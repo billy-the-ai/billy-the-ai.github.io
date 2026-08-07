@@ -119,6 +119,7 @@
     const pages=[...document.querySelectorAll('.page')],nav=[...document.querySelectorAll('.nav-btn')];
     const sidebar=document.getElementById('sidebar'),toast=document.getElementById('toast');
     let apiBase=(window.BILLY_DASHBOARD_API_URL||'').replace(/\/$/,'');
+    let dashboardConnection={state:apiBase?'configured':'unconfigured',endpoint:apiBase,error:'',health:null};
     const login=document.getElementById('discordLogin'),modePill=document.getElementById('modePill');
     const liveStatus=document.getElementById('liveStatus'),serverSelect=document.getElementById('serverSelect');
     const questionChannel=document.getElementById('questionChannel'),responseStyle=document.getElementById('responseStyle');
@@ -205,7 +206,25 @@
     if(fragment.get('auth_token')){sessionToken=fragment.get('auth_token');sessionStorage.setItem('billy_dashboard_token',sessionToken);history.replaceState(null,'',location.pathname+location.search+'#overview')}
     const initial=location.hash.slice(1);if(initial){const target=document.querySelector('.nav-btn[data-page="'+initial+'"]');if(target)target.click()}
     login.href='#';
-    login.addEventListener('click',event=>{if(!apiBase){event.preventDefault();showToast('Start Billy\'s main.py, then refresh this page. The dashboard will find the local API automatically.')}});
+    function dashboardConnectionHelp(){
+      const configured=(window.BILLY_DASHBOARD_API_URL||'').replace(/\/$/,'');
+      if(dashboardConnection.health&&!dashboardConnection.health.oauth_configured){
+        const missing=Array.isArray(dashboardConnection.health.oauth_missing)&&dashboardConnection.health.oauth_missing.length?dashboardConnection.health.oauth_missing.join(', '):'the Discord OAuth values';
+        return 'Billy\'s API is running, but Discord login needs '+missing+' in the bot .env file. Restart Billy after saving those values.'
+      }
+      if(dashboardConnection.state==='unreachable'){
+        const endpoint=dashboardConnection.endpoint||configured||'http://localhost:8787';
+        const detail=dashboardConnection.error?` Last check: ${dashboardConnection.error}`:'';
+        return `The browser could not reach Billy\'s API at ${endpoint}. Keep the dashboard and the running bot on this same computer, set DASHBOARD_API_ENABLED=true, then restart main.py.${detail}`
+      }
+      return 'Connect Discord first, choose a server, and keep Billy running before this control can make a server change.'
+    }
+    login.addEventListener('click',event=>{
+      if(!apiBase||!dashboardConnection.health||!dashboardConnection.health.oauth_configured){
+        event.preventDefault();
+        showToast(dashboardConnectionHelp(),apiBase?'Discord login needs setup':'Dashboard connection unavailable')
+      }
+    });
     async function api(path,options={}){
       if(!apiBase)throw new Error('Billy dashboard API is offline.');
       const request={method:options.method||'GET',headers:{Authorization:'Bearer '+sessionToken}};
@@ -218,16 +237,26 @@
     async function discoverApi(){
       const configured=(window.BILLY_DASHBOARD_API_URL||'').replace(/\/$/,'');
       const candidates=[configured,'http://localhost:8787','http://127.0.0.1:8787'].filter((value,index,list)=>value&&list.indexOf(value)===index);
+      const attempts=[];
+      dashboardConnection={state:'checking',endpoint:configured,error:'',health:null};
       for(const candidate of candidates){
+        let timeout;
         try{
-          const controller=new AbortController(),timeout=setTimeout(()=>controller.abort(),1800);
-          const response=await fetch(candidate+'/api/health',{cache:'no-store',signal:controller.signal});clearTimeout(timeout);
-          if(!response.ok)continue;
-          const health=await response.json();
-          if(health.ok){apiBase=candidate;return health}
-        }catch{}
+          const controller=new AbortController();timeout=setTimeout(()=>controller.abort(),3000);
+          const response=await fetch(candidate+'/api/health',{cache:'no-store',signal:controller.signal});
+          const health=await response.json().catch(()=>null);
+          if(!response.ok){attempts.push(`${candidate} returned HTTP ${response.status}.`);continue}
+          if(health&&health.ok){
+            apiBase=candidate;
+            dashboardConnection={state:'connected',endpoint:candidate,error:'',health};
+            return health
+          }
+          attempts.push(`${candidate} returned an invalid health response.`)
+        }catch(error){
+          attempts.push(`${candidate}: ${error&&error.name==='AbortError'?'timed out':(error&&error.message)||'connection failed'}.`)
+        }finally{if(timeout)clearTimeout(timeout)}
       }
-      apiBase='';return null
+      apiBase='';dashboardConnection={state:'unreachable',endpoint:configured||candidates[0]||'',error:attempts.join(' '),health:null};return null
     }
     function eventLabel(item){const d=item.data||{};if(item.type==='message')return ['Message activity',(d.user||'Member')+' in #'+(d.channel||'channel'),'↗'];if(item.type==='member_join')return ['Member joined',(d.user||'A member')+' joined • '+number(d.member_count)+' members','＋'];if(item.type==='voice_state')return ['Voice activity',(d.user||'Member')+' • '+(d.before||'Not connected')+' → '+(d.after||'Disconnected'),'◉'];return [String(item.type||'server update').replaceAll('_',' '),'Billy recorded a server update','◎']}
     function makeEmptyNote(title,copy){const note=document.createElement('div'),heading=document.createElement('strong'),textNode=document.createTextNode(copy);note.className='empty-note';heading.textContent=title;note.append(heading,textNode);return note}
@@ -288,15 +317,15 @@
     async function connectDashboard(){
       const health=await discoverApi();
       if(!health){
-        liveStatus.lastChild.textContent=' Billy API offline';modePill.textContent='Start Billy to connect';login.href='#';
-        showToast('The website is ready, but Billy\'s API is not running. Start main.py and refresh this page.','Billy is offline');return
+        liveStatus.lastChild.textContent=' Billy API unavailable';modePill.textContent='API unavailable';login.href='#';
+        showToast(dashboardConnectionHelp(),'Dashboard connection unavailable');return
       }
-      login.href=apiBase+'/api/oauth/login';
       liveStatus.lastChild.textContent=health.bot_ready?' Billy online':' Billy API online • bot starting';
       if(!health.oauth_configured){
-        modePill.textContent='OAuth setup required';
-        showToast('Billy is connected, but Discord login still needs the Client ID, Client Secret, redirect URL, and session secret in .env.','OAuth setup required');return
+        modePill.textContent='OAuth setup required';login.href='#';
+        showToast(dashboardConnectionHelp(),'Discord login needs setup');return
       }
+      login.href=apiBase+'/api/oauth/login';
       if(!sessionToken){modePill.textContent='Discord login required';return}
       try{const me=await api('/api/me');modePill.textContent='Live dashboard';login.textContent=me.user.username;document.getElementById('userAvatar').textContent=(me.user.username||'?').slice(0,1).toUpperCase();serverSelect.innerHTML='';me.guilds.forEach(g=>{const option=document.createElement('option');option.value=g.id;option.textContent=g.name;serverSelect.append(option)});if(me.guilds.length)loadGuild(me.guilds[0].id);else showToast('No servers found where you have Manage Server permission and Billy is installed.')}catch(error){sessionStorage.removeItem('billy_dashboard_token');sessionToken='';modePill.textContent='Session expired';showToast(error.message)}
     }
@@ -331,7 +360,7 @@
       const choices=setupChoices(keys,placeholder);
       return choices.length>1?makeModalField(label,id,{choices,value:value||''}):makeModalField(label,id,{value:value||'',placeholder:(placeholder||'Enter a Discord ID')+' (load setup options to choose)'})
     }
-    function connectionMessage(){return apiBase&&activeGuildId&&sessionToken?'Connected to Billy. The next request will be checked by the server API.':'Log in with Discord, choose a server, and keep Billy running before this control can make a server change.'}
+    function connectionMessage(){return apiBase&&activeGuildId&&sessionToken?'Connected to Billy. The next request will be checked by the server API.':dashboardConnectionHelp()}
     async function callGuildAction(path,options,status){
       if(!apiBase||!activeGuildId||!sessionToken){setModalStatus(status,'Dashboard connection required',connectionMessage(),true);return null}
       try{
@@ -379,19 +408,19 @@
       const forms=dashboardItems(payload,['forms','connections','items','results']);billyLiveState.forms=forms;const body=document.getElementById('formRows');if(!body)return;if(!forms.length){putEmpty(body,'No form connections are configured. Connect a destination channel to begin receiving form submissions.');return}body.replaceChildren();forms.forEach(form=>{const row=document.createElement('tr');const name=document.createElement('td');name.textContent=dashboardLabel(form,'Connected form');const destination=document.createElement('td');destination.textContent=dashboardValue(form,['channel_name','channel_id','destination'])||'—';const submitted=document.createElement('td');submitted.textContent=dashboardValue(form,['last_submission','last_submitted_at','updated_at','created_at'])||'—';const status=document.createElement('td');const state=document.createElement('span');state.textContent=dashboardValue(form,['status','state'])||'Connected';const wrap=document.createElement('div');wrap.className='table-actions';const test=document.createElement('button');test.className='button';test.type='button';test.textContent='Test';test.addEventListener('click',()=>openFormAction(form,'test'));const disconnect=document.createElement('button');disconnect.className='button';disconnect.type='button';disconnect.textContent='Disconnect';disconnect.addEventListener('click',()=>openFormAction(form,'disconnect'));wrap.append(test,disconnect);status.append(state,wrap);row.append(name,destination,submitted,status);body.append(row)});
     }
     async function loadOptionalDashboardData(guildId){
-      const routes=['/setup-options','/activity','/members','/levels','/voice','/logs','/moderation','/moderation/reviews','/tickets','/forms'];
-      const values=await Promise.all(routes.map(route=>optionalGuildRequest(guildId,route)));const [setup,activity,members,levels,voice,logs,moderation,reviews,tickets,forms]=values;
-      billyLiveState.setup=setup||{};renderLiveSources(setup||{});renderLiveMembers(members||{},levels||{},voice||{});renderLiveActivity(activity||{},logs||{});renderLiveModeration(moderation||{},reviews||{});renderLiveTickets(tickets||{});renderLiveForms(forms||{});
+      const routes=['/setup-options','/knowledge','/activity','/members','/levels','/voice','/logs','/moderation','/moderation/reviews','/tickets','/forms'];
+      const values=await Promise.all(routes.map(route=>optionalGuildRequest(guildId,route)));const [setup,knowledge,activity,members,levels,voice,logs,moderation,reviews,tickets,forms]=values;
+      billyLiveState.setup=setup||{};renderLiveSources(knowledge||{});renderLiveMembers(members||{},levels||{},voice||{});renderLiveActivity(activity||{},logs||{});renderLiveModeration(moderation||{},reviews||{});renderLiveTickets(tickets||{});renderLiveForms(forms||{});
       if(!setup)setOverviewText('overviewHealthStatus','API needs setup options');
     }
     async function loadGuild(guildId){
       activeGuildId=guildId;const selected=[...serverSelect.options].find(option=>option.value===guildId);const name=selected?selected.textContent:'Selected server';document.querySelectorAll('.server-name').forEach(node=>node.textContent=name);setOverviewText('overviewKnowledge','Loading…');setOverviewText('overviewSources','Loading sources…');setOverviewText('overviewMembers','Loading members…');try{await loadOptionalDashboardData(guildId);startStream(guildId)}catch(error){showToast(error.message,'Could not load live data')}
     }
     function openAddSource(){
-      openPage('knowledge');openActionModal('Add an approved knowledge source','Choose a text channel Billy may learn from. This does not read private channels unless they are selected and Billy has access.',()=>{const channel=liveChoice('Approved channel','knowledgeSourceChannel',['text_channels','channels','eligible_channels','public_channels'],'Choose a channel');const status=makeModalNote('No source added yet',connectionMessage());makeModalButton('Close','button',closeActionModal);makeModalButton('Add source with Billy','button amber',async()=>{const result=await callGuildAction('/knowledge/sources',{method:'POST',body:{channel_id:channel.value.trim()}},status);if(result)await loadOptionalDashboardData(activeGuildId)})})
+      openPage('knowledge');openActionModal('Add an approved knowledge source','Choose a public text channel. Billy can read announcement and information channels even when it cannot send messages there.',()=>{const channel=liveChoice('Approved channel','knowledgeSourceChannel',['knowledge_channels','eligible_channels','public_channels','text_channels','channels'],'Choose a public channel');const status=makeModalNote('No source added yet',connectionMessage());makeModalButton('Close','button',closeActionModal);makeModalButton('Add source with Billy','button amber',async()=>{if(!channel.value.trim()){setModalStatus(status,'Choose a channel','Load the live setup options, then select a public channel that Billy can view and read.',true);return}const result=await callGuildAction('/knowledge/sources',{method:'POST',body:{channel_id:channel.value.trim()}},status);if(result)await loadOptionalDashboardData(activeGuildId)})})
     }
     function openConflict(){
-      openPage('knowledge');openActionModal('Review knowledge conflicts','Billy can show conflicting approved facts, but a person must decide which source is correct.',()=>{makeModalText('No automatic replacement will be made from this dashboard. Refresh sources to inspect the latest approved information.');const status=makeModalNote('Human review required','This dashboard release does not auto-resolve knowledge conflicts.');makeModalButton('Close','button',closeActionModal);makeModalButton('Refresh sources','button amber',async()=>{const result=await callGuildAction('/setup-options',{},status);if(result){billyLiveState.setup=result;renderLiveSources(result)}})})
+      openPage('knowledge');openActionModal('Review knowledge conflicts','Billy can show conflicting approved facts, but a person must decide which source is correct.',()=>{makeModalText('No automatic replacement will be made from this dashboard. Refresh sources to inspect the latest approved information.');const status=makeModalNote('Human review required','This dashboard release does not auto-resolve knowledge conflicts.');makeModalButton('Close','button',closeActionModal);makeModalButton('Refresh sources','button amber',async()=>{const result=await callGuildAction('/knowledge',{},status);if(result)renderLiveSources(result)})})
     }
     function panelFields(draft){return {panel:liveChoice('Panel channel','ticketPanelChannel',['text_channels','channels','ticket_channels'],'Choose a channel',draft.panel_channel_id),category:liveChoice('Ticket category','ticketCategory',['categories','ticket_categories'],'Choose a category',draft.category_id),staff:liveChoice('Staff role','ticketStaffRole',['staff_roles','roles','moderator_roles'],'Choose a role',draft.staff_role_id),log:liveChoice('Ticket log channel','ticketLogChannel',['text_channels','channels','log_channels'],'Choose a channel',draft.log_channel_id)}}
     function openTicketSettings(){
