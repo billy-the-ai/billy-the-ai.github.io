@@ -36,6 +36,73 @@
     @media(max-width:780px){.topbar{padding:0 14px;height:68px}.brand{min-width:0}.brand div{display:none}.server-picker{min-width:0;flex:1}.server-picker select{width:100%}.status-pill,.preview-pill,.avatar{display:none}.mobile-menu{display:block}.shell{display:block}.sidebar{display:none;position:fixed;z-index:30;top:68px;left:0;width:270px;height:calc(100vh - 68px);background:#0f0e0b}.sidebar.open{display:block}.page-head{align-items:flex-start;flex-direction:column}.head-actions{width:100%}.head-actions .button{flex:1}main{padding:22px 14px}.cards{grid-template-columns:1fr}.health{grid-template-columns:1fr;justify-items:center}.source-list{width:100%}.ticket-board{grid-template-columns:repeat(3,260px)}.setting-row{align-items:flex-start;flex-direction:column}.timezone-helper{width:100%;min-width:0}.dashboard-modal{max-height:calc(100vh - 24px)}.modal-backdrop{padding:12px}}
     @media(max-width:520px){.stats{grid-template-columns:1fr 1fr}.stat{min-height:125px;padding:15px}.stat strong{font-size:25px}.quick-grid{grid-template-columns:1fr}.footer{flex-direction:column}.page-head h1{font-size:34px}}
   </style>
+  <style>
+    /* Live counters. Values tween between polls so the number moves smoothly
+       instead of snapping, the way a live subscriber counter reads. */
+    .stat strong{font-variant-numeric:tabular-nums;transition:color .35s ease}
+    .stat strong.counting{color:var(--amber-2)}
+    .stat.is-live:before{content:"";position:absolute;left:0;top:0;bottom:0;width:3px;background:linear-gradient(180deg,var(--amber),transparent)}
+    .stat-flash{animation:statFlash .9s ease}
+    @keyframes statFlash{0%{background:rgba(233,166,92,.16)}100%{background:transparent}}
+    .live-dot{display:inline-block;width:7px;height:7px;margin-right:6px;border-radius:50%;background:var(--green);box-shadow:0 0 10px var(--green);animation:livePulse 1.8s infinite}
+    @keyframes livePulse{0%,100%{opacity:1;transform:scale(1)}50%{opacity:.45;transform:scale(.82)}}
+    .stat .delta.live{color:var(--green)}
+
+    /* Approved knowledge sources. The old build printed the channel name and the
+       raw snowflake with no separation, which read as one unreadable string. */
+    .source-legend{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:14px;padding-bottom:14px;border-bottom:1px solid var(--line-soft)}
+    .source-legend span{display:inline-flex;align-items:center;gap:6px;padding:5px 10px;border:1px solid var(--line);border-radius:999px;background:#14120e;color:var(--muted);font-size:11px;font-weight:700}
+    .source-legend i{width:8px;height:8px;border-radius:50%;background:var(--green);font-style:normal}
+    .source-legend i.amber{background:var(--amber)}
+    .source-legend i.blue{background:var(--blue)}
+    .source-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(268px,1fr));gap:11px}
+    .source-item{display:grid;grid-template-columns:38px minmax(0,1fr);gap:12px;align-items:start;padding:14px;border:1px solid var(--line-soft);border-radius:15px;background:linear-gradient(150deg,#17140f,#121110);transition:.18s ease}
+    .source-item:hover{border-color:rgba(233,166,92,.42);transform:translateY(-1px)}
+    .source-item .src-glyph{width:38px;height:38px;display:grid;place-items:center;border-radius:11px;background:#221c14;color:var(--amber-2);font-size:16px}
+    .source-item .src-main{min-width:0}
+    .source-item .src-name{display:block;font-size:14px;font-weight:800;color:var(--cream);word-break:break-word}
+    .source-item .src-name .hash{color:var(--amber);margin-right:1px}
+    .source-item .src-meta{display:flex;flex-wrap:wrap;gap:6px;margin-top:8px}
+    .source-item .src-meta span{padding:3px 8px;border-radius:7px;background:rgba(255,255,255,.05);color:var(--muted);font-size:10.5px;font-weight:700;letter-spacing:.02em}
+    .source-item .src-meta span.ok{background:rgba(111,224,165,.11);color:var(--green)}
+    .source-item .src-meta span.warn{background:rgba(233,166,92,.12);color:var(--amber-2)}
+    .source-item .src-id{font-family:ui-monospace,SFMono-Regular,Menlo,monospace;font-size:10px;color:#6f6961;margin-top:7px;display:block;word-break:break-all}
+
+    /* Live activity + ticket cards rendered by the live-data layer. */
+    .activity-row{display:grid;grid-template-columns:1fr auto;gap:4px 12px;padding:11px 12px;border-radius:12px;border:1px solid transparent}
+    .activity-row:hover{background:rgba(255,255,255,.025);border-color:var(--line-soft)}
+    .activity-row b{font-size:13px;grid-column:1}
+    .activity-row span{grid-column:1;color:var(--muted);font-size:12px;line-height:1.45}
+    .activity-row time{grid-row:1;grid-column:2;color:#706a60;font-size:10px;white-space:nowrap}
+    .ticket-card{padding:14px;border:1px solid var(--line);border-radius:14px;background:#191610;margin-bottom:10px}
+    .ticket-card h3{font-family:CuteDino;font-weight:400;font-size:16px;margin:9px 0 6px}
+    .ticket-card p{margin:0;color:var(--muted);font-size:12px;line-height:1.5}
+    .tag{display:inline-block;padding:4px 9px;border-radius:999px;font-size:10px;font-weight:900;background:rgba(233,166,92,.12);color:var(--amber-2);border:1px solid rgba(233,166,92,.25)}
+    .tag.good{background:rgba(111,224,165,.1);color:var(--green);border-color:rgba(111,224,165,.22)}
+    .tag.warn{background:rgba(233,166,92,.12);color:var(--amber-2);border-color:rgba(233,166,92,.25)}
+
+    /* One timezone control: search box narrows the same list the select applies. */
+    .timezone-helper{grid-template-columns:minmax(180px,1fr) minmax(180px,1fr)}
+    .timezone-helper .timezone-status{grid-column:1/-1}
+    .timezone-status.ok{color:var(--green)}
+    @media(max-width:780px){.timezone-helper{grid-template-columns:1fr}}
+
+    /* Ticket panel designer */
+    .modal-field textarea{width:100%;min-height:82px;resize:vertical;border:1px solid var(--line);border-radius:10px;padding:10px 12px;background:#100f0c;color:var(--cream);outline:none;font-family:inherit;line-height:1.5}
+    .modal-field textarea:focus{border-color:var(--amber)}
+    .modal-field input[type=color]{height:42px;padding:4px;cursor:pointer}
+    .modal-section{margin-top:4px;padding-top:14px;border-top:1px solid var(--line-soft);font-size:11px;font-weight:900;letter-spacing:.14em;text-transform:uppercase;color:var(--amber)}
+    .field-hint{font-size:11px;color:var(--muted);line-height:1.45}
+    .panel-preview{border:1px solid var(--line);border-radius:14px;background:#0f0e0c;padding:14px;display:grid;gap:9px}
+    .panel-preview .pp-bar{width:4px;border-radius:4px;background:var(--amber);grid-row:1/99;grid-column:1}
+    .panel-preview .pp-title{font-weight:900;font-size:15px;color:var(--cream)}
+    .panel-preview .pp-desc{color:var(--muted);font-size:12.5px;line-height:1.5;white-space:pre-wrap}
+    .panel-preview .pp-field b{display:block;font-size:12px;margin-bottom:3px}
+    .panel-preview .pp-field span{color:var(--muted);font-size:12px;line-height:1.5;white-space:pre-wrap}
+    .panel-preview .pp-foot{color:#6f6961;font-size:10.5px;border-top:1px solid var(--line-soft);padding-top:8px}
+    .panel-preview img.pp-thumb{width:56px;height:56px;object-fit:cover;border-radius:9px;justify-self:end}
+    .panel-preview img.pp-image{width:100%;max-height:150px;object-fit:cover;border-radius:10px}
+  </style>
 </head>
 <body>
   <div class="noise"></div>
@@ -84,7 +151,7 @@
         </div>
       </section>
 
-      <section class="page" id="knowledge"><div class="page-head"><div><span class="eyebrow">Knowledge engine</span><h1>Teach once. Stay current.</h1><p>Choose exactly what Billy is allowed to learn and keep every server isolated.</p></div><div class="head-actions"><button class="button demo-action">Resolve conflict</button><button class="button amber demo-action">Add source</button></div></div><div class="stats"><article class="stat"><div class="stat-top"><span>Approved sources</span><span class="stat-icon">◎</span></div><strong>—</strong><span class="delta">Waiting for server data</span></article><article class="stat"><div class="stat-top"><span>Knowledge items</span><span class="stat-icon">▤</span></div><strong>—</strong><span class="delta">Waiting for server data</span></article><article class="stat"><div class="stat-top"><span>Answer confidence</span><span class="stat-icon">✓</span></div><strong>—</strong><span class="delta">Available after sync</span></article><article class="stat"><div class="stat-top"><span>Needs review</span><span class="stat-icon">!</span></div><strong>—</strong><span class="delta warn">No live review data</span></article></div><article class="panel"><header class="panel-head"><div><h2>Approved knowledge sources</h2><span>Private channels stay private unless explicitly selected</span></div></header><div class="panel-body" id="knowledgeSources"><div class="empty-note"><strong>Connect a server to load sources</strong>Approved sources will appear here after Billy's dashboard API is connected.</div></div></article></section>
+      <section class="page" id="knowledge"><div class="page-head"><div><span class="eyebrow">Knowledge engine</span><h1>Teach once. Stay current.</h1><p>Choose exactly what Billy is allowed to learn and keep every server isolated.</p></div><div class="head-actions"><button class="button demo-action">Resolve conflict</button><button class="button amber demo-action">Add source</button></div></div><div class="stats"><article class="stat"><div class="stat-top"><span>Approved sources</span><span class="stat-icon">◎</span></div><strong id="kbSources">—</strong><span class="delta" id="kbSourcesNote">Waiting for server data</span></article><article class="stat"><div class="stat-top"><span>Knowledge items</span><span class="stat-icon">▤</span></div><strong id="kbItems">—</strong><span class="delta" id="kbItemsNote">Waiting for server data</span></article><article class="stat"><div class="stat-top"><span>Answer confidence</span><span class="stat-icon">✓</span></div><strong id="kbConfidence">—</strong><span class="delta" id="kbConfidenceNote">Available after sync</span></article><article class="stat"><div class="stat-top"><span>Needs review</span><span class="stat-icon">!</span></div><strong id="kbReview">—</strong><span class="delta warn" id="kbReviewNote">No live review data</span></article></div><article class="panel"><header class="panel-head"><div><h2>Approved knowledge sources</h2><span>Channels Billy is allowed to read. Private channels stay private unless you explicitly approve them.</span></div><button class="button demo-action" data-action="Add source">Add source</button></header><div class="panel-body" id="knowledgeSources"><div class="empty-note"><strong>Connect a server to load sources</strong>Approved sources will appear here after Billy's dashboard API is connected.</div></div></article></section>
 
       <section class="page" id="tickets"><div class="page-head"><div><span class="eyebrow">Support workspace</span><h1>Every request has a clear path.</h1><p>Normal ticket handling with Billy helping organize context—not making staff decisions.</p></div><div class="head-actions"><button class="button demo-action">Panel settings</button><button class="button amber demo-action">Create ticket panel</button></div></div><div class="ticket-board" id="ticketBoard"><div class="empty-note"><strong>Tickets will appear here</strong>Connect Discord and choose a server to load live ticket information.</div></div></section>
 
@@ -98,7 +165,7 @@
 
       <section class="page" id="logs"><div class="page-head"><div><span class="eyebrow">Audit trail</span><h1>Important changes, clearly explained.</h1><p>Server, voice, moderation, and setup activity—with no unnecessary pings.</p></div><button class="button demo-action">Log channels</button></div><article class="panel"><header class="panel-head"><div><h2>Recent logs</h2><span>Waiting for live activity</span></div><div class="panel-body activity" id="logActivity"><div class="empty-note"><strong>Connect a server to stream logs</strong>New Billy events will appear here when the local dashboard API is available.</div></div></article></section>
 
-<section class="page" id="settings"><div class="page-head"><div><span class="eyebrow">Server configuration</span><h1>Billy, your way.</h1><p>Only administrators can change these settings for <span class="server-name">Billy The AI • Official</span>.</p></div><button class="button amber" id="saveSettings">Save changes</button></div><article class="panel"><header class="panel-head"><div><h2>Core settings</h2><span>Saved separately for every server you manage</span></div></header><div class="panel-body"><div class="setting-row"><div><b>Question channel</b><small>Billy answers support questions here even when not directly mentioned</small></div><select class="field" id="questionChannel"><option value="">Choose a channel</option></select></div><div class="setting-row"><div><b>Response style</b><small>Choose how Billy normally answers in this server</small></div><select class="field" id="responseStyle"><option value="balanced">Balanced</option><option value="concise">Concise</option><option value="friendly">Friendly</option><option value="detailed">Detailed</option></select></div><div class="setting-row"><div><b>Automatic knowledge updates</b><small>Keep approved knowledge channels in sync without requiring /rescan</small></div><button class="switch on" id="automaticKnowledge" aria-label="Toggle automatic knowledge updates" aria-pressed="true"></button></div><div class="setting-row"><div><b>Human-only moderation decisions</b><small>Billy can organize evidence but never punish a member automatically</small></div><button class="switch on" id="humanModeration" aria-label="Toggle human-only moderation decisions" aria-pressed="true"></button></div><div class="setting-row"><div><b>Timezone</b><small>Used for streak resets, scheduled events, and summaries</small></div><select class="field" id="timezone"><option value="UTC">UTC</option></select></div><div class="setting-row"><div><b>Find a timezone</b><small>Try a country, common city, US state, or IANA timezone. Some locations need an exact IANA name.</small></div><div class="timezone-helper"><input class="field" id="timezoneLookup" list="timezoneAliasList" placeholder="Puerto Rico, Texas, Tokyo…" autocomplete="off"/><button class="button" id="timezoneLookupApply" type="button">Use timezone</button><small class="timezone-status" id="timezoneLookupStatus" role="status" aria-live="polite"></small></div></div><datalist id="timezoneAliasList"></datalist></div></article></section>
+<section class="page" id="settings"><div class="page-head"><div><span class="eyebrow">Server configuration</span><h1>Billy, your way.</h1><p>Only administrators can change these settings for <span class="server-name">Billy The AI • Official</span>.</p></div><button class="button amber" id="saveSettings">Save changes</button></div><article class="panel"><header class="panel-head"><div><h2>Core settings</h2><span>Saved separately for every server you manage</span></div></header><div class="panel-body"><div class="setting-row"><div><b>Question channel</b><small>Billy answers support questions here even when not directly mentioned</small></div><select class="field" id="questionChannel"><option value="">Choose a channel</option></select></div><div class="setting-row"><div><b>Response style</b><small>Choose how Billy normally answers in this server</small></div><select class="field" id="responseStyle"><option value="balanced">Balanced</option><option value="concise">Concise</option><option value="friendly">Friendly</option><option value="detailed">Detailed</option></select></div><div class="setting-row"><div><b>Automatic knowledge updates</b><small>Keep approved knowledge channels in sync without requiring /rescan</small></div><button class="switch on" id="automaticKnowledge" aria-label="Toggle automatic knowledge updates" aria-pressed="true"></button></div><div class="setting-row"><div><b>Human-only moderation decisions</b><small>Billy can organize evidence but never punish a member automatically</small></div><button class="switch on" id="humanModeration" aria-label="Toggle human-only moderation decisions" aria-pressed="true"></button></div><div class="setting-row"><div><b>Timezone</b><small>Used for streak resets, scheduled events, and summaries. Search a country, city, or US state — or pick an exact IANA zone from the list.</small></div><div class="timezone-helper"><input class="field" id="timezoneLookup" list="timezoneAliasList" placeholder="Search: Puerto Rico, Texas, Tokyo…" autocomplete="off"/><select class="field" id="timezone"><option value="UTC">UTC</option></select><small class="timezone-status" id="timezoneLookupStatus" role="status" aria-live="polite"></small></div></div><datalist id="timezoneAliasList"></datalist></div></article></section>
 
       <footer class="footer"><span>Billy Control Room • Secure server dashboard</span><span><a href="../terms/">Terms</a> · <a href="../privacy/">Privacy</a> · <a href="https://discord.gg/uXHNJz6fDh">Support</a></span></footer>
     </main>
@@ -261,7 +328,18 @@
     function eventLabel(item){const d=item.data||{};if(item.type==='message')return ['Message activity',(d.user||'Member')+' in #'+(d.channel||'channel'),'↗'];if(item.type==='member_join')return ['Member joined',(d.user||'A member')+' joined • '+number(d.member_count)+' members','＋'];if(item.type==='voice_state')return ['Voice activity',(d.user||'Member')+' • '+(d.before||'Not connected')+' → '+(d.after||'Disconnected'),'◉'];return [String(item.type||'server update').replaceAll('_',' '),'Billy recorded a server update','◎']}
     function makeEmptyNote(title,copy){const note=document.createElement('div'),heading=document.createElement('strong'),textNode=document.createTextNode(copy);note.className='empty-note';heading.textContent=title;note.append(heading,textNode);return note}
     function appendEvent(list,item){if(!list)return;if(list.dataset.live!=='1'){list.replaceChildren();list.dataset.live='1'}const [title,detail,icon]=eventLabel(item),row=document.createElement('div'),iconNode=document.createElement('span'),content=document.createElement('div'),heading=document.createElement('b'),copy=document.createElement('small'),time=document.createElement('time'),when=new Date(item.at);row.className='event';iconNode.className='event-icon';iconNode.textContent=icon;heading.textContent=title;copy.textContent=detail;time.textContent=Number.isNaN(when.getTime())?'Now':when.toLocaleTimeString([],{hour:'numeric',minute:'2-digit'});content.append(heading,copy);row.append(iconNode,content,time);list.prepend(row);while(list.children.length>30)list.lastElementChild.remove()}
-    function addEvent(item){if(item.type==='heartbeat')return;[document.getElementById('logActivity'),document.getElementById('overviewActivity')].forEach(list=>appendEvent(list,item))}
+    /* Stream events move the counters the moment Discord reports them; the 10s
+       reconcile poll then corrects the tile against Billy's stored totals. */
+    function applyLiveEvent(item){
+      if(!item)return;
+      if(item.type==='message')bumpCounter('overviewMessages',1);
+      else if(item.type==='member_join'){
+        const count=Number(item.data&&item.data.member_count);
+        if(Number.isFinite(count))setOverviewText('overviewMembers',number(count)+' member'+(count===1?'':'s'));
+      }
+      else if(item.type==='automod_violation'||item.type==='moderation_case')bumpCounter('overviewModeration',1);
+    }
+    function addEvent(item){if(item.type==='heartbeat')return;applyLiveEvent(item);[document.getElementById('logActivity'),document.getElementById('overviewActivity')].forEach(list=>appendEvent(list,item))}
     function resetLiveActivity(){[document.getElementById('logActivity'),document.getElementById('overviewActivity')].forEach(list=>{if(!list)return;list.dataset.live='0';list.replaceChildren(makeEmptyNote('Waiting for live activity','Billy will replace this message when the selected server sends an event.'))})}
     async function startStream(guildId){if(streamController)streamController.abort();streamController=new AbortController();const subtitle=document.querySelector('#logs .panel-head span');if(subtitle)subtitle.textContent='Connecting live activity…';try{const response=await fetch(apiBase+'/api/guilds/'+guildId+'/events',{headers:{Authorization:'Bearer '+sessionToken},signal:streamController.signal});if(!response.ok)throw new Error('Live stream unavailable.');if(subtitle)subtitle.textContent='Live • updates appear automatically';const reader=response.body.getReader(),decoder=new TextDecoder();let buffer='';while(true){const {value,done}=await reader.read();if(done)break;buffer+=decoder.decode(value,{stream:true});const lines=buffer.split('\n');buffer=lines.pop();for(const line of lines){if(line.trim())addEvent(JSON.parse(line))}}}catch(error){if(error.name!=='AbortError'&&subtitle)subtitle.textContent='Disconnected • switch servers to retry'}}
     function sourceRow(source){const row=document.createElement('div'),div=document.createElement('div'),b=document.createElement('b'),small=document.createElement('small'),badge=document.createElement('span'),stamp=source.last_scanned_at?new Date(source.last_scanned_at):null;row.className='source-row';b.textContent='#'+(source.channel_name||'unknown-channel');small.textContent=stamp&&!Number.isNaN(stamp.getTime())?'Last synced '+stamp.toLocaleString():'Waiting for first sync';badge.className='chip'+(source.enabled===false?' amber':'');badge.textContent=source.enabled===false?'Paused':'Live';div.append(b,small);row.append(div,badge);return row}
@@ -330,8 +408,26 @@
       try{const me=await api('/api/me');modePill.textContent='Live dashboard';login.textContent=me.user.username;document.getElementById('userAvatar').textContent=(me.user.username||'?').slice(0,1).toUpperCase();serverSelect.innerHTML='';me.guilds.forEach(g=>{const option=document.createElement('option');option.value=g.id;option.textContent=g.name;serverSelect.append(option)});if(me.guilds.length)loadGuild(me.guilds[0].id);else showToast('No servers found where you have Manage Server permission and Billy is installed.')}catch(error){sessionStorage.removeItem('billy_dashboard_token');sessionToken='';modePill.textContent='Session expired';showToast(error.message)}
     }
     populateTimezones();
-    timezoneLookupApply?.addEventListener('click',applyTimezoneLookup);
-    timezoneLookup?.addEventListener('keydown',event=>{if(event.key==='Enter'){event.preventDefault();applyTimezoneLookup()}});
+    /* One control now: typing a place narrows the same select that gets saved,
+       so there is no second timezone widget to keep in sync. */
+    function applyTimezoneSearch(quiet){
+      const value=timezoneLookup?.value||'';
+      if(!timezoneLookupStatus)return;
+      if(!value.trim()){timezoneLookupStatus.textContent='';timezoneLookupStatus.classList.remove('error','ok');return}
+      const zone=resolveTimezoneLookup(value);
+      if(!zone){
+        if(quiet){timezoneLookupStatus.textContent='';timezoneLookupStatus.classList.remove('error','ok');return}
+        timezoneLookupStatus.textContent='No exact match. Try a city, US state, or an IANA name such as America/Puerto_Rico.';
+        timezoneLookupStatus.classList.add('error');timezoneLookupStatus.classList.remove('ok');return
+      }
+      ensureTimezoneOption(zone);timezoneSelect.value=zone;
+      timezoneLookupStatus.textContent=zone.replaceAll('_',' ')+' selected — choose Save changes to apply it.';
+      timezoneLookupStatus.classList.remove('error');timezoneLookupStatus.classList.add('ok');
+    }
+    timezoneLookup?.addEventListener('input',()=>applyTimezoneSearch(true));
+    timezoneLookup?.addEventListener('change',()=>applyTimezoneSearch(false));
+    timezoneLookup?.addEventListener('keydown',event=>{if(event.key==='Enter'){event.preventDefault();applyTimezoneSearch(false)}});
+    timezoneSelect?.addEventListener('change',()=>{if(timezoneLookupStatus){timezoneLookupStatus.textContent=timezoneSelect.value.replaceAll('_',' ')+' selected — choose Save changes to apply it.';timezoneLookupStatus.classList.remove('error');timezoneLookupStatus.classList.add('ok')}});
 
     /* Live dashboard controls. These only write after Billy's authenticated API confirms
        the request. The static site intentionally does not simulate Discord changes. */
@@ -372,12 +468,150 @@
     }
     function putEmpty(container,message){container.replaceChildren();if(container.tagName==='TBODY'){const row=document.createElement('tr'),cell=document.createElement('td');cell.colSpan=container.closest('table')?.querySelectorAll('thead th').length||1;cell.className='empty-note';cell.textContent=message;row.append(cell);container.append(row);return}const note=document.createElement('div');note.className='live-empty';note.textContent=message;container.append(note)}
     function setOverviewText(id,value){const node=document.getElementById(id);if(node)node.textContent=value}
+
+    /* ---- Live counters -------------------------------------------------
+       Each stat remembers its last value and tweens to the next one, so the
+       number glides the way a live subscriber counter does instead of jumping
+       on every refresh. Stream events nudge the value immediately and a slower
+       reconcile poll corrects it against Billy's database. */
+    const counterValues=new Map(),counterFrames=new Map();
+    const countFormat=value=>number(Math.round(value));
+    const hoursFormat=value=>(Math.max(0,value)/3600).toFixed(1)+'h';
+    function animateCount(el,id,target,format){
+      const previous=counterValues.get(id);
+      counterValues.set(id,target);
+      if(counterFrames.has(id)){cancelAnimationFrame(counterFrames.get(id));counterFrames.delete(id)}
+      if(!Number.isFinite(previous)||previous===target){el.textContent=format(target);return}
+      const start=performance.now(),distance=Math.abs(target-previous);
+      const duration=Math.min(1600,Math.max(450,Math.log10(distance+1)*620));
+      el.classList.add('counting');
+      const step=now=>{
+        const progress=Math.min(1,(now-start)/duration),eased=1-Math.pow(1-progress,3);
+        el.textContent=format(previous+(target-previous)*eased);
+        if(progress<1){counterFrames.set(id,requestAnimationFrame(step))}
+        else{counterFrames.delete(id);el.textContent=format(target);el.classList.remove('counting')}
+      };
+      counterFrames.set(id,requestAnimationFrame(step));
+    }
+    function setCounter(id,value,format){
+      const el=document.getElementById(id);if(!el)return;
+      const numeric=Number(value);
+      if(value===null||value===undefined||value===''||!Number.isFinite(numeric)){
+        counterValues.delete(id);el.textContent=value===0?'0':'—';return
+      }
+      el.closest('.stat')?.classList.add('is-live');
+      animateCount(el,id,numeric,format||countFormat);
+    }
+    function bumpCounter(id,delta,format){
+      const el=document.getElementById(id),current=counterValues.get(id);
+      if(!el||!Number.isFinite(current))return;
+      animateCount(el,id,Math.max(0,current+delta),format||countFormat);
+      const card=el.closest('.stat');
+      if(card){card.classList.remove('stat-flash');void card.offsetWidth;card.classList.add('stat-flash')}
+    }
+    function markStatLive(id,text){
+      const el=document.getElementById(id);if(!el)return;
+      el.classList.add('live');el.replaceChildren();
+      const dot=document.createElement('span');dot.className='live-dot';
+      el.append(dot,document.createTextNode(text));
+    }
+
+    /* Authoritative totals. The previous build dropped this call, which is why
+       the message, voice, and moderation tiles stopped filling in. */
+    async function refreshOverviewStats(guildId){
+      const overview=await optionalGuildRequest(guildId,'/overview');
+      if(!overview){setOverviewText('overviewSources','Overview endpoint unavailable');return null}
+      const stats=overview.stats||{},guild=overview.guild||{};
+      setCounter('overviewKnowledge',stats.knowledge_facts);
+      setCounter('overviewMessages',stats.messages_30d);
+      setCounter('overviewVoice',stats.voice_seconds_30d,hoursFormat);
+      setCounter('overviewModeration',stats.moderation_cases);
+      const sourceCount=Number(stats.knowledge_sources||0);
+      setOverviewText('overviewSources',number(sourceCount)+' approved source'+(sourceCount===1?'':'s'));
+      setOverviewText('overviewWarnings',number(stats.warnings)+' saved warning'+(Number(stats.warnings)===1?'':'s'));
+      const online=guild.online;
+      setOverviewText('overviewMembers',number(guild.members)+' member'+(Number(guild.members)===1?'':'s')+(online===null||online===undefined?'':' • '+number(online)+' online'));
+      setCounter('kbSources',stats.knowledge_sources);
+      setCounter('kbItems',stats.knowledge_facts);
+      setCounter('kbReview',stats.knowledge_gaps);
+      const gaps=Number(stats.knowledge_gaps||0),facts=Number(stats.knowledge_facts||0);
+      const confidence=facts?Math.max(0,Math.min(100,Math.round((1-gaps/(facts+gaps||1))*100))):0;
+      const confidenceEl=document.getElementById('kbConfidence');
+      if(confidenceEl){confidenceEl.closest('.stat')?.classList.add('is-live');animateCount(confidenceEl,'kbConfidence',confidence,value=>Math.round(value)+'%')}
+      setOverviewText('kbSourcesNote',sourceCount?'Channels Billy may read':'No sources approved yet');
+      setOverviewText('kbItemsNote',facts?'Indexed facts Billy can quote':'Nothing indexed yet');
+      setOverviewText('kbConfidenceNote',facts?'Share of answers with no open gap':'Add a source to build confidence');
+      setOverviewText('kbReviewNote',gaps?number(gaps)+' question'+(gaps===1?'':'s')+' Billy could not answer':'No open knowledge gaps');
+      const ring=document.getElementById('overviewHealthRing'),ringValue=document.getElementById('overviewHealthValue'),ringStatus=document.getElementById('overviewHealthStatus');
+      if(ring)ring.style.setProperty('--value',facts?confidence:0);
+      if(ringValue)ringValue.textContent=facts?confidence+'%':'—';
+      if(ringStatus)ringStatus.textContent=facts?'answer confidence':'needs sources';
+      return overview
+    }
+    let statsTimer=null;
+    function startStatsPolling(guildId){
+      if(statsTimer)clearInterval(statsTimer);
+      statsTimer=setInterval(()=>{
+        if(document.hidden||activeGuildId!==guildId)return;
+        refreshOverviewStats(guildId).catch(()=>{})
+      },10000);
+    }
+    function relativeTime(value){
+      if(!value)return null;
+      const when=new Date(value);
+      if(Number.isNaN(when.getTime()))return null;
+      const seconds=Math.round((Date.now()-when.getTime())/1000);
+      if(seconds<60)return 'just now';
+      if(seconds<3600)return Math.floor(seconds/60)+'m ago';
+      if(seconds<86400)return Math.floor(seconds/3600)+'h ago';
+      if(seconds<2592000)return Math.floor(seconds/86400)+'d ago';
+      return when.toLocaleDateString()
+    }
+    /* A source card shows the channel name, what it is, when Billy last read it,
+       and the Discord ID on its own line. The previous build printed the name and
+       the raw snowflake glued together, which is what made this list unreadable. */
+    function knowledgeSourceCard(source){
+      const rawName=String(dashboardValue(source,['channel_name','name','label'])||'unknown-channel');
+      const clean=rawName.replace(/^#/,'').trim();
+      const leadingEmoji=clean.match(/^([^\w\s]+)\s*[|·-]?\s*/u);
+      const glyphText=leadingEmoji?leadingEmoji[1].slice(0,2):'#';
+      const displayName=leadingEmoji?clean.slice(leadingEmoji[0].length).trim()||clean:clean;
+      const channelId=dashboardValue(source,['channel_id','id']);
+      const enabled=source&&source.enabled===false?false:true;
+      const synced=relativeTime(dashboardValue(source,['last_scanned_at','last_scan_at','updated_at']));
+
+      const row=document.createElement('div');row.className='source-item';
+      const glyph=document.createElement('span');glyph.className='src-glyph';glyph.textContent=glyphText;
+      const main=document.createElement('div');main.className='src-main';
+      const name=document.createElement('span');name.className='src-name';
+      // The glyph badge already carries the emoji or the # marker, so the name
+      // itself stays plain instead of repeating a second hash.
+      if(leadingEmoji){const hash=document.createElement('span');hash.className='hash';hash.textContent='#';name.append(hash)}
+      name.append(document.createTextNode(displayName));
+      const meta=document.createElement('div');meta.className='src-meta';
+      const state=document.createElement('span');state.className=enabled?'ok':'warn';
+      state.textContent=enabled?'Reading':'Paused';
+      const sync=document.createElement('span');
+      sync.textContent=synced?'Synced '+synced:'Awaiting first sync';
+      meta.append(state,sync);
+      main.append(name,meta);
+      if(channelId){const id=document.createElement('span');id.className='src-id';id.textContent='ID '+channelId;main.append(id)}
+      row.append(glyph,main);
+      return row
+    }
     function renderLiveSources(payload){
       const sources=dashboardItems(payload,['sources','knowledge_sources','items','results']);
       const targets=[document.getElementById('overviewSourceList'),document.getElementById('knowledgeSources')].filter(Boolean);
-      targets.forEach(target=>{target.replaceChildren();if(!sources.length){putEmpty(target,'No live knowledge sources were returned. Add an approved channel source to let Billy learn from it.');return}sources.forEach(source=>{const row=document.createElement('div');row.className='source-item';const title=document.createElement('b');title.textContent=dashboardLabel(source,'Approved source');const detail=document.createElement('small');detail.textContent=dashboardValue(source,['summary','status','channel_id','id'])||'Approved source';row.append(title,detail);target.append(row)})});
-      setOverviewText('overviewSources',sources.length+' approved source'+(sources.length===1?'':'s'));setOverviewText('overviewKnowledge',String(sources.length));
-      const value=document.getElementById('overviewHealthValue'),status=document.getElementById('overviewHealthStatus');if(value)value.textContent=sources.length?'Ready':'—';if(status)status.textContent=sources.length?'approved sources':'needs sources';
+      targets.forEach(target=>{
+        target.replaceChildren();
+        if(!sources.length){putEmpty(target,'No approved knowledge sources yet. Use “Add source” to let Billy read a public channel such as #rules or #announcements.');return}
+        const legend=document.createElement('div');legend.className='source-legend';
+        [['','Reading — Billy answers from this channel'],['amber','Paused — kept but not read'],['blue','Public channels only — private staff channels are never indexed']]
+          .forEach(([tone,text])=>{const chip=document.createElement('span'),dot=document.createElement('i');if(tone)dot.className=tone;chip.append(dot,document.createTextNode(text));legend.append(chip)});
+        const grid=document.createElement('div');grid.className='source-grid';
+        sources.forEach(source=>grid.append(knowledgeSourceCard(source)));
+        target.append(legend,grid);
+      });
     }
     function normaliseMember(item){
       const base=item&&typeof item==='object'?item:{};const profile=base.member||base.user||base;
@@ -390,7 +624,7 @@
       levels.forEach(item=>{const id=dashboardId(item);if(!id)return;const member=byId.get(id)||normaliseMember(item);member.level=dashboardValue(item,['level','message_level','rank_level'])||member.level;member.messages=dashboardValue(item,['messages','message_count','messages_all_time'])||member.messages;if(!byId.has(id)){byId.set(id,member);memberRows.push(member)}});
       voice.forEach(item=>{const id=dashboardId(item);if(!id)return;const member=byId.get(id)||normaliseMember(item);member.voice=dashboardValue(item,['voice_hours','hours','voice_seconds','voice_time'])||member.voice;if(!byId.has(id)){byId.set(id,member);memberRows.push(member)}});
       billyLiveState.members=memberRows;
-      const tbody=document.getElementById('overviewMemberRows');if(!tbody)return;if(!memberRows.length){putEmpty(tbody,'No member activity was returned by the connected Billy API yet.');return}tbody.replaceChildren();memberRows.slice(0,25).forEach(member=>{const tr=document.createElement('tr');const name=document.createElement('td');name.textContent=member.name;const level=document.createElement('td');level.textContent=member.level;const messages=document.createElement('td');messages.textContent=member.messages;const voice=document.createElement('td');voice.textContent=String(member.voice).includes('h')?member.voice:member.voice==='—'?'—':member.voice+'h';const standing=document.createElement('td');const wrap=document.createElement('div');wrap.className='table-actions';const tag=document.createElement('span');tag.className=member.warnings==='0'?'tag good':'tag warn';tag.textContent=member.warnings==='0'?'Clear':member.warnings+' warning'+(member.warnings==='1'?'':'s');wrap.append(tag);if(member.id){const button=document.createElement('button');button.type='button';button.className='member-detail';button.textContent='Details';button.addEventListener('click',()=>openMemberDetails(member.id));wrap.append(button)}standing.append(wrap);tr.append(name,level,messages,voice,standing);tbody.append(tr)});setOverviewText('overviewMembers',memberRows.length+' members loaded');
+      const tbody=document.getElementById('overviewMemberRows');if(!tbody)return;if(!memberRows.length){putEmpty(tbody,'No member activity was returned by the connected Billy API yet.');return}tbody.replaceChildren();memberRows.slice(0,25).forEach(member=>{const tr=document.createElement('tr');const name=document.createElement('td');name.textContent=member.name;const level=document.createElement('td');level.textContent=member.level;const messages=document.createElement('td');messages.textContent=member.messages;const voice=document.createElement('td');voice.textContent=String(member.voice).includes('h')?member.voice:member.voice==='—'?'—':member.voice+'h';const standing=document.createElement('td');const wrap=document.createElement('div');wrap.className='table-actions';const tag=document.createElement('span');tag.className=member.warnings==='0'?'tag good':'tag warn';tag.textContent=member.warnings==='0'?'Clear':member.warnings+' warning'+(member.warnings==='1'?'':'s');wrap.append(tag);if(member.id){const button=document.createElement('button');button.type='button';button.className='member-detail';button.textContent='Details';button.addEventListener('click',()=>openMemberDetails(member.id));wrap.append(button)}standing.append(wrap);tr.append(name,level,messages,voice,standing);tbody.append(tr)});
     }
     function renderLiveActivity(activityPayload,logsPayload){
       const rows=[...dashboardItems(activityPayload,['activity','events','items','results']),...dashboardItems(logsPayload,['logs','events','items','results'])];
@@ -399,7 +633,7 @@
     }
     function reviewList(payload){return dashboardItems(payload,['reviews','items','results','cases']).map(item=>({id:dashboardId(item),kind:dashboardValue(item,['kind','type','review_kind'])||'review',priority:dashboardValue(item,['priority','severity'])||'Review',member:dashboardValue(item,['member_name','username','user','member_id'])||'Unknown member',signal:dashboardValue(item,['signal','reason','title'])||'Needs context',context:dashboardValue(item,['context','description','message'])||'Open the review for details'}))}
     function renderLiveModeration(moderationPayload,reviewsPayload){
-      const reviewRows=reviewList(reviewsPayload);billyLiveState.reviews=reviewRows;const data=moderationPayload&&typeof moderationPayload==='object'?moderationPayload:{};const stats=data.stats&&typeof data.stats==='object'?data.stats:data;setOverviewText('overviewModeration',dashboardValue(stats,['cases','moderation_cases','records'])||String(reviewRows.length));setOverviewText('overviewWarnings',(dashboardValue(stats,['warnings','warning_count'])||'0')+' saved warnings');setOverviewText('moderationOpen',dashboardValue(stats,['open_reviews','open','pending'])||String(reviewRows.length));setOverviewText('moderationSpam',dashboardValue(stats,['spam_prevented','spam'])||'—');setOverviewText('moderationWarnings',dashboardValue(stats,['warnings','warning_count'])||'—');setOverviewText('moderationFalsePositives',dashboardValue(stats,['false_positives','false_positive_count'])||'—');const tbody=document.getElementById('reviewQueue');if(!tbody)return;if(!reviewRows.length){putEmpty(tbody,'No live moderation reviews are waiting. Billy does not punish anyone from this dashboard.');return}tbody.replaceChildren();reviewRows.forEach(row=>{const tr=document.createElement('tr');[row.priority,row.member,row.signal,row.context].forEach(value=>{const cell=document.createElement('td');cell.textContent=value;tr.append(cell)});const action=document.createElement('td');const button=document.createElement('button');button.className='button';button.type='button';button.textContent='Review';button.addEventListener('click',()=>openReview(row));action.append(button);tr.append(action);tbody.append(tr)});}
+      const reviewRows=reviewList(reviewsPayload);billyLiveState.reviews=reviewRows;const data=moderationPayload&&typeof moderationPayload==='object'?moderationPayload:{};const stats=data.stats&&typeof data.stats==='object'?data.stats:data;setOverviewText('moderationOpen',dashboardValue(stats,['open_reviews','open','pending'])||String(reviewRows.length));setOverviewText('moderationSpam',dashboardValue(stats,['spam_prevented','spam'])||'—');setOverviewText('moderationWarnings',dashboardValue(stats,['warnings','warning_count'])||'—');setOverviewText('moderationFalsePositives',dashboardValue(stats,['false_positives','false_positive_count'])||'—');const tbody=document.getElementById('reviewQueue');if(!tbody)return;if(!reviewRows.length){putEmpty(tbody,'No live moderation reviews are waiting. Billy does not punish anyone from this dashboard.');return}tbody.replaceChildren();reviewRows.forEach(row=>{const tr=document.createElement('tr');[row.priority,row.member,row.signal,row.context].forEach(value=>{const cell=document.createElement('td');cell.textContent=value;tr.append(cell)});const action=document.createElement('td');const button=document.createElement('button');button.className='button';button.type='button';button.textContent='Review';button.addEventListener('click',()=>openReview(row));action.append(button);tr.append(action);tbody.append(tr)});}
     function renderLiveTickets(payload){
       const tickets=dashboardItems(payload,['tickets','items','results']);const board=document.getElementById('ticketBoard');if(!board)return;if(!tickets.length){putEmpty(board,'No live tickets were returned. Create a panel after choosing its channels and staff role.');return}board.replaceChildren();tickets.forEach(ticket=>{const card=document.createElement('article');card.className='ticket-card';const tag=document.createElement('span');tag.className='tag';tag.textContent=dashboardValue(ticket,['status','type'])||'Ticket';const title=document.createElement('h3');title.textContent=dashboardLabel(ticket,'Support request');const detail=document.createElement('p');detail.textContent=dashboardValue(ticket,['summary','description','reason'])||'No description supplied.';card.append(tag,title,detail);board.append(card)});
     }
@@ -414,7 +648,23 @@
       if(!setup)setOverviewText('overviewHealthStatus','API needs setup options');
     }
     async function loadGuild(guildId){
-      activeGuildId=guildId;const selected=[...serverSelect.options].find(option=>option.value===guildId);const name=selected?selected.textContent:'Selected server';document.querySelectorAll('.server-name').forEach(node=>node.textContent=name);setOverviewText('overviewKnowledge','Loading…');setOverviewText('overviewSources','Loading sources…');setOverviewText('overviewMembers','Loading members…');try{await loadOptionalDashboardData(guildId);startStream(guildId)}catch(error){showToast(error.message,'Could not load live data')}
+      activeGuildId=guildId;
+      counterValues.clear();
+      const selected=[...serverSelect.options].find(option=>option.value===guildId);
+      const name=selected?selected.textContent:'Selected server';
+      document.querySelectorAll('.server-name').forEach(node=>node.textContent=name);
+      setOverviewText('overviewSources','Loading sources…');setOverviewText('overviewMembers','Loading members…');
+      try{
+        await Promise.all([loadOptionalDashboardData(guildId),loadTicketDesign(guildId)]);
+        await refreshOverviewStats(guildId);
+        startStatsPolling(guildId);
+        startStream(guildId);
+      }catch(error){showToast(error.message,'Could not load live data')}
+    }
+    async function loadTicketDesign(guildId){
+      const payload=await optionalGuildRequest(guildId,'/tickets');
+      if(payload&&payload.design&&typeof payload.design==='object')billyLiveState.ticketDesign=payload.design;
+      return payload
     }
     function openAddSource(){
       openPage('knowledge');openActionModal('Add an approved knowledge source','Choose a public text channel. Billy can read announcement and information channels even when it cannot send messages there.',()=>{const channel=liveChoice('Approved channel','knowledgeSourceChannel',['knowledge_channels','eligible_channels','public_channels','text_channels','channels'],'Choose a public channel');const status=makeModalNote('No source added yet',connectionMessage());makeModalButton('Close','button',closeActionModal);makeModalButton('Add source with Billy','button amber',async()=>{if(!channel.value.trim()){setModalStatus(status,'Choose a channel','Load the live setup options, then select a public channel that Billy can view and read.',true);return}const result=await callGuildAction('/knowledge/sources',{method:'POST',body:{channel_id:channel.value.trim()}},status);if(result)await loadOptionalDashboardData(activeGuildId)})})
@@ -423,8 +673,99 @@
       openPage('knowledge');openActionModal('Review knowledge conflicts','Billy can show conflicting approved facts, but a person must decide which source is correct.',()=>{makeModalText('No automatic replacement will be made from this dashboard. Refresh sources to inspect the latest approved information.');const status=makeModalNote('Human review required','This dashboard release does not auto-resolve knowledge conflicts.');makeModalButton('Close','button',closeActionModal);makeModalButton('Refresh sources','button amber',async()=>{const result=await callGuildAction('/knowledge',{},status);if(result)renderLiveSources(result)})})
     }
     function panelFields(draft){return {panel:liveChoice('Panel channel','ticketPanelChannel',['text_channels','channels','ticket_channels'],'Choose a channel',draft.panel_channel_id),category:liveChoice('Ticket category','ticketCategory',['categories','ticket_categories'],'Choose a category',draft.category_id),staff:liveChoice('Staff role','ticketStaffRole',['staff_roles','roles','moderator_roles'],'Choose a role',draft.staff_role_id),log:liveChoice('Ticket log channel','ticketLogChannel',['text_channels','channels','log_channels'],'Choose a channel',draft.log_channel_id)}}
+    function makeModalSection(text){const node=document.createElement('div');node.className='modal-section';node.textContent=text;actionModalBody.append(node);return node}
+    function makeModalHint(text){const node=document.createElement('p');node.className='field-hint';node.textContent=text;actionModalBody.append(node);return node}
+    function makeModalTextarea(labelText,id,value,placeholder){
+      const wrap=document.createElement('div'),label=document.createElement('label'),field=document.createElement('textarea');
+      wrap.className='modal-field';label.htmlFor=id;label.textContent=labelText;
+      field.id=id;field.value=value||'';field.placeholder=placeholder||'';
+      wrap.append(label,field);actionModalBody.append(wrap);return field
+    }
+    const TICKET_PANEL_DEFAULTS={
+      title:'Open a Ticket',
+      description:'Choose the option that best matches what you need. A private channel will open for you and the server staff.',
+      color:'#20c9b4',
+      options_title:'Ticket options',
+      options_body:'• Bug reports\n• In-game or Discord support\n• Discord member or in-game player reports\n• Punishment appeals',
+      notice_title:'Before opening',
+      notice_body:'Complete the short form and include useful details. Reports require evidence. A staff member will read the ticket and respond when available.',
+      thumbnail_url:'',image_url:'',footer:''
+    };
     function openTicketSettings(){
-      openPage('tickets');const draft=getDraft('billy_ticket_panel_draft');openActionModal('Ticket panel settings','Choose the Discord locations Billy will use. Save a browser draft first, then create the panel when ready.',()=>{const fields=panelFields(draft);const status=makeModalNote('No Discord panel created',connectionMessage());makeModalButton('Close','button',closeActionModal);makeModalButton('Save browser draft','button',()=>saveDraft('billy_ticket_panel_draft',{panel_channel_id:fields.panel.value.trim(),category_id:fields.category.value.trim(),staff_role_id:fields.staff.value.trim(),log_channel_id:fields.log.value.trim()},status));makeModalButton('Create panel','button amber',async()=>{const result=await callGuildAction('/tickets/panel',{method:'POST',body:{panel_channel_id:fields.panel.value.trim(),category_id:fields.category.value.trim(),staff_role_id:fields.staff.value.trim(),log_channel_id:fields.log.value.trim()}},status);if(result)await loadOptionalDashboardData(activeGuildId)})})
+      openPage('tickets');
+      const draft=getDraft('billy_ticket_panel_draft');
+      const saved=billyLiveState.ticketDesign||{};
+      const design={...TICKET_PANEL_DEFAULTS,...saved,...(draft.design||{})};
+      openActionModal('Ticket panel','Pick where the panel lives, then design the report card members will see. Nothing is posted to Discord until you choose Create panel.',()=>{
+        makeModalSection('Discord locations');
+        const fields=panelFields(draft);
+
+        makeModalSection('Panel design');
+        makeModalHint('This is the embed members see. Image links must start with https:// — Billy rejects anything else.');
+        const title=makeModalField('Panel title','tpTitle',{value:design.title,placeholder:'Open a Ticket'});
+        const description=makeModalTextarea('Panel description','tpDescription',design.description,'Explain what the panel is for.');
+        const color=makeModalField('Accent colour','tpColor',{type:'color',value:/^#[0-9a-f]{6}$/i.test(design.color||'')?design.color:'#20c9b4'});
+        const optionsTitle=makeModalField('Report options heading','tpOptionsTitle',{value:design.options_title,placeholder:'Ticket options'});
+        const optionsBody=makeModalTextarea('Your report options (one per line)','tpOptionsBody',design.options_body,'• Bug reports\n• Player reports\n• Appeals');
+        const noticeTitle=makeModalField('Notice heading','tpNoticeTitle',{value:design.notice_title,placeholder:'Before opening'});
+        const noticeBody=makeModalTextarea('Notice text','tpNoticeBody',design.notice_body,'What members should include.');
+        const thumbnail=makeModalField('Thumbnail URL','tpThumb',{value:design.thumbnail_url,placeholder:'https://example.com/icon.png'});
+        const image=makeModalField('Large image URL','tpImage',{value:design.image_url,placeholder:'https://example.com/banner.png'});
+        const footer=makeModalField('Footer text','tpFooter',{value:design.footer,placeholder:'Leave blank to use the server default'});
+
+        makeModalSection('Live preview');
+        const preview=document.createElement('div');preview.className='panel-preview';actionModalBody.append(preview);
+        const collect=()=>({
+          title:title.value.trim(),description:description.value.trim(),color:color.value,
+          options_title:optionsTitle.value.trim(),options_body:optionsBody.value.trim(),
+          notice_title:noticeTitle.value.trim(),notice_body:noticeBody.value.trim(),
+          thumbnail_url:thumbnail.value.trim(),image_url:image.value.trim(),footer:footer.value.trim()
+        });
+        const httpsOnly=value=>/^https:\/\/\S+$/i.test(value)?value:'';
+        function renderPreview(){
+          const d=collect();preview.replaceChildren();
+          preview.style.borderLeft='4px solid '+(/^#[0-9a-f]{6}$/i.test(d.color)?d.color:'#20c9b4');
+          const head=document.createElement('div');head.style.display='flex';head.style.gap='12px';head.style.justifyContent='space-between';
+          const headText=document.createElement('div');
+          const t=document.createElement('div');t.className='pp-title';t.textContent=d.title||TICKET_PANEL_DEFAULTS.title;
+          headText.append(t);
+          if(d.description){const p=document.createElement('div');p.className='pp-desc';p.style.marginTop='5px';p.textContent=d.description;headText.append(p)}
+          head.append(headText);
+          const thumbUrl=httpsOnly(d.thumbnail_url);
+          if(thumbUrl){const img=document.createElement('img');img.className='pp-thumb';img.src=thumbUrl;img.alt='';img.onerror=()=>img.remove();head.append(img)}
+          preview.append(head);
+          [[d.options_title,d.options_body],[d.notice_title,d.notice_body]].forEach(([heading,body])=>{
+            if(!body)return;
+            const block=document.createElement('div');block.className='pp-field';
+            const b=document.createElement('b');b.textContent=heading||'';
+            const s=document.createElement('span');s.textContent=body;
+            block.append(b,s);preview.append(block)
+          });
+          const imageUrl=httpsOnly(d.image_url);
+          if(imageUrl){const img=document.createElement('img');img.className='pp-image';img.src=imageUrl;img.alt='';img.onerror=()=>img.remove();preview.append(img)}
+          const foot=document.createElement('div');foot.className='pp-foot';
+          foot.textContent=d.footer||'Server name • Private staff support • Never share passwords or tokens';
+          preview.append(foot);
+        }
+        [title,description,color,optionsTitle,optionsBody,noticeTitle,noticeBody,thumbnail,image,footer]
+          .forEach(field=>field.addEventListener('input',renderPreview));
+        renderPreview();
+
+        const status=makeModalNote('No Discord panel created',connectionMessage());
+        const locations=()=>({panel_channel_id:fields.panel.value.trim(),category_id:fields.category.value.trim(),staff_role_id:fields.staff.value.trim(),log_channel_id:fields.log.value.trim()});
+        makeModalButton('Close','button',closeActionModal);
+        makeModalButton('Save browser draft','button',()=>saveDraft('billy_ticket_panel_draft',{...locations(),design:collect()},status));
+        makeModalButton('Create panel','button amber',async()=>{
+          const where=locations();
+          if(!where.panel_channel_id||!where.category_id||!where.staff_role_id||!where.log_channel_id){
+            setModalStatus(status,'Choose every Discord location','Billy needs a panel channel, ticket category, staff role, and log channel before it can create the panel.',true);return
+          }
+          const badImage=[thumbnail.value.trim(),image.value.trim()].find(value=>value&&!httpsOnly(value));
+          if(badImage){setModalStatus(status,'Image link rejected','Thumbnail and image links must start with https:// and contain no spaces.',true);return}
+          const result=await callGuildAction('/tickets/panel',{method:'POST',body:{...where,design:collect()}},status);
+          if(result){billyLiveState.ticketDesign=collect();await loadOptionalDashboardData(activeGuildId)}
+        })
+      })
     }
     function openCreateTicketPanel(){openTicketSettings()}
     function openCases(){
@@ -445,17 +786,72 @@
     function openMemberDetails(userId){
       openPage('overview');openActionModal('Member activity details','Billy will load recorded activity and moderation history for this member. This view is for authorized staff and does not make a moderation decision.',()=>{const status=makeModalNote('Loading member data','Contacting Billy…');makeModalButton('Close','button',closeActionModal);(async()=>{const result=await callGuildAction('/members/'+encodeURIComponent(userId),{},status);if(!result)return;const data=result.member||result;const items=[['Member',dashboardLabel(data,'Unknown member')],['Level',dashboardValue(data,['level','message_level'])||'—'],['Messages',dashboardValue(data,['messages','message_count'])||'—'],['Voice',dashboardValue(data,['voice_hours','voice_seconds'])||'—'],['Warnings',dashboardValue(data,['warnings','warning_count'])||'0'],['Timeouts',dashboardValue(data,['timeouts','timeout_count'])||'0'],['Kicks',dashboardValue(data,['kicks','kick_count'])||'0'],['Bans',dashboardValue(data,['bans','ban_count'])||'0']];makeModalList(items.map(([title,detail])=>({title,detail})))})()})
     }
+    function openExportSummary(){
+      openPage('members');
+      const rows=billyLiveState.members||[];
+      openActionModal('Export activity summary','Download the member activity Billy has already loaded in this browser. Nothing is sent anywhere.',()=>{
+        if(!rows.length){
+          makeModalText('No member activity is loaded yet. Choose a server and let the dashboard finish loading, then export again.');
+          makeModalButton('Close','button',closeActionModal);return
+        }
+        makeModalText(rows.length+' member'+(rows.length===1?'':'s')+' are loaded. The file includes name, level, messages, voice time, and warning count.');
+        const status=makeModalNote('Nothing exported yet','The download is generated locally from data already on this page.');
+        makeModalButton('Close','button',closeActionModal);
+        makeModalButton('Download CSV','button amber',()=>{
+          const escape=value=>'"'+String(value??'').replace(/"/g,'""')+'"';
+          const csv=[['Member','Level','Messages','Voice','Warnings'].map(escape).join(',')]
+            .concat(rows.map(member=>[member.name,member.level,member.messages,member.voice,member.warnings].map(escape).join(',')))
+            .join('\r\n');
+          const blob=new Blob([csv],{type:'text/csv;charset=utf-8'}),url=URL.createObjectURL(blob);
+          const link=document.createElement('a');link.href=url;
+          link.download='billy-activity-'+(activeGuildId||'server')+'-'+new Date().toISOString().slice(0,10)+'.csv';
+          document.body.append(link);link.click();link.remove();setTimeout(()=>URL.revokeObjectURL(url),1000);
+          setModalStatus(status,'Export ready','The CSV was downloaded by your browser. No Discord data was changed.');
+        })
+      })
+    }
+    function openAutomationPlanner(){
+      openPage('automations');
+      openActionModal('Automations','Billy runs these from Discord. This dashboard release shows their status and where to configure each one.',()=>{
+        makeModalList([
+          {title:'Welcome new members',detail:'Configure with /welcome and /autorole in Discord.'},
+          {title:'AutoMod and spam protection',detail:'Configure with /automod, /automodtoggle, /automodconfig, and /blockword.'},
+          {title:'Anti-raid protection',detail:'Configure with /raidtoggle, /raidconfig, /lockdown, and /unlock.'},
+          {title:'Level rewards',detail:'Level roles are granted automatically as members reach each level.'}
+        ]);
+        makeModalNote('Read-only here','Automation rules are edited with Billy\'s slash commands so every change is permission-checked and written to the audit log.');
+        makeModalButton('Close','button',closeActionModal)
+      })
+    }
+    function openPremium(){
+      openActionModal('Billy premium','Premium is not part of this release.',()=>{
+        makeModalText('No subscription, payment, or upgrade is started from this button. Every feature shown in this dashboard is already included.');
+        makeModalButton('Close','button',closeActionModal)
+      })
+    }
+    function openAskBilly(){
+      openPage('knowledge');
+      openActionModal('Ask Billy','Billy answers members inside Discord, using only the approved knowledge sources listed on this page.',()=>{
+        makeModalText('Mention Billy in your server\'s configured question channel, or use /betaask, to ask something. Answers come from the approved channels shown here.');
+        makeModalNote('Improve answers','If Billy could not answer something, it appears under “Needs review”. Add the missing channel as a knowledge source to fix it.');
+        makeModalButton('Close','button',closeActionModal);
+        makeModalButton('Add a source','button amber',()=>{closeActionModal();openAddSource()})
+      })
+    }
     function runAction(button){
       const name=(button.dataset.action||button.textContent||'').trim().toLowerCase();
-      if(name.includes('source')||name.includes('teach billy'))return openAddSource();
       if(name.includes('resolve conflict'))return openConflict();
+      if(name.includes('source')||name.includes('teach billy'))return openAddSource();
       if(name.includes('ticket panel')||name.includes('panel settings'))return openTicketSettings();
       if(name.includes('review flags')||name.includes('view cases'))return openCases();
       if(name.includes('safety settings'))return showSettingsFocus(humanModeration);
       if(name.includes('log channels'))return openLogChannels();
       if(name.includes('connect form'))return openFormConnection();
-      if(name.includes('full analytics'))return openPage('members');
-      if(name.includes('create flow')||name.includes('automation')){openPage('settings');showToast('Automation setup is not included in this dashboard API yet. No automation was created.','API feature required');return}
+      if(name.includes('full analytics')||name.includes('view activity'))return openPage('members');
+      if(name.includes('export summary'))return openExportSummary();
+      if(name.includes('ask billy'))return openAskBilly();
+      if(name.includes('premium'))return openPremium();
+      if(name.includes('create flow')||name.includes('automation'))return openAutomationPlanner();
       showToast('This control does not have a connected dashboard action yet.','API feature required')
     }
     document.addEventListener('click',event=>{const control=event.target.closest('.demo-action');if(!control)return;event.preventDefault();event.stopImmediatePropagation();runAction(control)},true);
