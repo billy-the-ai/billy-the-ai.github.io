@@ -100,6 +100,13 @@
     .side-usage-bar i.full{background:linear-gradient(90deg,#ff7f79,#ffb0aa)}
     .side-usage small{display:block;margin-top:6px;color:var(--muted);font-size:11px}
 
+    /* Filter box above long dropdowns */
+    .choice-search{width:100%;margin-bottom:7px;padding:9px 12px;border:1px solid var(--line);border-radius:10px;background:#0f0e0c;color:var(--cream);outline:none;font-size:13px}
+    .choice-search:focus{border-color:var(--amber)}
+    .choice-search::placeholder{color:#6f6961}
+    .choice-search::-webkit-search-cancel-button{filter:invert(.6)}
+    .choice-count{display:block;margin-top:5px;color:#6f6961;font-size:11px}
+
     /* Calm state for visitors who are not the bot owner */
     .owner-notice{max-width:660px;margin:6px 0 24px;padding:26px 28px;border:1px solid var(--line);border-radius:20px;background:linear-gradient(150deg,#18150f,#121110)}
     .owner-notice b{display:block;font-family:CuteDino;font-weight:400;font-size:23px;margin-bottom:10px}
@@ -313,7 +320,62 @@
     function makeModalText(text,className='modal-copy'){const node=document.createElement('p');node.className=className;node.textContent=text;actionModalBody.append(node);return node}
     function makeModalNote(title,text){const node=document.createElement('div'),heading=document.createElement('b'),copy=document.createElement('span');node.className='modal-note';heading.textContent=title;copy.textContent=text;node.append(heading,copy);actionModalBody.append(node);return node}
     function makeModalList(items){const list=document.createElement('ul');list.className='modal-list';items.forEach(item=>{const row=document.createElement('li'),title=document.createElement('b'),copy=document.createElement('small');title.textContent=item.title;copy.textContent=item.detail;row.append(title,copy);list.append(row)});actionModalBody.append(list);return list}
-    function makeModalField(labelText,id,options={}){const wrap=document.createElement('div'),label=document.createElement('label'),field=options.choices?document.createElement('select'):document.createElement('input');wrap.className='modal-field';label.htmlFor=id;label.textContent=labelText;field.id=id;if(options.choices){options.choices.forEach(choice=>{const option=document.createElement('option');option.value=choice.value;option.textContent=choice.label;field.append(option)})}else{field.type=options.type||'text';field.placeholder=options.placeholder||''}field.value=options.value||'';wrap.append(label,field);actionModalBody.append(wrap);return field}
+    /* Any dropdown longer than a handful of entries gets a filter box. A server
+       with 80 channels produced an unreadable scrolling wall, and picking the
+       right one meant hunting by eye. Filtering rebuilds the option list, so
+       every existing `field.value` read keeps working unchanged. */
+    const SEARCHABLE_THRESHOLD=6;
+    function attachChoiceSearch(wrap,field,choices,placeholder){
+      const search=document.createElement('input');
+      search.type='search';
+      search.className='choice-search';
+      search.placeholder=placeholder||'Type to filter…';
+      search.autocomplete='off';
+      search.setAttribute('aria-label',placeholder||'Filter options');
+      const count=document.createElement('small');
+      count.className='choice-count';
+      const render=()=>{
+        const term=search.value.trim().toLowerCase();
+        const keep=choices.filter(c=>!term||String(c.label).toLowerCase().includes(term)||String(c.value).includes(term));
+        const previous=field.value;
+        field.replaceChildren();
+        keep.forEach(c=>{const o=document.createElement('option');o.value=c.value;o.textContent=c.label;field.append(o)});
+        // Keep the current pick selected when it survives the filter.
+        if(keep.some(c=>String(c.value)===String(previous)))field.value=previous;
+        const real=keep.filter(c=>c.value!=='').length;
+        count.textContent=term
+          ? `${real} match${real===1?'':'es'}`
+          : `${choices.filter(c=>c.value!=='').length} available`;
+        field.size=0;
+      };
+      search.addEventListener('input',render);
+      // Enter inside the filter should not submit anything.
+      search.addEventListener('keydown',e=>{if(e.key==='Enter')e.preventDefault()});
+      wrap.append(search);
+      render();
+      return count;
+    }
+    function makeModalField(labelText,id,options={}){
+      const wrap=document.createElement('div'),label=document.createElement('label');
+      const field=options.choices?document.createElement('select'):document.createElement('input');
+      wrap.className='modal-field';label.htmlFor=id;label.textContent=labelText;field.id=id;
+      if(options.choices){
+        options.choices.forEach(choice=>{const o=document.createElement('option');o.value=choice.value;o.textContent=choice.label;field.append(o)});
+      }else{
+        field.type=options.type||'text';field.placeholder=options.placeholder||'';
+      }
+      field.value=options.value||'';
+      wrap.append(label);
+      let counter=null;
+      if(options.choices&&options.choices.length>SEARCHABLE_THRESHOLD){
+        counter=attachChoiceSearch(wrap,field,options.choices,options.searchPlaceholder);
+        field.value=options.value||'';
+      }
+      wrap.append(field);
+      if(counter)wrap.append(counter);
+      actionModalBody.append(wrap);
+      return field;
+    }
     function makeModalButton(label,className,handler){const button=document.createElement('button');button.type='button';button.className=className;button.textContent=label;button.addEventListener('click',handler);actionModalActions.append(button);return button}
     function openActionModal(title,description,build){actionModalTitle.textContent=title;actionModalDescription.textContent=description;actionModalBody.replaceChildren();actionModalActions.replaceChildren();build?.();actionModal.hidden=false;document.body.style.overflow='hidden';actionModalClose.focus()}
     function closeActionModal(){actionModal.hidden=true;document.body.style.overflow=''}
@@ -502,8 +564,14 @@
         card.append(title,copy,hint);
         host.parentNode.insertBefore(card,host);
       }
-      // Blank tiles and empty panels look broken; hide them entirely.
-      document.querySelectorAll('#overview .stats, #overview .grid').forEach(n=>{n.style.display='none'});
+      // Blank tiles and empty panels look broken; hide them entirely. The page
+      // actions ("View activity", "Ask Billy") do nothing without data either,
+      // so leaving them behind on an otherwise empty page looks broken too.
+      document.querySelectorAll(
+        '#overview .stats, #overview .grid, #overview .head-actions'
+      ).forEach(n=>{n.style.display='none'});
+      const intro=document.querySelector('#overview .page-head p');
+      if(intro)intro.textContent='Billy is running in your Discord server. This page shows live data to the bot owner only.';
     }
     async function connectDashboard(){
       const health=await discoverApi();
