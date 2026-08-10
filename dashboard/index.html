@@ -113,7 +113,12 @@
     .owner-notice p{margin:0 0 12px;color:var(--muted);font-size:13.5px;line-height:1.65}
     .owner-notice small{color:#6f6961;font-size:11.5px}
     body.billy-offline .status-pill i{background:var(--amber);box-shadow:0 0 15px var(--amber)}
-    body.billy-offline .side-card{display:none}
+    body.billy-offline .side-card,
+    body.billy-offline .sidebar,
+    body.billy-offline .footer{display:none}
+    body.billy-offline .shell{grid-template-columns:minmax(0,1fr)}
+    body.billy-offline main{display:grid;place-items:center;min-height:calc(100vh - 140px)}
+    body.billy-offline .owner-notice{margin:0}
 
     /* Premium pricing */
     .plan-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(290px,1fr));gap:16px;margin-bottom:18px}
@@ -551,27 +556,22 @@
        read as a locked door, not a crash. */
     function showOwnerOnlyNotice(){
       document.body.classList.add('billy-offline');
-      const host=document.querySelector('#overview .stats');
-      if(host&&!document.getElementById('ownerOnlyNotice')){
-        const card=document.createElement('div');
-        card.id='ownerOnlyNotice';card.className='owner-notice';
-        const title=document.createElement('b');title.textContent='This control room is private';
-        const copy=document.createElement('p');
-        copy.textContent='Live server data is only visible to the bot owner while Billy is running. '
-          +'Everything else about Billy works normally in Discord — use his slash commands there.';
-        const hint=document.createElement('small');
-        hint.textContent='Owner: start Billy on this computer, then reload.';
-        card.append(title,copy,hint);
-        host.parentNode.insertBefore(card,host);
-      }
-      // Blank tiles and empty panels look broken; hide them entirely. The page
-      // actions ("View activity", "Ask Billy") do nothing without data either,
-      // so leaving them behind on an otherwise empty page looks broken too.
-      document.querySelectorAll(
-        '#overview .stats, #overview .grid, #overview .head-actions'
-      ).forEach(n=>{n.style.display='none'});
-      const intro=document.querySelector('#overview .page-head p');
-      if(intro)intro.textContent='Billy is running in your Discord server. This page shows live data to the bot owner only.';
+      // Every page needs live data, so hide them all and show one notice
+      // directly in <main>. Putting it inside the Overview page meant a
+      // visitor landing on any other tab saw a completely blank screen.
+      document.querySelectorAll('.page').forEach(page=>{page.style.display='none'});
+      const main=document.querySelector('main');
+      if(!main||document.getElementById('ownerOnlyNotice'))return;
+      const card=document.createElement('div');
+      card.id='ownerOnlyNotice';card.className='owner-notice';
+      const title=document.createElement('b');title.textContent='This control room is private';
+      const copy=document.createElement('p');
+      copy.textContent='Live server data is only visible to the bot owner while Billy is running. '
+        +'Everything else about Billy works normally in Discord — use his slash commands there.';
+      const hint=document.createElement('small');
+      hint.textContent='Owner: start Billy on this computer, then reload this page.';
+      card.append(title,copy,hint);
+      main.prepend(card);
     }
     async function connectDashboard(){
       const health=await discoverApi();
