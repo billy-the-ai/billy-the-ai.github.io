@@ -87,6 +87,33 @@
     .timezone-status.ok{color:var(--green)}
     @media(max-width:780px){.timezone-helper{grid-template-columns:1fr}}
 
+    /* Update log / changelog */
+    .update-filters{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:18px}
+    .update-filters button{padding:8px 13px;border:1px solid var(--line);border-radius:999px;background:var(--surface);color:var(--muted);font-size:12px;font-weight:800;cursor:pointer;transition:.16s}
+    .update-filters button:hover{color:var(--cream);border-color:#4b4030}
+    .update-filters button.active{background:var(--cream);color:#18110a;border-color:var(--cream)}
+    .update-feed{display:grid;gap:0}
+    .update-entry{display:grid;grid-template-columns:26px minmax(0,1fr);gap:16px;padding:0 0 22px}
+    .update-rail{position:relative;display:flex;justify-content:center}
+    .update-rail:before{content:"";position:absolute;top:20px;bottom:-22px;width:2px;background:var(--line-soft)}
+    .update-entry:last-child .update-rail:before{display:none}
+    .update-dot{position:relative;z-index:1;width:13px;height:13px;margin-top:6px;border-radius:50%;background:var(--amber);box-shadow:0 0 0 4px rgba(233,166,92,.14)}
+    .update-dot.dashboard{background:var(--blue);box-shadow:0 0 0 4px rgba(135,191,255,.14)}
+    .update-dot.patch{background:var(--green);box-shadow:0 0 0 4px rgba(111,224,165,.14)}
+    .update-dot.fix{background:var(--red);box-shadow:0 0 0 4px rgba(255,127,121,.14)}
+    .update-dot.announcement{background:var(--purple);box-shadow:0 0 0 4px rgba(189,156,255,.14)}
+    .update-card{min-width:0;padding:16px 18px;border:1px solid var(--line-soft);border-radius:16px;background:linear-gradient(150deg,#17140f,#121110)}
+    .update-card:hover{border-color:rgba(233,166,92,.32)}
+    .update-top{display:flex;flex-wrap:wrap;align-items:center;gap:9px;margin-bottom:9px}
+    .update-top h3{font-family:CuteDino;font-weight:400;font-size:19px;margin:0}
+    .update-version{padding:3px 9px;border-radius:999px;background:rgba(233,166,92,.14);color:var(--amber-2);font-size:11px;font-weight:900}
+    .update-kind{padding:3px 9px;border-radius:999px;font-size:10px;font-weight:900;text-transform:uppercase;letter-spacing:.08em;background:rgba(255,255,255,.06);color:var(--muted)}
+    .update-when{margin-left:auto;color:#706a60;font-size:11px;white-space:nowrap}
+    .update-body{margin:0;color:var(--muted);font-size:13px;line-height:1.62;white-space:pre-wrap;word-break:break-word}
+    .update-link{display:inline-block;margin-top:11px;color:var(--amber-2);font-size:12px;font-weight:800;text-decoration:none}
+    .update-link:hover{text-decoration:underline}
+    @media(max-width:520px){.update-entry{grid-template-columns:18px minmax(0,1fr);gap:11px}.update-when{margin-left:0;width:100%}}
+
     /* Ticket panel designer */
     .modal-field textarea{width:100%;min-height:82px;resize:vertical;border:1px solid var(--line);border-radius:10px;padding:10px 12px;background:#100f0c;color:var(--cream);outline:none;font-family:inherit;line-height:1.5}
     .modal-field textarea:focus{border-color:var(--amber)}
@@ -125,6 +152,7 @@
       <button class="nav-btn" data-page="automations"><span class="icon">↻</span>Automations</button>
       <button class="nav-btn" data-page="forms"><span class="icon">▤</span>Connected forms</button>
       <button class="nav-btn" data-page="logs"><span class="icon">≡</span>Server logs</button>
+      <button class="nav-btn" data-page="updates"><span class="icon">✦</span>What's new<span class="count" id="updatesCount"></span></button>
       <div class="nav-label">Configuration</div>
       <button class="nav-btn" data-page="settings"><span class="icon">⚙</span>Server settings</button>
       <div class="side-card"><b>Need more power?</b><p>Premium unlocks deeper analytics, more knowledge sources, and advanced automation.</p><button class="demo-action">View premium</button></div>
@@ -164,6 +192,8 @@
       <section class="page" id="forms"><div class="page-head"><div><span class="eyebrow">Form connections</span><h1>Applications arrive organized.</h1><p>Route each connected form to the correct private channel with verified member activity attached.</p></div><button class="button amber demo-action">Connect form</button></div><article class="panel"><header class="panel-head"><div><h2>Connected forms</h2><span>Submissions are forwarded without automatic acceptance or rejection</span></div></header><div class="panel-body table-wrap"><table class="table"><thead><tr><th>Form</th><th>Destination</th><th>Last submission</th><th>Status</th></tr></thead><tbody id="formRows"><tr><td colspan="4" class="empty-note"><strong>Connect a server to load forms</strong>Only forms saved by Billy will appear here.</td></tr></tbody></table></div></article></section>
 
       <section class="page" id="logs"><div class="page-head"><div><span class="eyebrow">Audit trail</span><h1>Important changes, clearly explained.</h1><p>Server, voice, moderation, and setup activity—with no unnecessary pings.</p></div><button class="button demo-action">Log channels</button></div><article class="panel"><header class="panel-head"><div><h2>Recent logs</h2><span>Waiting for live activity</span></div><div class="panel-body activity" id="logActivity"><div class="empty-note"><strong>Connect a server to stream logs</strong>New Billy events will appear here when the local dashboard API is available.</div></div></article></section>
+
+<section class="page" id="updates"><div class="page-head"><div><span class="eyebrow">Changelog</span><h1>What's new in Billy.</h1><p>Every bot update, dashboard change, and patch note staff publish with <code>/updates post</code> appears here automatically.</p></div><div class="head-actions"><button class="button" id="updatesRefresh">Refresh</button></div></div><div class="update-filters" id="updateFilters"></div><article class="panel"><header class="panel-head"><div><h2>Update log</h2><span id="updatesSubtitle">Loading Billy's published updates…</span></div></header><div class="panel-body" id="updateFeed"><div class="empty-note"><strong>Loading updates</strong>Billy is fetching the published changelog.</div></div></article></section>
 
 <section class="page" id="settings"><div class="page-head"><div><span class="eyebrow">Server configuration</span><h1>Billy, your way.</h1><p>Only administrators can change these settings for <span class="server-name">Billy The AI • Official</span>.</p></div><button class="button amber" id="saveSettings">Save changes</button></div><article class="panel"><header class="panel-head"><div><h2>Core settings</h2><span>Saved separately for every server you manage</span></div></header><div class="panel-body"><div class="setting-row"><div><b>Question channel</b><small>Billy answers support questions here even when not directly mentioned</small></div><select class="field" id="questionChannel"><option value="">Choose a channel</option></select></div><div class="setting-row"><div><b>Response style</b><small>Choose how Billy normally answers in this server</small></div><select class="field" id="responseStyle"><option value="balanced">Balanced</option><option value="concise">Concise</option><option value="friendly">Friendly</option><option value="detailed">Detailed</option></select></div><div class="setting-row"><div><b>Automatic knowledge updates</b><small>Keep approved knowledge channels in sync without requiring /rescan</small></div><button class="switch on" id="automaticKnowledge" aria-label="Toggle automatic knowledge updates" aria-pressed="true"></button></div><div class="setting-row"><div><b>Human-only moderation decisions</b><small>Billy can organize evidence but never punish a member automatically</small></div><button class="switch on" id="humanModeration" aria-label="Toggle human-only moderation decisions" aria-pressed="true"></button></div><div class="setting-row"><div><b>Timezone</b><small>Used for streak resets, scheduled events, and summaries. Search a country, city, or US state — or pick an exact IANA zone from the list.</small></div><div class="timezone-helper"><input class="field" id="timezoneLookup" list="timezoneAliasList" placeholder="Search: Puerto Rico, Texas, Tokyo…" autocomplete="off"/><select class="field" id="timezone"><option value="UTC">UTC</option></select><small class="timezone-status" id="timezoneLookupStatus" role="status" aria-live="polite"></small></div></div><datalist id="timezoneAliasList"></datalist></div></article></section>
 
@@ -873,7 +903,84 @@ setOverviewText('moderationFalsePositivesNote',falsePositives?'Reviews staff dis
       showToast('This control does not have a connected dashboard action yet.','API feature required')
     }
     document.addEventListener('click',event=>{const control=event.target.closest('.demo-action');if(!control)return;event.preventDefault();event.stopImmediatePropagation();runAction(control)},true);
-    connectDashboard();
+    /* ---- Update log -------------------------------------------------
+       Reads the changelog Billy publishes with /updates post. It is public
+       read-only data, so it loads without a Discord session. */
+    const UPDATE_KINDS={bot:'Bot update',dashboard:'Dashboard',patch:'Patch notes',fix:'Fix',announcement:'Announcement'};
+    let updateEntries=[],updateFilter='all';
+    function updateWhen(value){
+      const when=new Date(value);
+      if(Number.isNaN(when.getTime()))return '';
+      const days=Math.floor((Date.now()-when.getTime())/86400000);
+      if(days<=0)return 'Today';
+      if(days===1)return 'Yesterday';
+      if(days<30)return days+' days ago';
+      return when.toLocaleDateString(undefined,{year:'numeric',month:'short',day:'numeric'});
+    }
+    function renderUpdateFilters(){
+      const bar=document.getElementById('updateFilters');if(!bar)return;
+      const kinds=['all',...new Set(updateEntries.map(entry=>entry.category||'bot'))];
+      bar.replaceChildren();
+      kinds.forEach(kind=>{
+        const button=document.createElement('button');button.type='button';
+        button.textContent=kind==='all'?'Everything':(UPDATE_KINDS[kind]||kind);
+        button.classList.toggle('active',kind===updateFilter);
+        button.addEventListener('click',()=>{updateFilter=kind;renderUpdateFilters();renderUpdateFeed()});
+        bar.append(button);
+      });
+    }
+    function renderUpdateFeed(){
+      const feed=document.getElementById('updateFeed');if(!feed)return;
+      const rows=updateFilter==='all'?updateEntries:updateEntries.filter(entry=>(entry.category||'bot')===updateFilter);
+      feed.replaceChildren();
+      if(!rows.length){
+        feed.append(makeEmptyNote('No updates published yet',"Staff publish these with /updates post in Discord. They appear here the moment they're posted."));
+        return
+      }
+      const list=document.createElement('div');list.className='update-feed';
+      rows.forEach(entry=>{
+        const kind=entry.category||'bot';
+        const row=document.createElement('article');row.className='update-entry';
+        const rail=document.createElement('div');rail.className='update-rail';
+        const dot=document.createElement('span');dot.className='update-dot '+kind;rail.append(dot);
+        const card=document.createElement('div');card.className='update-card';
+        const top=document.createElement('div');top.className='update-top';
+        const heading=document.createElement('h3');heading.textContent=entry.title||'Update';top.append(heading);
+        if(entry.version){const tag=document.createElement('span');tag.className='update-version';tag.textContent=entry.version;top.append(tag)}
+        const kindTag=document.createElement('span');kindTag.className='update-kind';kindTag.textContent=UPDATE_KINDS[kind]||kind;top.append(kindTag);
+        const when=document.createElement('span');when.className='update-when';when.textContent=updateWhen(entry.created_at);top.append(when);
+        const body=document.createElement('p');body.className='update-body';body.textContent=entry.body||'';
+        card.append(top,body);
+        if(entry.message_url&&/^https:\/\/(discord\.com|discordapp\.com)\//i.test(entry.message_url)){
+          const link=document.createElement('a');link.className='update-link';link.href=entry.message_url;
+          link.target='_blank';link.rel='noopener noreferrer';link.textContent='View the Discord announcement →';
+          card.append(link);
+        }
+        row.append(rail,card);list.append(row);
+      });
+      feed.append(list);
+    }
+    async function loadUpdates(){
+      const subtitle=document.getElementById('updatesSubtitle'),badge=document.getElementById('updatesCount');
+      if(!apiBase){
+        if(subtitle)subtitle.textContent='Billy must be running to load the changelog';
+        renderUpdateFeed();return
+      }
+      try{
+        const response=await fetch(apiBase+'/api/updates?limit=50',{cache:'no-store'});
+        const data=await response.json();
+        updateEntries=Array.isArray(data.updates)?data.updates:[];
+        if(subtitle)subtitle.textContent=updateEntries.length?updateEntries.length+' published update'+(updateEntries.length===1?'':'s'):'Nothing published yet';
+        if(badge)badge.textContent=updateEntries.length?String(updateEntries.length):'';
+        renderUpdateFilters();renderUpdateFeed();
+      }catch(error){
+        if(subtitle)subtitle.textContent='Could not reach Billy for the changelog';
+        renderUpdateFeed();
+      }
+    }
+    document.getElementById('updatesRefresh')?.addEventListener('click',loadUpdates);
+
+    connectDashboard().then(loadUpdates);
   </script>
 </body>
 </html>
