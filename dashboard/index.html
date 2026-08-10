@@ -282,6 +282,12 @@
       if(dashboardConnection.state==='unreachable'){
         const endpoint=dashboardConnection.endpoint||configured||'http://localhost:8787';
         const detail=dashboardConnection.error?` Last check: ${dashboardConnection.error}`:'';
+        /* "localhost" is whichever computer the visitor is using. Anyone who is
+           not the person hosting Billy will always land here, so say that plainly
+           instead of asking them to edit a .env file they do not have. */
+        if(/^https?:\/\/(localhost|127\.0\.0\.1)(:|$)/i.test(endpoint)){
+          return 'This control room only works on the computer that is running Billy, because it reads Billy directly at '+endpoint+' — and "localhost" means your own computer. If you are not the person hosting Billy, ask the bot owner for the numbers you need, or use Billy\'s slash commands in Discord instead. Owner: start Billy with DASHBOARD_API_ENABLED=true, then reload this page.'
+        }
         return `The browser could not reach Billy\'s API at ${endpoint}. Keep the dashboard and the running bot on this same computer, set DASHBOARD_API_ENABLED=true, then restart main.py.${detail}`
       }
       return 'Connect Discord first, choose a server, and keep Billy running before this control can make a server change.'
