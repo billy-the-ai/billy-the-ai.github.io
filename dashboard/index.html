@@ -87,6 +87,33 @@
     .timezone-status.ok{color:var(--green)}
     @media(max-width:780px){.timezone-helper{grid-template-columns:1fr}}
 
+    /* Premium pricing */
+    .plan-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(290px,1fr));gap:16px;margin-bottom:18px}
+    .plan{position:relative;display:flex;flex-direction:column;padding:24px;border:1px solid var(--line-soft);border-radius:20px;background:linear-gradient(150deg,#17140f,#121110)}
+    .plan.featured{border-color:rgba(233,166,92,.45);box-shadow:0 18px 50px rgba(233,166,92,.09)}
+    .plan-flag{position:absolute;top:-11px;left:24px;padding:4px 11px;border-radius:999px;background:var(--amber);color:#1d1208;font-size:10px;font-weight:900;text-transform:uppercase;letter-spacing:.1em}
+    .plan h3{font-family:CuteDino;font-weight:400;font-size:23px;margin:0 0 6px}
+    .plan-price{font-family:CuteDino;font-size:38px;line-height:1;margin:6px 0 10px}
+    .plan-price span{font-family:inherit;font-size:13px;color:var(--muted);margin-left:4px}
+    .plan header p{margin:0 0 16px;color:var(--muted);font-size:13px;line-height:1.55}
+    .plan-list{list-style:none;margin:0 0 20px;padding:0;display:grid;gap:9px;flex:1}
+    .plan-list li{position:relative;padding-left:23px;color:var(--cream);font-size:13px;line-height:1.5}
+    .plan-list li:before{content:"✓";position:absolute;left:0;color:var(--green);font-weight:900}
+    .plan-list li.off{color:var(--muted)}
+    .plan-list li.off:before{content:"—";color:#5d574e}
+    .plan-list.plain li:before{content:"•";color:var(--amber)}
+    .plan footer{margin-top:auto}
+    .plan-cta{width:100%}
+    .plan-cta:disabled{opacity:.55;cursor:not-allowed}
+    .plan-current{display:inline-block;padding:8px 13px;border:1px solid var(--line);border-radius:999px;color:var(--muted);font-size:12px;font-weight:800}
+    .plan-current.active{border-color:rgba(111,224,165,.4);background:rgba(111,224,165,.1);color:var(--green)}
+    .plan-note{display:block;margin-top:10px;color:var(--muted);font-size:11.5px;line-height:1.5}
+    .premium-banner{display:flex;flex-wrap:wrap;align-items:center;gap:12px;padding:15px 18px;margin-bottom:18px;border:1px solid var(--line);border-radius:15px;background:#15130f}
+    .premium-banner.active{border-color:rgba(111,224,165,.35);background:rgba(111,224,165,.07)}
+    .premium-banner.warn{border-color:rgba(233,166,92,.35);background:rgba(233,166,92,.07)}
+    .premium-banner b{font-size:14px}
+    .premium-banner span{color:var(--muted);font-size:12.5px;line-height:1.5}
+
     /* Update log / changelog */
     .update-filters{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:18px}
     .update-filters button{padding:8px 13px;border:1px solid var(--line);border-radius:999px;background:var(--surface);color:var(--muted);font-size:12px;font-weight:800;cursor:pointer;transition:.16s}
@@ -153,9 +180,10 @@
       <button class="nav-btn" data-page="forms"><span class="icon">▤</span>Connected forms</button>
       <button class="nav-btn" data-page="logs"><span class="icon">≡</span>Server logs</button>
       <button class="nav-btn" data-page="updates"><span class="icon">✦</span>What's new<span class="count" id="updatesCount"></span></button>
+      <button class="nav-btn" data-page="premium"><span class="icon">✧</span>Premium<span class="count" id="premiumBadge"></span></button>
       <div class="nav-label">Configuration</div>
       <button class="nav-btn" data-page="settings"><span class="icon">⚙</span>Server settings</button>
-      <div class="side-card"><b>Need more power?</b><p>Premium unlocks deeper analytics, more knowledge sources, and advanced automation.</p><button class="demo-action">View premium</button></div>
+      <div class="side-card"><b>Need more power?</b><p>Raise the limits on knowledge sources, blocked words, giveaways, and reaction roles. Safety features stay free.</p><button class="demo-action">View premium</button></div>
     </aside>
 
     <main>
@@ -192,6 +220,8 @@
       <section class="page" id="forms"><div class="page-head"><div><span class="eyebrow">Form connections</span><h1>Applications arrive organized.</h1><p>Route each connected form to the correct private channel with verified member activity attached.</p></div><button class="button amber demo-action">Connect form</button></div><article class="panel"><header class="panel-head"><div><h2>Connected forms</h2><span>Submissions are forwarded without automatic acceptance or rejection</span></div></header><div class="panel-body table-wrap"><table class="table"><thead><tr><th>Form</th><th>Destination</th><th>Last submission</th><th>Status</th></tr></thead><tbody id="formRows"><tr><td colspan="4" class="empty-note"><strong>Connect a server to load forms</strong>Only forms saved by Billy will appear here.</td></tr></tbody></table></div></article></section>
 
       <section class="page" id="logs"><div class="page-head"><div><span class="eyebrow">Audit trail</span><h1>Important changes, clearly explained.</h1><p>Server, voice, moderation, and setup activity—with no unnecessary pings.</p></div><button class="button demo-action">Log channels</button></div><article class="panel"><header class="panel-head"><div><h2>Recent logs</h2><span>Waiting for live activity</span></div><div class="panel-body activity" id="logActivity"><div class="empty-note"><strong>Connect a server to stream logs</strong>New Billy events will appear here when the local dashboard API is available.</div></div></article></section>
+
+<section class="page" id="premium"><div class="page-head"><div><span class="eyebrow">Billy Premium</span><h1>More room to grow.</h1><p>Every safety feature stays free, always. Premium raises the limits on the things big servers run out of.</p></div><div class="head-actions"><button class="button" id="premiumRefresh">Refresh</button></div></div><div id="premiumState"></div><div class="plan-grid"><article class="plan" id="planFree"><header><h3>Free</h3><div class="plan-price">$0<span>/month</span></div><p>Everything a server needs to run safely.</p></header><ul class="plan-list" id="freeList"></ul><footer><span class="plan-current" id="freeCurrent">Current plan</span></footer></article><article class="plan featured" id="planPremium"><span class="plan-flag">Recommended</span><header><h3>Premium</h3><div class="plan-price" id="premiumPrice">—<span>/month</span></div><p>For communities that have outgrown the free limits.</p></header><ul class="plan-list" id="premiumList"></ul><footer><button class="button amber plan-cta" id="premiumUpgrade">Upgrade this server</button><small class="plan-note" id="premiumNote"></small></footer></article></div><article class="panel"><header class="panel-head"><div><h2>What Premium does not change</h2><span>Protection is never paywalled</span></div></header><div class="panel-body"><ul class="plan-list plain"><li>AutoMod spam, mention, caps, and blocked-word filters</li><li>Anti-raid detection, lockdown, and the verification gate</li><li>Anti-nuke protection against a compromised staff account</li><li>Warnings, timeouts, bans, tickets, and moderation logs</li></ul><p class="field-hint">A server that cannot pay is never a less safe server.</p></div></article></section>
 
 <section class="page" id="updates"><div class="page-head"><div><span class="eyebrow">Changelog</span><h1>What's new in Billy.</h1><p>Every bot update, dashboard change, and patch note staff publish with <code>/updates post</code> appears here automatically.</p></div><div class="head-actions"><button class="button" id="updatesRefresh">Refresh</button></div></div><div class="update-filters" id="updateFilters"></div><article class="panel"><header class="panel-head"><div><h2>Update log</h2><span id="updatesSubtitle">Loading Billy's published updates…</span></div></header><div class="panel-body" id="updateFeed"><div class="empty-note"><strong>Loading updates</strong>Billy is fetching the published changelog.</div></div></article></section>
 
@@ -707,6 +737,7 @@ setOverviewText('moderationFalsePositivesNote',falsePositives?'Reviews staff dis
         await refreshOverviewStats(guildId);
         startStatsPolling(guildId);
         startStream(guildId);
+        void loadPremium();
       }catch(error){showToast(error.message,'Could not load live data')}
     }
     async function loadTicketDesign(guildId){
@@ -898,7 +929,7 @@ setOverviewText('moderationFalsePositivesNote',falsePositives?'Reviews staff dis
       if(name.includes('full analytics')||name.includes('view activity'))return openPage('members');
       if(name.includes('export summary'))return openExportSummary();
       if(name.includes('ask billy'))return openAskBilly();
-      if(name.includes('premium'))return openPremium();
+      if(name.includes('premium')){openPage('premium');void loadPremium();return}
       if(name.includes('create flow')||name.includes('automation'))return openAutomationPlanner();
       showToast('This control does not have a connected dashboard action yet.','API feature required')
     }
@@ -980,7 +1011,105 @@ setOverviewText('moderationFalsePositivesNote',falsePositives?'Reviews staff dis
     }
     document.getElementById('updatesRefresh')?.addEventListener('click',loadUpdates);
 
-    connectDashboard().then(loadUpdates);
+    /* ---- Premium ------------------------------------------------------
+       Limits come from the API rather than being duplicated here, so the page
+       can never advertise a limit the bot does not actually enforce. */
+    const PREMIUM_PRICE=window.BILLY_PREMIUM_PRICE||'$4.99';
+    const LIMIT_LABELS={knowledge_sources:'knowledge sources',blocked_words:'custom blocked words',
+      active_giveaways:'giveaways at once',reaction_role_panels:'reaction role panels',
+      automod_exemptions:'AutoMod exemptions'};
+    const PERK_LABELS={priority_ai:'Priority AI responses',custom_branding:'Custom branding on cards',
+      advanced_analytics:'Advanced analytics'};
+    function planItems(list,limits,other){
+      list.replaceChildren();
+      Object.entries(LIMIT_LABELS).forEach(([key,label])=>{
+        const item=document.createElement('li');
+        // A numeric allowance is something the plan *gives* you, so it always
+        // reads as included. Greying the free column out entirely made the free
+        // plan look empty when it actually covers most servers.
+        item.textContent=`${number(limits[key])} ${label}`;
+        list.append(item);
+      });
+      Object.entries(PERK_LABELS).forEach(([key,label])=>{
+        const item=document.createElement('li');
+        item.textContent=label;
+        if(!limits[key])item.classList.add('off');
+        list.append(item);
+      });
+    }
+    function premiumBanner(kind,title,detail){
+      const host=document.getElementById('premiumState');if(!host)return;
+      host.replaceChildren();
+      const box=document.createElement('div');box.className='premium-banner'+(kind?' '+kind:'');
+      const heading=document.createElement('b');heading.textContent=title;
+      const copy=document.createElement('span');copy.textContent=detail;
+      box.append(heading,copy);host.append(box);
+    }
+    async function loadPremium(){
+      const badge=document.getElementById('premiumBadge');
+      const upgrade=document.getElementById('premiumUpgrade');
+      const note=document.getElementById('premiumNote');
+      const current=document.getElementById('freeCurrent');
+      document.getElementById('premiumPrice').firstChild.textContent=PREMIUM_PRICE;
+      if(!apiBase||!activeGuildId||!sessionToken){
+        premiumBanner('','Connect a server first','Choose a server you manage to see its plan and upgrade options.');
+        if(upgrade){upgrade.disabled=true}
+        return
+      }
+      let data=null;
+      try{data=await api('/api/guilds/'+activeGuildId+'/billing')}catch(error){
+        premiumBanner('warn','Plan information unavailable',error.message);
+        if(upgrade)upgrade.disabled=true;return
+      }
+      const isPremium=data.tier&&data.tier!=='free';
+      planItems(document.getElementById('freeList'),data.limits.free,data.limits.premium);
+      planItems(document.getElementById('premiumList'),data.limits.premium,data.limits.free);
+      if(badge)badge.textContent=isPremium?'✧':'';
+      if(current)current.classList.toggle('active',!isPremium);
+      if(current)current.textContent=isPremium?'Not your plan':'Current plan';
+
+      if(isPremium){
+        let detail='This server has Billy Premium.';
+        if(data.current_period_end){
+          const when=new Date(data.current_period_end);
+          if(!Number.isNaN(when.getTime())){
+            detail=(data.cancel_at_period_end?'Premium ends ':'Premium renews ')+when.toLocaleDateString();
+          }
+        }
+        premiumBanner('active','Premium is active',detail);
+        if(upgrade){upgrade.disabled=true;upgrade.textContent='Already on Premium'}
+        if(note)note.textContent='Manage or cancel your subscription from the receipt email sent by the payment provider.';
+        return
+      }
+      premiumBanner('','This server is on the free plan','Everything it uses today keeps working. Premium only raises limits.');
+      if(!data.payments_available){
+        if(upgrade){upgrade.disabled=true;upgrade.textContent='Checkout not available yet'}
+        if(note)note.textContent='Billy\'s owner has not finished connecting a payment provider, so nothing can be purchased yet.';
+        return
+      }
+      if(upgrade){upgrade.disabled=false;upgrade.textContent='Upgrade this server'}
+      if(note)note.textContent='You will be taken to the payment provider\'s secure checkout. Billy never sees your card details.';
+    }
+    document.getElementById('premiumUpgrade')?.addEventListener('click',async()=>{
+      const upgrade=document.getElementById('premiumUpgrade'),note=document.getElementById('premiumNote');
+      if(!activeGuildId){showToast('Choose a server first.','No server selected');return}
+      upgrade.disabled=true;upgrade.textContent='Opening checkout…';
+      try{
+        const result=await api('/api/guilds/'+activeGuildId+'/billing/checkout',{method:'POST',body:{}});
+        if(result&&result.checkout_url){
+          // Hosted by the payment provider: card details never touch Billy.
+          window.open(result.checkout_url,'_blank','noopener,noreferrer');
+          if(note)note.textContent='Checkout opened in a new tab. This page updates once the payment is confirmed.';
+          setTimeout(loadPremium,4000);
+        }else{throw new Error('No checkout link was returned.')}
+      }catch(error){
+        if(note)note.textContent='Could not start checkout: '+error.message;
+        showToast(error.message,'Checkout unavailable');
+      }finally{upgrade.disabled=false;upgrade.textContent='Upgrade this server'}
+    });
+    document.getElementById('premiumRefresh')?.addEventListener('click',loadPremium);
+
+    connectDashboard().then(()=>{loadUpdates();loadPremium()});
   </script>
 </body>
 </html>
