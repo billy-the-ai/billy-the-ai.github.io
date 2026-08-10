@@ -87,6 +87,19 @@
     .timezone-status.ok{color:var(--green)}
     @media(max-width:780px){.timezone-helper{grid-template-columns:1fr}}
 
+    /* The sidebar upgrade card, driven by the server's real plan */
+    .side-card{position:relative}
+    .side-plan{display:inline-block;margin-bottom:7px;padding:3px 9px;border-radius:999px;background:rgba(255,255,255,.07);color:var(--muted);font-size:10px;font-weight:900;text-transform:uppercase;letter-spacing:.09em}
+    .side-card.is-premium{background:linear-gradient(145deg,rgba(111,224,165,.14),rgba(255,255,255,.02));border-color:rgba(111,224,165,.34)}
+    .side-card.is-premium .side-plan{background:rgba(111,224,165,.17);color:var(--green)}
+    .side-card.is-near-limit{border-color:rgba(233,166,92,.5)}
+    .side-card.is-near-limit .side-plan{background:rgba(233,166,92,.18);color:var(--amber-2)}
+    .side-usage{margin:11px 0 13px}
+    .side-usage-bar{height:6px;border-radius:999px;background:#2a241c;overflow:hidden}
+    .side-usage-bar i{display:block;height:100%;border-radius:inherit;background:linear-gradient(90deg,var(--amber),var(--amber-2));transition:width .5s ease}
+    .side-usage-bar i.full{background:linear-gradient(90deg,#ff7f79,#ffb0aa)}
+    .side-usage small{display:block;margin-top:6px;color:var(--muted);font-size:11px}
+
     /* Premium pricing */
     .plan-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(290px,1fr));gap:16px;margin-bottom:18px}
     .plan{position:relative;display:flex;flex-direction:column;padding:24px;border:1px solid var(--line-soft);border-radius:20px;background:linear-gradient(150deg,#17140f,#121110)}
@@ -180,10 +193,9 @@
       <button class="nav-btn" data-page="forms"><span class="icon">▤</span>Connected forms</button>
       <button class="nav-btn" data-page="logs"><span class="icon">≡</span>Server logs</button>
       <button class="nav-btn" data-page="updates"><span class="icon">✦</span>What's new<span class="count" id="updatesCount"></span></button>
-      <button class="nav-btn" data-page="premium"><span class="icon">✧</span>Premium<span class="count" id="premiumBadge"></span></button>
       <div class="nav-label">Configuration</div>
       <button class="nav-btn" data-page="settings"><span class="icon">⚙</span>Server settings</button>
-      <div class="side-card"><b>Need more power?</b><p>Raise the limits on knowledge sources, blocked words, giveaways, and reaction roles. Safety features stay free.</p><button class="demo-action">View premium</button></div>
+      <div class="side-card" id="premiumCard"><span class="side-plan" id="premiumCardPlan">Free plan</span><b id="premiumCardTitle">Need more power?</b><p id="premiumCardCopy">Raise the limits on knowledge sources, blocked words, giveaways, and reaction roles. Safety features stay free.</p><div class="side-usage" id="premiumCardUsage" hidden><div class="side-usage-bar"><i id="premiumCardBar"></i></div><small id="premiumCardUsageText"></small></div><button class="demo-action" id="premiumCardButton" data-action="View premium">View premium</button></div>
     </aside>
 
     <main>
@@ -278,7 +290,7 @@
       zones.forEach(zone=>{const option=document.createElement('option');option.value=zone;option.textContent=zone.replaceAll('_',' ');option.selected=zone===local;select.append(option)});
       if(timezoneAliasList){timezoneAliasList.replaceChildren();Object.keys(TIMEZONE_ALIASES).sort().forEach(alias=>{const option=document.createElement('option');option.value=alias;timezoneAliasList.append(option)})}
     }
-    function openPage(id){const target=nav.find(btn=>btn.dataset.page===id);if(!target)return;nav.forEach(x=>x.classList.toggle('active',x===target));pages.forEach(x=>x.classList.toggle('active',x.id===id));sidebar.classList.remove('open');window.scrollTo({top:0,behavior:'smooth'});history.replaceState(null,'','#'+id)}
+    function openPage(id){const target=nav.find(btn=>btn.dataset.page===id);if(!document.getElementById(id))return;nav.forEach(x=>x.classList.toggle('active',x===target));pages.forEach(x=>x.classList.toggle('active',x.id===id));sidebar.classList.remove('open');window.scrollTo({top:0,behavior:'smooth'});history.replaceState(null,'','#'+id)}
     nav.forEach(btn=>btn.addEventListener('click',()=>openPage(btn.dataset.page)));
     function setSwitch(button,value){button.classList.toggle('on',Boolean(value));button.setAttribute('aria-pressed',String(Boolean(value)))}
     [automaticKnowledge,humanModeration].forEach(button=>button?.addEventListener('click',()=>setSwitch(button,!button.classList.contains('on'))));
@@ -1045,14 +1057,70 @@ setOverviewText('moderationFalsePositivesNote',falsePositives?'Reviews staff dis
       const copy=document.createElement('span');copy.textContent=detail;
       box.append(heading,copy);host.append(box);
     }
+    /* The sidebar card is the only entry point to premium, so it carries the
+       real state: which plan, and how close this server is to a limit. */
+    function renderPremiumCard(data){
+      const card=document.getElementById('premiumCard');if(!card)return;
+      const plan=document.getElementById('premiumCardPlan');
+      const title=document.getElementById('premiumCardTitle');
+      const copy=document.getElementById('premiumCardCopy');
+      const usageBox=document.getElementById('premiumCardUsage');
+      const bar=document.getElementById('premiumCardBar');
+      const usageText=document.getElementById('premiumCardUsageText');
+      const button=document.getElementById('premiumCardButton');
+      card.classList.remove('is-premium','is-near-limit');
+      if(usageBox)usageBox.hidden=true;
+
+      if(!data){
+        plan.textContent='Free plan';title.textContent='Need more power?';
+        copy.textContent='Raise the limits on knowledge sources, blocked words, giveaways, and reaction roles. Safety features stay free.';
+        button.textContent='View premium';return
+      }
+      if(data.tier&&data.tier!=='free'){
+        card.classList.add('is-premium');
+        plan.textContent='Premium';title.textContent='Premium is active';
+        copy.textContent='Thank you for supporting Billy. Every limit on this server is raised.';
+        button.textContent='View plan';return
+      }
+
+      plan.textContent='Free plan';
+      // Surface whichever limit this server is closest to running out of.
+      const limits=(data.limits&&data.limits.free)||{},usage=data.usage||{};
+      let worst=null;
+      Object.entries(LIMIT_LABELS).forEach(([key,label])=>{
+        const cap=limits[key],used=usage[key];
+        if(typeof cap!=='number'||typeof used!=='number'||cap<=0)return;
+        const ratio=used/cap;
+        if(!worst||ratio>worst.ratio)worst={key,label,used,cap,ratio};
+      });
+      if(worst&&worst.ratio>=0.6){
+        const full=worst.used>=worst.cap;
+        card.classList.add('is-near-limit');
+        title.textContent=full?'Limit reached':'Running low';
+        copy.textContent=full
+          ? `This server has used all ${number(worst.cap)} ${worst.label} on the free plan.`
+          : `This server is using most of its free ${worst.label}.`;
+        if(usageBox){
+          usageBox.hidden=false;
+          bar.style.width=Math.min(100,Math.round(worst.ratio*100))+'%';
+          bar.classList.toggle('full',full);
+          usageText.textContent=`${number(worst.used)} of ${number(worst.cap)} ${worst.label}`;
+        }
+        button.textContent='See Premium limits';
+        return
+      }
+      title.textContent='Need more power?';
+      copy.textContent='Raise the limits on knowledge sources, blocked words, giveaways, and reaction roles. Safety features stay free.';
+      button.textContent='View premium';
+    }
     async function loadPremium(){
-      const badge=document.getElementById('premiumBadge');
       const upgrade=document.getElementById('premiumUpgrade');
       const note=document.getElementById('premiumNote');
       const current=document.getElementById('freeCurrent');
       document.getElementById('premiumPrice').firstChild.textContent=PREMIUM_PRICE;
       if(!apiBase||!activeGuildId||!sessionToken){
         premiumBanner('','Connect a server first','Choose a server you manage to see its plan and upgrade options.');
+        renderPremiumCard(null);
         if(upgrade){upgrade.disabled=true}
         return
       }
@@ -1062,9 +1130,9 @@ setOverviewText('moderationFalsePositivesNote',falsePositives?'Reviews staff dis
         if(upgrade)upgrade.disabled=true;return
       }
       const isPremium=data.tier&&data.tier!=='free';
+      renderPremiumCard(data);
       planItems(document.getElementById('freeList'),data.limits.free,data.limits.premium);
       planItems(document.getElementById('premiumList'),data.limits.premium,data.limits.free);
-      if(badge)badge.textContent=isPremium?'✧':'';
       if(current)current.classList.toggle('active',!isPremium);
       if(current)current.textContent=isPremium?'Not your plan':'Current plan';
 
