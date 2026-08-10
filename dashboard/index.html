@@ -375,7 +375,13 @@
     login.addEventListener('click',event=>{
       if(!apiBase||!dashboardConnection.health||!dashboardConnection.health.oauth_configured){
         event.preventDefault();
-        showToast(dashboardConnectionHelp(),apiBase?'Discord login needs setup':'Dashboard connection unavailable')
+        // A member clicking Connect Discord should not be handed bot-owner
+        // setup instructions they cannot act on.
+        if(!apiBase){
+          showToast('Live server data is only available to the bot owner right now. Billy still works normally in Discord.','Control room is private')
+        }else{
+          showToast(dashboardConnectionHelp(),'Discord login needs setup')
+        }
       }
     });
     async function api(path,options={}){
