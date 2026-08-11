@@ -100,6 +100,25 @@
     .side-usage-bar i.full{background:linear-gradient(90deg,#ff7f79,#ffb0aa)}
     .side-usage small{display:block;margin-top:6px;color:var(--muted);font-size:11px}
 
+    /* Custom ticket options editor */
+    .ticket-options{display:grid;gap:12px}
+    .option-list{display:grid;gap:7px;max-height:290px;overflow-y:auto;padding-right:4px}
+    .option-row{display:grid;grid-template-columns:32px minmax(0,1fr) auto;gap:11px;align-items:center;padding:10px 12px;border:1px solid var(--line-soft);border-radius:12px;background:#14120e}
+    .option-row.builtin{opacity:.72}
+    .option-emoji{font-size:17px;text-align:center}
+    .option-text{min-width:0}
+    .option-text b{display:block;font-size:13px}
+    .option-text small{display:block;color:var(--muted);font-size:11.5px;line-height:1.4;word-break:break-word}
+    .option-tag{padding:3px 8px;border-radius:999px;background:rgba(255,255,255,.06);color:var(--muted);font-size:10px;font-weight:800}
+    .option-remove{padding:6px 11px;border:1px solid rgba(255,127,121,.4);border-radius:9px;background:transparent;color:var(--red);font-size:11px;font-weight:800;cursor:pointer}
+    .option-remove:hover{background:rgba(255,127,121,.12)}
+    .option-remove:disabled{opacity:.5;cursor:not-allowed}
+    .option-form{display:grid;grid-template-columns:64px minmax(0,1fr);gap:8px;padding:14px;border:1px dashed var(--line);border-radius:13px}
+    .option-form .field{width:100%}
+    .option-form>.field:nth-child(3),.option-form>.option-toggles,.option-form>.button{grid-column:1/-1}
+    .option-toggles{display:flex;flex-wrap:wrap;gap:16px;color:var(--muted);font-size:12px}
+    .option-toggles label{display:flex;align-items:center;gap:6px;cursor:pointer}
+
     /* Filter box above long dropdowns */
     .choice-search{width:100%;margin-bottom:7px;padding:9px 12px;border:1px solid var(--line);border-radius:10px;background:#0f0e0c;color:var(--cream);outline:none;font-size:13px}
     .choice-search:focus{border-color:var(--amber)}
@@ -889,6 +908,99 @@ setOverviewText('moderationFalsePositivesNote',falsePositives?'Reviews staff dis
       notice_body:'Complete the short form and include useful details. Reports require evidence. A staff member will read the ticket and respond when available.',
       thumbnail_url:'',image_url:'',footer:''
     };
+    /* Custom ticket options. Billy's built-ins are read-only here; only the
+       server's own entries can be added or removed. */
+    async function renderTicketOptions(){
+      const box=document.getElementById('ticketOptionsBox');if(!box)return;
+      box.replaceChildren();
+      if(!apiBase||!activeGuildId||!sessionToken){
+        const note=document.createElement('p');note.className='field-hint';
+        note.textContent='Connect Discord and choose a server to manage ticket options.';
+        box.append(note);return
+      }
+      let data=null;
+      try{data=await api('/api/guilds/'+activeGuildId+'/tickets/options')}catch(error){
+        const note=document.createElement('p');note.className='field-hint';
+        note.textContent='Could not load ticket options: '+error.message;
+        box.append(note);return
+      }
+      const list=document.createElement('div');list.className='option-list';
+      (data.builtin||[]).forEach(item=>{
+        const row=document.createElement('div');row.className='option-row builtin';
+        const em=document.createElement('span');em.className='option-emoji';em.textContent=item.emoji||'🎫';
+        const text=document.createElement('div');text.className='option-text';
+        const name=document.createElement('b');name.textContent=item.label;
+        const desc=document.createElement('small');desc.textContent=item.description||'';
+        text.append(name,desc);
+        const tag=document.createElement('span');tag.className='option-tag';tag.textContent='Built in';
+        row.append(em,text,tag);list.append(row);
+      });
+      (data.custom||[]).forEach(item=>{
+        const row=document.createElement('div');row.className='option-row';
+        const em=document.createElement('span');em.className='option-emoji';em.textContent=item.emoji||'🎫';
+        const text=document.createElement('div');text.className='option-text';
+        const name=document.createElement('b');name.textContent=item.label;
+        const bits=[item.description||''];
+        if(item.requires_evidence)bits.push('evidence required');
+        if(item.notify_staff)bits.push('pings staff');
+        const desc=document.createElement('small');desc.textContent=bits.filter(Boolean).join(' · ');
+        text.append(name,desc);
+        const remove=document.createElement('button');
+        remove.type='button';remove.className='option-remove';remove.textContent='Remove';
+        remove.addEventListener('click',async()=>{
+          remove.disabled=true;remove.textContent='Removing…';
+          try{
+            await api('/api/guilds/'+activeGuildId+'/tickets/options/'+encodeURIComponent(item.key),{method:'DELETE'});
+            await renderTicketOptions();
+          }catch(error){
+            remove.disabled=false;remove.textContent='Remove';
+            showToast(error.message,'Could not remove option');
+          }
+        });
+        row.append(em,text,remove);list.append(row);
+      });
+      box.append(list);
+
+      const used=Number(data.used||0),max=Number(data.max_custom||0);
+      const counter=document.createElement('p');counter.className='field-hint';
+      counter.textContent=used+' of '+max+' custom options used.';
+      box.append(counter);
+      if(used>=max)return;
+
+      const form=document.createElement('div');form.className='option-form';
+      const emoji=document.createElement('input');emoji.className='field';emoji.placeholder='🎫';emoji.maxLength=8;
+      emoji.setAttribute('aria-label','Emoji');
+      const label=document.createElement('input');label.className='field';
+      label.placeholder='Option name, for example Bug Bounty Report';label.maxLength=80;
+      label.setAttribute('aria-label','Option name');
+      const description=document.createElement('input');description.className='field';
+      description.placeholder='Short description shown under the name';description.maxLength=100;
+      description.setAttribute('aria-label','Description');
+      const toggles=document.createElement('div');toggles.className='option-toggles';
+      const evidence=document.createElement('label');const evidenceBox=document.createElement('input');
+      evidenceBox.type='checkbox';evidence.append(evidenceBox,document.createTextNode(' Require evidence'));
+      const notify=document.createElement('label');const notifyBox=document.createElement('input');
+      notifyBox.type='checkbox';notifyBox.checked=true;notify.append(notifyBox,document.createTextNode(' Ping staff'));
+      toggles.append(evidence,notify);
+      const add=document.createElement('button');add.type='button';add.className='button amber';add.textContent='Add option';
+      add.addEventListener('click',async()=>{
+        if(!label.value.trim()){showToast('Give the option a name.','Name required');return}
+        add.disabled=true;add.textContent='Adding…';
+        try{
+          await api('/api/guilds/'+activeGuildId+'/tickets/options',{method:'POST',body:{
+            label:label.value.trim(),emoji:emoji.value.trim()||'🎫',
+            description:description.value.trim(),
+            requires_evidence:evidenceBox.checked,notify_staff:notifyBox.checked,
+          }});
+          label.value='';emoji.value='';description.value='';
+          await renderTicketOptions();
+        }catch(error){
+          showToast(error.message,'Could not add option');
+        }finally{add.disabled=false;add.textContent='Add option'}
+      });
+      form.append(emoji,label,description,toggles,add);
+      box.append(form);
+    }
     function openTicketSettings(){
       openPage('tickets');
       const draft=getDraft('billy_ticket_panel_draft');
@@ -897,6 +1009,12 @@ setOverviewText('moderationFalsePositivesNote',falsePositives?'Reviews staff dis
       openActionModal('Ticket panel','Pick where the panel lives, then design the report card members will see. Nothing is posted to Discord until you choose Create panel.',()=>{
         makeModalSection('Discord locations');
         const fields=panelFields(draft);
+
+        makeModalSection('Report options members can choose');
+        makeModalHint('Billy\'s built-in options are always available. Add your own below — for example a second kind of report. Recreate the panel afterwards so members see the change.');
+        const optionsBox=document.createElement('div');optionsBox.className='ticket-options';optionsBox.id='ticketOptionsBox';
+        actionModalBody.append(optionsBox);
+        void renderTicketOptions();
 
         makeModalSection('Panel design');
         makeModalHint('This is the embed members see. Image links must start with https:// — Billy rejects anything else.');
