@@ -830,10 +830,55 @@
       billyLiveState.members=memberRows;
       const tbody=document.getElementById('overviewMemberRows');if(!tbody)return;if(!memberRows.length){putEmpty(tbody,'No member activity was returned by the connected Billy API yet.');return}tbody.replaceChildren();memberRows.slice(0,25).forEach(member=>{const tr=document.createElement('tr');const name=document.createElement('td');name.textContent=member.name;const level=document.createElement('td');level.textContent=member.level;const messages=document.createElement('td');messages.textContent=member.messages;const voice=document.createElement('td');voice.textContent=String(member.voice).includes('h')?member.voice:member.voice==='—'?'—':member.voice+'h';const standing=document.createElement('td');const wrap=document.createElement('div');wrap.className='table-actions';const tag=document.createElement('span');tag.className=member.warnings==='0'?'tag good':'tag warn';tag.textContent=member.warnings==='0'?'Clear':member.warnings+' warning'+(member.warnings==='1'?'':'s');wrap.append(tag);if(member.id){const button=document.createElement('button');button.type='button';button.className='member-detail';button.textContent='Details';button.addEventListener('click',()=>openMemberDetails(member.id));wrap.append(button)}standing.append(wrap);tr.append(name,level,messages,voice,standing);tbody.append(tr)});
     }
+    /* Turn a stored action name like "slash_warning_added" into something a
+       human reads without decoding it. */
+    function prettyLogAction(value){
+      const raw=String(value||'').replace(/[_-]+/g,' ').trim();
+      if(!raw)return 'Server activity';
+      return raw.charAt(0).toUpperCase()+raw.slice(1);
+    }
+    function logWhen(value){
+      const when=new Date(value);
+      if(Number.isNaN(when.getTime()))return String(value||'');
+      const mins=Math.round((Date.now()-when.getTime())/60000);
+      if(mins<1)return 'just now';
+      if(mins<60)return mins+'m ago';
+      if(mins<1440)return Math.floor(mins/60)+'h ago';
+      return when.toLocaleDateString(undefined,{month:'short',day:'numeric'});
+    }
     function renderLiveActivity(activityPayload,logsPayload){
-      const rows=[...dashboardItems(activityPayload,['activity','events','items','results']),...dashboardItems(logsPayload,['logs','events','items','results'])];
+      // The logs endpoint returns rows under "audit" and "cases", not "logs".
+      // Reading only the generic keys meant a server with 126 recorded events
+      // still showed an empty page.
+      const audit=dashboardItems(logsPayload,['audit','logs','events','items','results']);
+      const cases=dashboardItems(logsPayload,['cases']).map(row=>({
+        ...row,
+        action:'Moderation case #'+(row.case_number??'')+' · '+(row.action||'action'),
+        details:[row.reason,row.details].filter(Boolean).join(' — '),
+      }));
+      const rows=[...dashboardItems(activityPayload,['activity','events','items','results']),...audit,...cases]
+        .sort((a,b)=>String(b.created_at||'').localeCompare(String(a.created_at||'')));
       const targets=[document.getElementById('overviewActivity'),document.getElementById('logActivity')].filter(Boolean);
-      targets.forEach(target=>{target.replaceChildren();if(!rows.length){putEmpty(target,'No live activity was returned yet. Billy will show relevant events here once the API receives them.');return}rows.slice(0,30).forEach(row=>{const item=document.createElement('div');item.className='activity-row';const title=document.createElement('b');title.textContent=dashboardValue(row,['title','event','type','name'])||'Server activity';const detail=document.createElement('span');detail.textContent=dashboardValue(row,['description','message','detail','content'])||'Recorded by Billy';const time=document.createElement('time');time.textContent=dashboardValue(row,['created_at','timestamp','time'])||'';item.append(title,detail,time);target.append(item)})});
+      targets.forEach(target=>{
+        target.replaceChildren();
+        if(!rows.length){
+          putEmpty(target,'Nothing recorded yet. Billy logs moderation actions, tickets, and setup changes as they happen.');
+          return
+        }
+        rows.slice(0,30).forEach(row=>{
+          const item=document.createElement('div');item.className='activity-row';
+          const title=document.createElement('b');
+          title.textContent=prettyLogAction(dashboardValue(row,['title','event','action','type','name']));
+          const detail=document.createElement('span');
+          // A raw snowflake tells a reader nothing, so the id is dropped from
+          // the line rather than printed as a wall of digits.
+          const body=dashboardValue(row,['description','message','detail','details','content','reason']);
+          detail.textContent=body||'Recorded by Billy';
+          const time=document.createElement('time');
+          time.textContent=logWhen(dashboardValue(row,['created_at','timestamp','time']));
+          item.append(title,detail,time);target.append(item)
+        })
+      });
     }
     function reviewList(payload){return dashboardItems(payload,['reviews','items','results','cases']).map(item=>({id:dashboardId(item),kind:dashboardValue(item,['kind','type','review_kind'])||'review',priority:dashboardValue(item,['priority','severity'])||'Review',member:dashboardValue(item,['member_name','username','user','member_id'])||'Unknown member',signal:dashboardValue(item,['signal','reason','title'])||'Needs context',context:dashboardValue(item,['context','description','message'])||'Open the review for details'}))}
     function renderLiveModeration(moderationPayload,reviewsPayload){
