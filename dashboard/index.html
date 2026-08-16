@@ -304,7 +304,7 @@
     const automaticKnowledge=document.getElementById('automaticKnowledge'),humanModeration=document.getElementById('humanModeration');
     const timezoneSelect=document.getElementById('timezone'),saveSettings=document.getElementById('saveSettings');
     const timezoneLookup=document.getElementById('timezoneLookup'),timezoneLookupApply=document.getElementById('timezoneLookupApply'),timezoneLookupStatus=document.getElementById('timezoneLookupStatus'),timezoneAliasList=document.getElementById('timezoneAliasList');
-    let timer,streamController=null,sessionToken=sessionStorage.getItem('billy_dashboard_token')||'',activeGuildId='';
+    let timer,streamController=null,sessionToken=localStorage.getItem('billy_dashboard_token')||sessionStorage.getItem('billy_dashboard_token')||'',activeGuildId='';
     function showToast(message,title='Dashboard connection'){toast.querySelector('b').textContent=title;toast.querySelector('span').textContent=message||'Billy\'s dashboard API is not available.';toast.classList.add('show');clearTimeout(timer);timer=setTimeout(()=>toast.classList.remove('show'),4200)}
     function setText(id,value){const el=document.getElementById(id);if(el)el.textContent=value}
     function number(value){return new Intl.NumberFormat().format(Number(value||0))}
@@ -436,7 +436,7 @@
     document.getElementById('mobileMenu').addEventListener('click',()=>sidebar.classList.toggle('open'));
     serverSelect.addEventListener('change',event=>{const option=event.target.selectedOptions[0];document.querySelectorAll('.server-name').forEach(x=>x.textContent=option?.textContent||'Billy server');if(event.target.value)loadGuild(event.target.value)});
     const fragment=new URLSearchParams(location.hash.slice(1));
-    if(fragment.get('auth_token')){sessionToken=fragment.get('auth_token');sessionStorage.setItem('billy_dashboard_token',sessionToken);history.replaceState(null,'',location.pathname+location.search+'#overview')}
+    if(fragment.get('auth_token')){sessionToken=fragment.get('auth_token');localStorage.setItem('billy_dashboard_token',sessionToken);sessionStorage.setItem('billy_dashboard_token',sessionToken);history.replaceState(null,'',location.pathname+location.search+'#overview')}
     const initial=location.hash.slice(1);if(initial){const target=document.querySelector('.nav-btn[data-page="'+initial+'"]');if(target)target.click()}
     login.href='#';
     function dashboardConnectionHelp(){
@@ -476,8 +476,25 @@
       if(options.body!==undefined){request.headers['Content-Type']='application/json';request.body=JSON.stringify(options.body)}
       const response=await fetch(apiBase+path,request);
       const data=await response.json().catch(()=>({error:'Billy returned an invalid response.'}));
-      if(!response.ok)throw new Error(data.error||'Dashboard request failed.');
+      if(!response.ok){
+        /* Carry the status so panels can explain the real cause. Every failure
+           used to collapse into one vague sentence, which made a login problem
+           look identical to a server outage. */
+        const error=new Error(data.error||('Dashboard request failed (HTTP '+response.status+').'));
+        error.status=response.status;
+        throw error
+      }
       return data
+    }
+    /* Turn an API failure into something a server owner can act on. */
+    function explainApiError(error){
+      const status=error&&error.status;
+      if(status===401)return 'Your login expired. Press “cxno” at the top right to sign in with Discord again.';
+      if(status===403)return 'You need the Manage Server permission in this server to see this.';
+      if(status===404)return 'This Billy is running an older version that does not have this feature yet.';
+      if(status>=500)return 'Billy hit an error building this (HTTP '+status+'). Check the bot logs.';
+      if(!status)return 'Could not reach Billy. The bot may be offline or restarting.';
+      return (error&&error.message)||'Request failed.'
     }
     async function discoverApi(){
       const configured=(window.BILLY_DASHBOARD_API_URL||'').replace(/\/$/,'');
@@ -532,8 +549,9 @@
     function renderModeration(payload){const items=collectionFrom(payload,['cases','reviews','items','results']),stats=payload?.stats||payload||{},body=document.getElementById('reviewQueue');setText('moderationOpen',stats.open_reviews??stats.open_cases??items.length??'—');setText('moderationSpam',stats.spam_prevented??'—');setText('moderationWarnings',stats.warnings??'—');setText('moderationFalsePositives',stats.false_positives??'—');if(!items.length){setTableNote(body,5,'No active reviews','Billy returned an empty moderation review list for this server.');return}body.replaceChildren();items.forEach(item=>{const row=document.createElement('tr'),priority=document.createElement('span'),member=String(item.member||item.member_name||item.user||'Unknown member'),signal=item.signal||item.category||item.type||'Review item',context=item.context||item.summary||'No additional context was provided.',actionCell=document.createElement('td'),review=document.createElement('button');priority.className='chip '+(String(item.priority||'').toLowerCase()==='high'?'red':String(item.priority||'').toLowerCase()==='medium'?'amber':'');priority.textContent=item.priority||'Review';review.type='button';review.className='button demo-action';review.textContent='Review';review.addEventListener('click',()=>openReview(review));actionCell.append(review);row.append(cell(''),cell(member),cell(signal),cell(context),actionCell);row.firstElementChild.append(priority);body.append(row)})}
     function setFormsNote(title,copy){setTableNote(document.getElementById('formRows'),4,title,copy)}
     function renderForms(payload){const forms=collectionFrom(payload,['forms','items','results']),body=document.getElementById('formRows');if(!forms.length){setFormsNote('No connected forms','Billy returned an empty form connection list for this server.');return}body.replaceChildren();forms.forEach(form=>{const row=document.createElement('tr'),status=document.createElement('span');status.className='chip'+(form.enabled===false?' amber':'');status.textContent=form.enabled===false?'Paused':'Connected';row.append(cell(form.name||form.title||'Untitled form'),cell(form.destination||form.channel||'Not set'),cell(form.last_submission_at?new Date(form.last_submission_at).toLocaleString():'No submissions yet'),cell(''));row.lastElementChild.append(status);body.append(row)})}
-    async function optionalGuildRequest(guildId,path){try{return await api('/api/guilds/'+guildId+path)}catch{return null}}
-    async function loadOptionalDashboardData(guildId){setTicketNote('Loading live tickets','Checking the connected Billy API…');setModerationNote('Loading live reviews','Checking the connected Billy API…');setFormsNote('Loading connected forms','Checking the connected Billy API…');const [tickets,moderation,forms]=await Promise.all([optionalGuildRequest(guildId,'/tickets'),optionalGuildRequest(guildId,'/moderation'),optionalGuildRequest(guildId,'/forms')]);if(tickets===null)setTicketNote('Ticket data is not available yet','The connected Billy API has not published a ticket endpoint. Use Discord or update Billy before managing tickets here.');else renderTickets(tickets);if(moderation===null)setModerationNote('Moderation data is not available yet','The connected Billy API has not published a moderation-case endpoint. No moderation action can be taken from this page.');else renderModeration(moderation);if(forms===null)setFormsNote('Form data is not available yet','The connected Billy API has not published form connections. Use /connectform in Discord, then update Billy to display them here.');else renderForms(forms)}
+    let lastRequestError='';
+    async function optionalGuildRequest(guildId,path){try{lastRequestError='';return await api('/api/guilds/'+guildId+path)}catch(error){lastRequestError=explainApiError(error);if(error&&error.status===401){localStorage.removeItem('billy_dashboard_token');sessionStorage.removeItem('billy_dashboard_token');sessionToken='';modePill.textContent='Session expired'}return null}}
+    async function loadOptionalDashboardData(guildId){setTicketNote('Loading live tickets','Checking the connected Billy API…');setModerationNote('Loading live reviews','Checking the connected Billy API…');setFormsNote('Loading connected forms','Checking the connected Billy API…');const [tickets,moderation,forms]=await Promise.all([optionalGuildRequest(guildId,'/tickets'),optionalGuildRequest(guildId,'/moderation'),optionalGuildRequest(guildId,'/forms')]);if(tickets===null)setTicketNote('Tickets could not be loaded',lastRequestError||'The connected Billy API has not published a ticket endpoint.');else renderTickets(tickets);if(moderation===null)setModerationNote('Moderation could not be loaded',lastRequestError||'The connected Billy API has not published a moderation-case endpoint.');else renderModeration(moderation);if(forms===null)setFormsNote('Connected forms could not be loaded',lastRequestError||'The connected Billy API has not published form connections.');else renderForms(forms)}
     function renderSettings(settings){
       if(!settings)return;
       const selectedChannel=String(settings.question_channel_id||'');
@@ -609,7 +627,7 @@
       }
       login.href=apiBase+'/api/oauth/login';
       if(!sessionToken){modePill.textContent='Discord login required';return}
-      try{const me=await api('/api/me');modePill.textContent='Live dashboard';login.textContent=me.user.username;document.getElementById('userAvatar').textContent=(me.user.username||'?').slice(0,1).toUpperCase();serverSelect.innerHTML='';me.guilds.forEach(g=>{const option=document.createElement('option');option.value=g.id;option.textContent=g.name;serverSelect.append(option)});if(me.guilds.length)loadGuild(me.guilds[0].id);else showToast('No servers found where you have Manage Server permission and Billy is installed.')}catch(error){sessionStorage.removeItem('billy_dashboard_token');sessionToken='';modePill.textContent='Session expired';showToast(error.message)}
+      try{const me=await api('/api/me');modePill.textContent='Live dashboard';login.textContent=me.user.username;document.getElementById('userAvatar').textContent=(me.user.username||'?').slice(0,1).toUpperCase();serverSelect.innerHTML='';me.guilds.forEach(g=>{const option=document.createElement('option');option.value=g.id;option.textContent=g.name;serverSelect.append(option)});if(me.guilds.length)loadGuild(me.guilds[0].id);else showToast('No servers found where you have Manage Server permission and Billy is installed.')}catch(error){localStorage.removeItem('billy_dashboard_token');sessionStorage.removeItem('billy_dashboard_token');sessionToken='';modePill.textContent='Session expired';showToast(explainApiError(error))}
     }
     populateTimezones();
     /* One control now: typing a place narrows the same select that gets saved,
@@ -724,7 +742,7 @@
        the message, voice, and moderation tiles stopped filling in. */
     async function refreshOverviewStats(guildId){
       const overview=await optionalGuildRequest(guildId,'/overview');
-      if(!overview){setOverviewText('overviewSources','Overview endpoint unavailable');return null}
+      if(!overview){setOverviewText('overviewSources',lastRequestError||'Overview endpoint unavailable');return null}
       const stats=overview.stats||{},guild=overview.guild||{};
       setCounter('overviewKnowledge',stats.knowledge_facts);
       setCounter('overviewMessages',stats.messages_30d);
