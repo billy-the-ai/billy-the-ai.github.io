@@ -264,9 +264,9 @@
 
       <section class="page" id="moderation"><div class="page-head"><div><span class="eyebrow">Human-first safety</span><h1>Context before consequences.</h1><p>Billy organizes evidence and suggestions. Authorized staff remain responsible for every action.</p></div><div class="head-actions"><button class="button demo-action">View cases</button><button class="button primary demo-action">Safety settings</button></div></div><div class="stats"><article class="stat"><div class="stat-top"><span>Open reviews</span><span class="stat-icon">◇</span></div><strong id="moderationOpen">—</strong><span class="delta warn" id="moderationOpenNote">Waiting for staff data</span></article><article class="stat"><div class="stat-top"><span>Spam prevented</span><span class="stat-icon">!</span></div><strong id="moderationSpam">—</strong><span class="delta" id="moderationSpamNote">AutoMod and flood removals</span></article><article class="stat"><div class="stat-top"><span>Warnings</span><span class="stat-icon">△</span></div><strong id="moderationWarnings">—</strong><span class="delta" id="moderationWarningsNote">Saved warnings</span></article><article class="stat"><div class="stat-top"><span>False positives</span><span class="stat-icon">↺</span></div><strong id="moderationFalsePositives">—</strong><span class="delta" id="moderationFalsePositivesNote">Reviews you dismissed</span></article></div><article class="panel"><header class="panel-head"><div><h2>Review queue</h2><span>Nothing here causes an automatic punishment</span></div></header><div class="panel-body table-wrap"><table class="table"><thead><tr><th>Priority</th><th>Member</th><th>Signal</th><th>Context</th><th>Action</th></tr></thead><tbody id="reviewQueue"><tr><td colspan="5" class="empty-note"><strong>Connect a server to load cases</strong>Live safety reviews appear here only when Billy's API provides them.</td></tr></tbody></table></div></article></section>
 
-<section class="page" id="members"><div class="page-head"><div><span class="eyebrow">Community activity</span><h1>See effort, not just numbers.</h1><p>Messages, voice time, levels, streaks, invites, and conduct in one respectful view.</p></div><button class="button primary demo-action">Export summary</button></div><div class="cards"><article class="module"><div class="module-top"><span class="module-icon">↗</span><span class="chip">Live data only</span></div><h3>Message levels</h3><p>Reward useful participation with server-specific XP and level roles.</p><footer><span>Waiting for Billy's activity data</span><span class="chip">API required</span></footer></article><article class="module"><div class="module-top"><span class="module-icon">◉</span><span class="chip">Live data only</span></div><h3>Voice levels</h3><p>Track time in voice channels without counting AFK farming.</p><footer><span>Waiting for Billy's activity data</span><span class="chip">API required</span></footer></article><article class="module"><div class="module-top"><span class="module-icon">◆</span><span class="chip">Live data only</span></div><h3>Daily streaks</h3><p>Celebrate consistent daily chat activity without encouraging spam.</p><footer><span>Waiting for Billy's activity data</span><span class="chip">API required</span></footer></article></div></section>
+<section class="page" id="members"><div class="page-head"><div><span class="eyebrow">Community activity</span><h1>See effort, not just numbers.</h1><p>Messages, voice time, levels, streaks, invites, and conduct in one respectful view.</p></div><button class="button primary demo-action">Export summary</button></div><div class="cards"><article class="module"><div class="module-top"><span class="module-icon">↗</span><span class="chip">Live data only</span></div><h3>Message levels</h3><p>Reward useful participation with server-specific XP and level roles.</p><footer><span id="actMessages">Loading…</span><span class="chip" id="actMessagesTop">—</span></footer></article><article class="module"><div class="module-top"><span class="module-icon">◉</span><span class="chip">Live data only</span></div><h3>Voice levels</h3><p>Track time in voice channels without counting AFK farming.</p><footer><span id="actVoice">Loading…</span><span class="chip" id="actVoiceTop">—</span></footer></article><article class="module"><div class="module-top"><span class="module-icon">◆</span><span class="chip">Live data only</span></div><h3>Daily streaks</h3><p>Celebrate consistent daily chat activity without encouraging spam.</p><footer><span id="actStreak">Loading…</span><span class="chip" id="actStreakTop">—</span></footer></article></div></section>
 
-<section class="page" id="automations"><div class="page-head"><div><span class="eyebrow">Billy flows</span><h1>Automation with guardrails.</h1><p>Build useful workflows with permission checks, cooldowns, and a readable audit trail.</p></div><button class="button amber demo-action">New automation</button></div><div class="cards"><article class="module"><div class="module-top"><span class="module-icon">👋</span><span class="chip">API required</span></div><h3>Welcome new members</h3><p>Send the server welcome, apply the autorole, and include Billy's official support link.</p><footer><span>Automation status is not loaded yet</span><span>Read-only</span></footer></article><article class="module"><div class="module-top"><span class="module-icon">⚡</span><span class="chip">API required</span></div><h3>Level rewards</h3><p>Grant configured roles at Levels 1, 5, 10, 15, 20, 50, 75, and 100.</p><footer><span>Automation status is not loaded yet</span><span>Read-only</span></footer></article><article class="module"><div class="module-top"><span class="module-icon">🛡</span><span class="chip">API required</span></div><h3>Staff safety alerts</h3><p>Send credible raid, hack, and nuke threats to the private review channel.</p><footer><span>Automation status is not loaded yet</span><span>Read-only</span></footer></article></div></section>
+<section class="page" id="automations"><div class="page-head"><div><span class="eyebrow">Billy flows</span><h1>Automation with guardrails.</h1><p>Build useful workflows with permission checks, cooldowns, and a readable audit trail.</p></div><button class="button amber demo-action">New automation</button></div><div class="cards"><article class="module"><div class="module-top"><span class="module-icon">👋</span><span class="chip">API required</span></div><h3>Welcome new members</h3><p>Send the server welcome, apply the autorole, and include Billy's official support link.</p><footer><span id="autoWelcome">Loading…</span><span>Read-only</span></footer></article><article class="module"><div class="module-top"><span class="module-icon">⚡</span><span class="chip">API required</span></div><h3>Level rewards</h3><p>Grant configured roles at Levels 1, 5, 10, 15, 20, 50, 75, and 100.</p><footer><span id="autoLevels">Loading…</span><span>Read-only</span></footer></article><article class="module"><div class="module-top"><span class="module-icon">🛡</span><span class="chip">API required</span></div><h3>Staff safety alerts</h3><p>Send credible raid, hack, and nuke threats to the private review channel.</p><footer><span id="autoSafety">Loading…</span><span>Read-only</span></footer></article></div></section>
 
       <section class="page" id="forms"><div class="page-head"><div><span class="eyebrow">Form connections</span><h1>Applications arrive organized.</h1><p>Route each connected form to the correct private channel with verified member activity attached.</p></div><button class="button amber demo-action">Connect form</button></div><article class="panel"><header class="panel-head"><div><h2>Connected forms</h2><span>Submissions are forwarded without automatic acceptance or rejection</span></div></header><div class="panel-body table-wrap"><table class="table"><thead><tr><th>Form</th><th>Destination</th><th>Last submission</th><th>Status</th></tr></thead><tbody id="formRows"><tr><td colspan="4" class="empty-note"><strong>Connect a server to load forms</strong>Only forms saved by Billy will appear here.</td></tr></tbody></table></div></article></section>
 
@@ -936,10 +936,59 @@ setOverviewText('moderationFalsePositivesNote',falsePositives?'Reviews staff dis
       try{
         await Promise.all([loadOptionalDashboardData(guildId),loadTicketDesign(guildId)]);
         await refreshOverviewStats(guildId);
+        /* An older copy of loadGuild used to fetch these and was overridden by
+           this one, so approved knowledge sources, settings and the activity
+           cards silently stopped rendering even when the server had them. */
+        await loadKnowledgeAndSettings(guildId);
+        void loadActivityCards(guildId);
         startStatsPolling(guildId);
         startStream(guildId);
         void loadPremium();
-      }catch(error){showToast(error.message,'Could not load live data')}
+      }catch(error){showToast(explainApiError(error),'Could not load live data')}
+    }
+    async function loadKnowledgeAndSettings(guildId){
+      const [knowledge,settings]=await Promise.all([
+        optionalGuildRequest(guildId,'/knowledge'),
+        optionalGuildRequest(guildId,'/settings')
+      ]);
+      if(knowledge)renderKnowledge(knowledge);
+      if(settings&&settings.settings){renderSettings(settings.settings);renderAutomationCards(settings.settings)}
+      else renderAutomationCards(null)
+    }
+    /* These three cards said "Automation status is not loaded yet" forever
+       because nothing ever loaded it. They read the real server settings. */
+    function renderAutomationCards(settings){
+      const set=(id,text)=>{const el=document.getElementById(id);if(el)el.textContent=text};
+      if(!settings){
+        ['autoWelcome','autoLevels','autoSafety'].forEach(id=>set(id,lastRequestError||'Could not read settings'));
+        return
+      }
+      const on=value=>value&&String(value)!=='0'&&String(value)!=='false';
+      set('autoWelcome',on(settings.welcome_channel_id)?'On — welcoming new members':'Off — no welcome channel chosen');
+      set('autoLevels',on(settings.level_channel_id)?'On — level updates are posted':'Off — no level update channel');
+      set('autoSafety',on(settings.mod_report_channel_id||settings.report_channel_id)?'On — alerts go to your staff channel':'Off — no staff alert channel')
+    }
+    /* Community activity cards. These were static mockups labelled "API
+       required" while the /levels endpoint was already returning the data. */
+    async function loadActivityCards(guildId){
+      const set=(id,text)=>{const el=document.getElementById(id);if(el)el.textContent=text};
+      const levels=await optionalGuildRequest(guildId,'/levels');
+      if(!levels){
+        ['actMessages','actVoice','actStreak'].forEach(id=>set(id,lastRequestError||'Not available'));
+        ['actMessagesTop','actVoiceTop','actStreakTop'].forEach(id=>set(id,'—'));
+        return
+      }
+      const byMessages=levels.messages||levels.message_rows||[];
+      const byVoice=levels.voice||levels.voice_rows||[];
+      const top=(rows,label)=>rows.length?(rows[0].display_name||rows[0].username||'')+' · '+label(rows[0]):'—';
+      set('actMessages',byMessages.length?byMessages.length+' members earning XP':'No activity tracked yet');
+      set('actMessagesTop',top(byMessages,r=>'Level '+(r.level||0)));
+      const voiceHours=byVoice.reduce((total,row)=>total+Number(row.voice_total_hours||row.voice_hours||0),0);
+      set('actVoice',voiceHours?Math.round(voiceHours).toLocaleString()+' hours tracked':'No voice time tracked yet');
+      set('actVoiceTop',top(byVoice,r=>'Level '+(r.voice_level||0)));
+      const best=byMessages.reduce((top,row)=>Number(row.active_days||0)>Number(top.active_days||0)?row:top,{});
+      set('actStreak',best.active_days?best.active_days+' active days (best)':'No streaks yet');
+      set('actStreakTop',best.display_name||best.username||'—')
     }
     async function loadTicketDesign(guildId){
       const payload=await optionalGuildRequest(guildId,'/tickets');
