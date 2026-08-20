@@ -50,6 +50,23 @@
 @media (prefers-reduced-motion: reduce){
   .do-flicker{animation:none}
 }
+
+    /* Entrance for the control room: heading, then the line under it, then the
+       cards, so a page assembles instead of appearing all at once. */
+    @keyframes billyIntroIn{
+      0%{opacity:0;transform:translateY(12px);filter:blur(6px)}
+      55%{opacity:1;filter:blur(0)}
+      100%{opacity:1;transform:translateY(0);filter:blur(0)}
+    }
+    .intro-in{opacity:0;animation:billyIntroIn .7s cubic-bezier(.2,.7,.3,1) forwards}
+    .intro-in.step-2{animation-delay:.28s}
+    .intro-in.step-3{animation-delay:.5s}
+    .intro-hero{opacity:0;animation:billyIntroIn .7s cubic-bezier(.2,.7,.3,1) forwards,
+                billyFlicker .9s ease .7s 1 forwards;
+                text-shadow:0 0 42px rgba(233,166,92,.2)}
+    @media (prefers-reduced-motion:reduce){
+      .intro-in,.intro-hero{opacity:1;animation:none;transform:none;filter:none}
+    }
 </style>
   <style>
     /* Live counters. Values tween between polls so the number moves smoothly
@@ -359,15 +376,19 @@
     function flickerIn(page){
       if(!page)return;
       if(window.matchMedia('(prefers-reduced-motion: reduce)').matches)return;
-      /* Heading first, then the line under it a beat later, so arriving on a
-         page reads as one movement rather than two things blinking at once. */
-      const heading=page.querySelector('h1');
-      const subtitle=page.querySelector('.page-head p');
-      [[heading,'do-flicker'],[subtitle,'do-flicker delay-1']].forEach(([el,cls])=>{
+      /* Heading rises and then flickers, the line under it follows, then the
+         cards. Arriving on a page reads as one movement. */
+      const staged=[
+        [page.querySelector('h1'),['intro-hero']],
+        [page.querySelector('.page-head p'),['intro-in','step-2']],
+        ...[...page.querySelectorAll('.stats,.cards,.panel')].slice(0,1)
+            .map(el=>[el,['intro-in','step-3']]),
+      ];
+      staged.forEach(([el,classes])=>{
         if(!el)return;
-        el.classList.remove('do-flicker','delay-1');
-        void el.offsetWidth;
-        cls.split(' ').forEach(c=>el.classList.add(c));
+        el.classList.remove('intro-hero','intro-in','step-2','step-3');
+        void el.offsetWidth;   /* restarts the animation */
+        classes.forEach(c=>el.classList.add(c));
       });
     }
     nav.forEach(btn=>btn.addEventListener('click',()=>openPage(btn.dataset.page)));

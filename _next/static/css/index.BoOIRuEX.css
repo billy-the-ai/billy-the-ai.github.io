@@ -5,3 +5,23 @@
 .do-flicker{animation:.9s ease 0s 1 normal forwards billyFlicker}
 .do-flicker.delay-1{animation-delay:.15s}
 @media (prefers-reduced-motion:reduce){.do-flicker{animation:none}}
+
+/* Entrance. Content starts unseen and rises out of the dark in order, so the
+   page assembles itself rather than appearing all at once. The wordmark then
+   stutters like a sign warming up. */
+@keyframes billyIntroIn{
+  0%{opacity:0;transform:translateY(14px);filter:blur(7px)}
+  55%{opacity:1;filter:blur(0)}
+  100%{opacity:1;transform:translateY(0);filter:blur(0)}
+}
+.intro-in{opacity:0;animation:billyIntroIn .75s cubic-bezier(.2,.7,.3,1) forwards}
+.intro-in.step-1{animation-delay:.08s}
+.intro-in.step-2{animation-delay:.42s}
+.intro-in.step-3{animation-delay:.72s}
+/* The headline rises, then flickers once it has arrived. */
+.intro-hero{opacity:0;animation:billyIntroIn .75s cubic-bezier(.2,.7,.3,1) .08s forwards,
+            billyFlicker .9s ease .8s 1 forwards;
+            text-shadow:0 0 46px rgba(233,166,92,.22)}
+@media (prefers-reduced-motion:reduce){
+  .intro-in,.intro-hero{opacity:1;animation:none;transform:none;filter:none}
+}
