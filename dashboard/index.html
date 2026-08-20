@@ -359,13 +359,20 @@
     function flickerIn(page){
       if(!page)return;
       if(window.matchMedia('(prefers-reduced-motion: reduce)').matches)return;
+      /* Heading first, then the line under it a beat later, so arriving on a
+         page reads as one movement rather than two things blinking at once. */
       const heading=page.querySelector('h1');
-      if(!heading)return;
-      heading.classList.remove('do-flicker');
-      void heading.offsetWidth;
-      heading.classList.add('do-flicker');
+      const subtitle=page.querySelector('.page-head p');
+      [[heading,'do-flicker'],[subtitle,'do-flicker delay-1']].forEach(([el,cls])=>{
+        if(!el)return;
+        el.classList.remove('do-flicker','delay-1');
+        void el.offsetWidth;
+        cls.split(' ').forEach(c=>el.classList.add(c));
+      });
     }
     nav.forEach(btn=>btn.addEventListener('click',()=>openPage(btn.dataset.page)));
+    /* Run the intro on whichever page you land on. */
+    flickerIn(document.querySelector('.page.active')||document.getElementById('overview'));
     function setSwitch(button,value){button.classList.toggle('on',Boolean(value));button.setAttribute('aria-pressed',String(Boolean(value)))}
     [automaticKnowledge,humanModeration].forEach(button=>button?.addEventListener('click',()=>setSwitch(button,!button.classList.contains('on'))));
     const actionPages={
