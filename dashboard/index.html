@@ -673,7 +673,38 @@
     /* Shown when Billy's API cannot be reached. Almost always because the
        visitor is not the person hosting Billy, which is normal — so it must
        read as a locked door, not a crash. */
+    /* Reachable Billy, no session: the only thing missing is a sign-in, so ask
+       for it directly rather than describing the situation. */
+    function showSignInPrompt(){
+      /* Either Billy cannot be reached, or it can and you need to sign in.
+         Showing both messages at once contradicts itself. */
+      const stale=document.getElementById('ownerOnlyNotice');
+      if(stale)stale.remove();
+      document.body.classList.remove('billy-offline');
+      if(document.getElementById('signInCard'))return;
+      const main=document.querySelector('main');
+      if(!main)return;
+      const card=document.createElement('div');
+      card.id='signInCard';
+      card.className='panel';
+      card.style.cssText='margin:24px auto;max-width:560px;padding:28px;text-align:center';
+      const title=document.createElement('h2');
+      title.textContent='Sign in to your control room';
+      title.style.cssText='margin:0 0 8px;font-size:22px';
+      const copy=document.createElement('p');
+      copy.style.cssText='margin:0 0 18px;color:var(--muted,#a9a29a);line-height:1.55';
+      copy.textContent='Connect your Discord account to manage the servers you run with Billy. '
+        +'You stay signed in, so this is a one-time step.';
+      const button=document.createElement('a');
+      button.className='button amber';
+      button.textContent='Connect Discord';
+      button.href=apiBase+'/api/oauth/login';
+      card.append(title,copy,button);
+      main.prepend(card);
+    }
     function showOwnerOnlyNotice(){
+      const signIn=document.getElementById('signInCard');
+      if(signIn)signIn.remove();
       document.body.classList.add('billy-offline');
       // Every page needs live data, so hide them all and show one notice
       // directly in <main>. Putting it inside the Overview page meant a
@@ -688,7 +719,7 @@
       copy.textContent='Live server data is only visible to the bot owner while Billy is running. '
         +'Everything else about Billy works normally in Discord — use his slash commands there.';
       const hint=document.createElement('small');
-      hint.textContent='Owner: start Billy on this computer, then reload this page.';
+      hint.textContent='If you host Billy, check the bot is running and that its address is reachable.';
       card.append(title,copy,hint);
       main.prepend(card);
     }
@@ -708,7 +739,11 @@
         showToast(dashboardConnectionHelp(),'Discord login needs setup');return
       }
       login.href=apiBase+'/api/oauth/login';
-      if(!sessionToken){modePill.textContent='Discord login required';return}
+      if(!sessionToken){
+        modePill.textContent='Discord login required';
+        showSignInPrompt();
+        return
+      }
       try{const me=await api('/api/me');modePill.textContent='Live dashboard';login.textContent=me.user.username;document.getElementById('userAvatar').textContent=(me.user.username||'?').slice(0,1).toUpperCase();serverSelect.innerHTML='';me.guilds.forEach(g=>{const option=document.createElement('option');option.value=g.id;option.textContent=g.name;serverSelect.append(option)});if(me.guilds.length)loadGuild(me.guilds[0].id);else showToast('No servers found where you have Manage Server permission and Billy is installed.')}catch(error){if(error&&error.status===401){forgetSession('Session expired')}else{modePill.textContent='Reconnecting…'}showToast(explainApiError(error))}
     }
     populateTimezones();
