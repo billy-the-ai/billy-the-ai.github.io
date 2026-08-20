@@ -499,7 +499,7 @@
     document.getElementById('mobileMenu').addEventListener('click',()=>sidebar.classList.toggle('open'));
     serverSelect.addEventListener('change',event=>{const option=event.target.selectedOptions[0];document.querySelectorAll('.server-name').forEach(x=>x.textContent=option?.textContent||'Billy server');if(event.target.value)loadGuild(event.target.value)});
     const fragment=new URLSearchParams(location.hash.slice(1));
-    if(fragment.get('auth_token')){sessionToken=fragment.get('auth_token');localStorage.setItem('billy_dashboard_token',sessionToken);sessionStorage.setItem('billy_dashboard_token',sessionToken);history.replaceState(null,'',location.pathname+location.search+'#overview')}
+    if(fragment.get('auth_token')){sessionToken=fragment.get('auth_token');storeSessionToken(sessionToken);history.replaceState(null,'',location.pathname+location.search+'#overview')}
     const initial=location.hash.slice(1);if(initial){const target=document.querySelector('.nav-btn[data-page="'+initial+'"]');if(target)target.click()}
     login.href='#';
     function dashboardConnectionHelp(){
@@ -538,6 +538,10 @@
       const request={method:options.method||'GET',headers:{Authorization:'Bearer '+sessionToken}};
       if(options.body!==undefined){request.headers['Content-Type']='application/json';request.body=JSON.stringify(options.body)}
       const response=await fetch(apiBase+path,request);
+      /* Billy hands back a renewed session once the current one is a day old,
+         so an account in regular use never has to sign in again. */
+      const renewed=response.headers.get('X-Billy-Session');
+      if(renewed&&renewed!==sessionToken){sessionToken=renewed;storeSessionToken(renewed)}
       const data=await response.json().catch(()=>({error:'Billy returned an invalid response.'}));
       if(!response.ok){
         /* Carry the status so panels can explain the real cause. Every failure
@@ -548,6 +552,21 @@
         throw error
       }
       return data
+    }
+    /* One place that writes the session, so a renewed token cannot end up in
+       only one of the two stores. */
+    function storeSessionToken(token){
+      try{localStorage.setItem('billy_dashboard_token',token)}catch(e){}
+      try{sessionStorage.setItem('billy_dashboard_token',token)}catch(e){}
+    }
+    /* Only ever forget the login when Billy says the token itself is bad.
+       Clearing it on a network error signed people out whenever the bot
+       restarted, which looked like the dashboard forgetting them every visit. */
+    function forgetSession(reason){
+      localStorage.removeItem('billy_dashboard_token');
+      sessionStorage.removeItem('billy_dashboard_token');
+      sessionToken='';
+      if(modePill)modePill.textContent=reason||'Session expired';
     }
     /* Turn an API failure into something a server owner can act on. */
     function explainApiError(error){
@@ -613,7 +632,7 @@
     function setFormsNote(title,copy){setTableNote(document.getElementById('formRows'),4,title,copy)}
     function renderForms(payload){const forms=collectionFrom(payload,['forms','items','results']),body=document.getElementById('formRows');if(!forms.length){setFormsNote('No connected forms','Billy returned an empty form connection list for this server.');return}body.replaceChildren();forms.forEach(form=>{const row=document.createElement('tr'),status=document.createElement('span');status.className='chip'+(form.enabled===false?' amber':'');status.textContent=form.enabled===false?'Paused':'Connected';row.append(cell(form.name||form.title||'Untitled form'),cell(form.destination||form.channel||'Not set'),cell(form.last_submission_at?new Date(form.last_submission_at).toLocaleString():'No submissions yet'),cell(''));row.lastElementChild.append(status);body.append(row)})}
     let lastRequestError='';
-    async function optionalGuildRequest(guildId,path){try{lastRequestError='';return await api('/api/guilds/'+guildId+path)}catch(error){lastRequestError=explainApiError(error);if(error&&error.status===401){localStorage.removeItem('billy_dashboard_token');sessionStorage.removeItem('billy_dashboard_token');sessionToken='';modePill.textContent='Session expired'}return null}}
+    async function optionalGuildRequest(guildId,path){try{lastRequestError='';return await api('/api/guilds/'+guildId+path)}catch(error){lastRequestError=explainApiError(error);if(error&&error.status===401){forgetSession('Session expired')}return null}}
     async function loadOptionalDashboardData(guildId){setTicketNote('Loading live tickets','Checking the connected Billy API…');setModerationNote('Loading live reviews','Checking the connected Billy API…');setFormsNote('Loading connected forms','Checking the connected Billy API…');const [tickets,moderation,forms]=await Promise.all([optionalGuildRequest(guildId,'/tickets'),optionalGuildRequest(guildId,'/moderation'),optionalGuildRequest(guildId,'/forms')]);if(tickets===null)setTicketNote('Tickets could not be loaded',lastRequestError||'The connected Billy API has not published a ticket endpoint.');else renderTickets(tickets);if(moderation===null)setModerationNote('Moderation could not be loaded',lastRequestError||'The connected Billy API has not published a moderation-case endpoint.');else renderModeration(moderation);if(forms===null)setFormsNote('Connected forms could not be loaded',lastRequestError||'The connected Billy API has not published form connections.');else renderForms(forms)}
     function renderSettings(settings){
       if(!settings)return;
@@ -690,7 +709,7 @@
       }
       login.href=apiBase+'/api/oauth/login';
       if(!sessionToken){modePill.textContent='Discord login required';return}
-      try{const me=await api('/api/me');modePill.textContent='Live dashboard';login.textContent=me.user.username;document.getElementById('userAvatar').textContent=(me.user.username||'?').slice(0,1).toUpperCase();serverSelect.innerHTML='';me.guilds.forEach(g=>{const option=document.createElement('option');option.value=g.id;option.textContent=g.name;serverSelect.append(option)});if(me.guilds.length)loadGuild(me.guilds[0].id);else showToast('No servers found where you have Manage Server permission and Billy is installed.')}catch(error){localStorage.removeItem('billy_dashboard_token');sessionStorage.removeItem('billy_dashboard_token');sessionToken='';modePill.textContent='Session expired';showToast(explainApiError(error))}
+      try{const me=await api('/api/me');modePill.textContent='Live dashboard';login.textContent=me.user.username;document.getElementById('userAvatar').textContent=(me.user.username||'?').slice(0,1).toUpperCase();serverSelect.innerHTML='';me.guilds.forEach(g=>{const option=document.createElement('option');option.value=g.id;option.textContent=g.name;serverSelect.append(option)});if(me.guilds.length)loadGuild(me.guilds[0].id);else showToast('No servers found where you have Manage Server permission and Billy is installed.')}catch(error){if(error&&error.status===401){forgetSession('Session expired')}else{modePill.textContent='Reconnecting…'}showToast(explainApiError(error))}
     }
     populateTimezones();
     /* One control now: typing a place narrows the same select that gets saved,
