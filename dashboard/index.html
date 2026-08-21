@@ -133,6 +133,29 @@
     .update-entry p{margin:0;color:var(--muted,#a9a29a);font-size:14px;line-height:1.55}
     @media (prefers-reduced-motion:reduce){.update-entry{transition:none}
       .update-entry:hover{transform:none}}
+
+    /* Idle state: Billy beside the message, clock resting at zero. */
+    .countdown-card{position:relative}
+    .countdown-mascot{position:absolute;left:26px;top:50%;transform:translateY(-50%);
+      width:74px;height:74px;object-fit:contain;opacity:.95;
+      filter:drop-shadow(0 6px 18px rgba(233,166,92,.28))}
+    .countdown-card.idle{border-color:rgba(255,255,255,.1);
+      background:radial-gradient(120% 140% at 50% -20%,rgba(233,166,92,.08),rgba(20,18,16,.9));
+      /* Reserve room on the left so Billy sits beside the message rather than
+         on top of the numbers. Only in the idle state, where he appears. */
+      padding-left:150px}
+    .countdown-card.idle .countdown-title{font-size:23px}
+    .countdown-card.idle .countdown-unit strong{color:rgba(255,255,255,.35)}
+    .countdown-card.idle .countdown-sep{color:rgba(255,255,255,.12)}
+    /* The mascot would sit on top of the numbers on a narrow screen, so it
+       moves above the text instead of overlapping it. */
+    @media (max-width:720px){
+      .countdown-mascot{position:static;transform:none;display:block;margin:0 auto 10px;
+        width:60px;height:60px}
+      /* Billy stacks above the text here, so the space reserved beside him on a
+         wide screen would just be a wasted margin. */
+      .countdown-card.idle{padding-left:24px}
+    }
 </style>
   <style>
     /* Live counters. Values tween between polls so the number moves smoothly
@@ -381,7 +404,7 @@
 
 <section class="page" id="premium"><div class="page-head"><div><span class="eyebrow">Billy Premium</span><h1>More room to grow.</h1><p>Every safety feature stays free, always. Premium raises the limits on the things big servers run out of.</p></div><div class="head-actions"><button class="button" id="premiumRefresh">Refresh</button></div></div><div id="premiumState"></div><div class="plan-grid"><article class="plan" id="planFree"><header><h3>Free</h3><div class="plan-price">$0<span>/month</span></div><p>Everything a server needs to run safely.</p></header><ul class="plan-list" id="freeList"></ul><div class="plan-detail"><p><b>What you get</b> — every safety feature Billy has, with no limits on protection: AutoMod, anti-raid, anti-nuke, verification, honeypots, warnings, timeouts, bans, tickets and appeals.</p><p><b>Where it stops</b> — 15 knowledge sources, 50 blocked words, 3 giveaways at once, 2 role panels, 15 custom commands, 3 scheduled events.</p></div><footer><span class="plan-current" id="freeCurrent">Current plan</span></footer></article><article class="plan featured" id="planPremium"><span class="plan-flag">Recommended</span><header><h3>Premium</h3><div class="plan-price" id="premiumPrice">—<span>/month</span></div><p>For communities that have outgrown the free limits.</p></header><ul class="plan-list" id="premiumList"></ul><div class="plan-detail"><p><b>Everything in Free</b>, then more room: 100 knowledge sources, 500 blocked words, 25 giveaways, 20 role panels, 150 custom commands and 30 scheduled events.</p><p><b>Also included</b> — priority AI when Billy is busy, your own embed colour, and longer history in recaps and exports.</p><p>Protection is never part of the paid plan. A server that cannot pay is never a less safe server.</p></div><footer><button class="button amber plan-cta" id="premiumUpgrade">Upgrade this server</button><small class="plan-note" id="premiumNote"></small></footer></article></div><article class="panel"><header class="panel-head"><div><h2>What Premium does not change</h2><span>Protection is never paywalled</span></div></header><div class="panel-body"><ul class="plan-list plain"><li>AutoMod spam, mention, caps, and blocked-word filters</li><li>Anti-raid detection, lockdown, and the verification gate</li><li>Anti-nuke protection against a compromised staff account</li><li>Warnings, timeouts, bans, tickets, and moderation logs</li></ul><p class="field-hint">A server that cannot pay is never a less safe server.</p></div></article></section>
 
-<section class="page" id="updates"><div class="page-head"><div><span class="eyebrow">Changelog</span><h1>What's new in Billy.</h1><p>Every bot update, dashboard change and fix, recorded as it ships.</p></div><div class="head-actions"><button class="button" id="updatesRefresh">Refresh</button></div></div><section class="countdown-card" id="countdownCard" hidden><div class="countdown-top"><span class="countdown-kicker" id="countdownKicker">Next update</span><span class="countdown-version" id="countdownVersion"></span></div><h2 class="countdown-title" id="countdownTitle"></h2><p class="countdown-note" id="countdownNote"></p><div class="countdown-clock" id="countdownClock"><div class="countdown-unit"><strong id="cdDays">00</strong><span>DAY</span></div><i class="countdown-sep">:</i><div class="countdown-unit"><strong id="cdHours">00</strong><span>HRS</span></div><i class="countdown-sep">:</i><div class="countdown-unit"><strong id="cdMins">00</strong><span>MIN</span></div><i class="countdown-sep">:</i><div class="countdown-unit"><strong id="cdSecs">00</strong><span>SEC</span></div></div><p class="countdown-when" id="countdownWhen"></p></section><div class="update-filters" id="updateFilters"></div><article class="panel"><header class="panel-head"><div><h2>Update log</h2><span id="updatesSubtitle">Loading Billy's published updates…</span></div></header><div class="panel-body" id="updateFeed"><div class="empty-note"><strong>Loading updates</strong>Billy is fetching the published changelog.</div></div></article></section>
+<section class="page" id="updates"><div class="page-head"><div><span class="eyebrow">Changelog</span><h1>What's new in Billy.</h1><p>Every bot update, dashboard change and fix, recorded as it ships.</p></div><div class="head-actions"><button class="button" id="updatesRefresh">Refresh</button></div></div><section class="countdown-card" id="countdownCard" hidden><img class="countdown-mascot" id="countdownMascot" src="/billy-icon.webp" alt="" hidden/><div class="countdown-top"><span class="countdown-kicker" id="countdownKicker">Next update</span><span class="countdown-version" id="countdownVersion"></span></div><h2 class="countdown-title" id="countdownTitle"></h2><p class="countdown-note" id="countdownNote"></p><div class="countdown-clock" id="countdownClock"><div class="countdown-unit"><strong id="cdDays">00</strong><span>DAY</span></div><i class="countdown-sep">:</i><div class="countdown-unit"><strong id="cdHours">00</strong><span>HRS</span></div><i class="countdown-sep">:</i><div class="countdown-unit"><strong id="cdMins">00</strong><span>MIN</span></div><i class="countdown-sep">:</i><div class="countdown-unit"><strong id="cdSecs">00</strong><span>SEC</span></div></div><p class="countdown-when" id="countdownWhen"></p></section><div class="update-filters" id="updateFilters"></div><article class="panel"><header class="panel-head"><div><h2>Update log</h2><span id="updatesSubtitle">Loading Billy's published updates…</span></div></header><div class="panel-body" id="updateFeed"><div class="empty-note"><strong>Loading updates</strong>Billy is fetching the published changelog.</div></div></article></section>
 
 <section class="page" id="team"><div class="page-head"><div><span class="eyebrow">Who builds Billy</span><h1>The people behind it.</h1><p>A small team running Billy for real communities.</p></div></div><div class="team-grid"><article class="team-card"><div class="team-avatar"><img src="/team/adrian.png" alt=""/></div><h3 class="team-name">Adrian</h3><p class="team-role">Founder &amp; Developer</p><div class="team-tags"><span class="team-tag">Billy</span><span class="team-tag">Backend</span><span class="team-tag">Community</span></div></article><article class="team-card"><div class="team-avatar"><img src="/team/josh.png" alt=""/></div><h3 class="team-name">Josh</h3><p class="team-role">Community Manager</p><div class="team-tags"><span class="team-tag">Community</span><span class="team-tag">Support</span></div></article><article class="team-card"><div class="team-avatar"><img src="/team/isaiah.png" alt=""/></div><h3 class="team-name">Isaiah</h3><p class="team-role">Community Manager</p><div class="team-tags"><span class="team-tag">Community</span><span class="team-tag">Support</span></div></article></div></section><section class="page" id="settings"><div class="page-head"><div><span class="eyebrow">Server configuration</span><h1>Billy, your way.</h1><p>Only administrators can change these settings for <span class="server-name">Billy The AI • Official</span>.</p></div><button class="button amber" id="saveSettings">Save changes</button></div><article class="panel"><header class="panel-head"><div><h2>Core settings</h2><span>Saved separately for every server you manage</span></div></header><div class="panel-body"><div class="setting-row"><div><b>Question channel</b><small>Billy answers support questions here even when not directly mentioned</small></div><select class="field" id="questionChannel"><option value="">Choose a channel</option></select></div><div class="setting-row"><div><b>Response style</b><small>Choose how Billy normally answers in this server</small></div><select class="field" id="responseStyle"><option value="balanced">Balanced</option><option value="concise">Concise</option><option value="friendly">Friendly</option><option value="detailed">Detailed</option></select></div><div class="setting-row"><div><b>Automatic knowledge updates</b><small>Keep approved knowledge channels in sync without requiring /rescan</small></div><button class="switch on" id="automaticKnowledge" aria-label="Toggle automatic knowledge updates" aria-pressed="true"></button></div><div class="setting-row"><div><b>Human-only moderation decisions</b><small>Billy can organize evidence but never punish a member automatically</small></div><button class="switch on" id="humanModeration" aria-label="Toggle human-only moderation decisions" aria-pressed="true"></button></div><div class="setting-row"><div><b>Timezone</b><small>Used for streak resets, scheduled events, and summaries. Search a country, city, or US state — or pick an exact IANA zone from the list.</small></div><div class="timezone-helper"><input class="field" id="timezoneLookup" list="timezoneAliasList" placeholder="Search: Puerto Rico, Texas, Tokyo…" autocomplete="off"/><select class="field" id="timezone"><option value="UTC">UTC</option></select><small class="timezone-status" id="timezoneLookupStatus" role="status" aria-live="polite"></small></div></div><datalist id="timezoneAliasList"></datalist></div></article></section>
 
@@ -747,7 +770,7 @@
          Showing both messages at once contradicts itself. */
       const stale=document.getElementById('ownerOnlyNotice');
       if(stale)stale.remove();
-      document.body.classList.remove('billy-offline');
+      restorePages();
       if(document.getElementById('signInCard'))return;
       const main=document.querySelector('main');
       if(!main)return;
@@ -768,6 +791,13 @@
       button.href=apiBase+'/api/oauth/login';
       card.append(title,copy,button);
       main.prepend(card);
+    }
+    /* The offline notice hides every page with an inline style, which beats any
+       stylesheet rule. Nothing used to undo that, so a visitor who arrived
+       during a restart kept a blank control room even once Billy was back. */
+    function restorePages(){
+      document.body.classList.remove('billy-offline');
+      document.querySelectorAll('.page').forEach(page=>{page.style.removeProperty('display')});
     }
     function showOwnerOnlyNotice(){
       const signIn=document.getElementById('signInCard');
@@ -800,6 +830,10 @@
         modePill.textContent='Preview';login.href='#';
         showOwnerOnlyNotice();return
       }
+      /* Billy answered, so undo anything a previous failed attempt hid. */
+      restorePages();
+      const staleNotice=document.getElementById('ownerOnlyNotice');
+      if(staleNotice)staleNotice.remove();
       liveStatus.lastChild.textContent=health.bot_ready?' Billy online':' Billy API online • bot starting';
       if(!health.oauth_configured){
         modePill.textContent='OAuth setup required';login.href='#';
@@ -1585,9 +1619,30 @@ setOverviewText('moderationFalsePositivesNote',falsePositives?'Reviews staff dis
       const card=document.getElementById('countdownCard');
       if(!card)return;
       if(countdownTimer){clearInterval(countdownTimer);countdownTimer=null}
-      if(!upcoming||!upcoming.release_at){card.hidden=true;countdownTarget=null;return}
+      const mascot=document.getElementById('countdownMascot');
+      const showIdle=()=>{
+        /* Nothing planned. Rather than an empty space, Billy says so and the
+           clock rests at zero. */
+        countdownTarget=null;
+        card.hidden=false;card.classList.add('idle');card.classList.remove('releasing');
+        if(mascot)mascot.hidden=false;
+        document.getElementById('countdownKicker').textContent='Next update';
+        document.getElementById('countdownTitle').textContent='More Updates Coming Soon!';
+        const idleNote=document.getElementById('countdownNote');
+        idleNote.textContent='Billy is always being worked on. The next release will appear here with a countdown.';
+        idleNote.hidden=false;
+        const idleVersion=document.getElementById('countdownVersion');
+        idleVersion.textContent='';idleVersion.hidden=true;
+        ['cdDays','cdHours','cdMins','cdSecs'].forEach(id=>{
+          const cell=document.getElementById(id);if(cell)cell.textContent='00';
+        });
+        document.getElementById('countdownWhen').textContent='';
+      };
+      if(!upcoming||!upcoming.release_at){showIdle();return}
       const target=Date.parse(upcoming.release_at);
-      if(Number.isNaN(target)){card.hidden=true;return}
+      if(Number.isNaN(target)){showIdle();return}
+      card.classList.remove('idle');
+      if(mascot)mascot.hidden=true;
       countdownTarget=target;
       const server=serverTime?Date.parse(serverTime):NaN;
       countdownSkewMs=Number.isNaN(server)?0:server-Date.now();
