@@ -114,26 +114,6 @@
     .countdown-card.releasing{border-color:rgba(111,224,165,.5)}
     .countdown-card.releasing .countdown-kicker{color:#6fe0a5}
 
-    /* Update log entries, rebuilt as a timeline. */
-    .update-entry{position:relative;padding:16px 18px 16px 22px;margin-bottom:12px;
-      border-radius:16px;border:1px solid var(--line-soft);background:rgba(255,255,255,.02);
-      transition:border-color .2s ease,transform .2s ease}
-    .update-entry:hover{border-color:rgba(233,166,92,.35);transform:translateX(2px)}
-    .update-entry::before{content:'';position:absolute;left:8px;top:22px;width:7px;height:7px;
-      border-radius:50%;background:#e9a65c}
-    .update-entry.cat-fix::before{background:#ff7f79}
-    .update-entry.cat-dashboard::before{background:#87bfff}
-    .update-entry.cat-patch::before{background:#6fe0a5}
-    .update-entry-head{display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin-bottom:6px}
-    .update-entry h3{margin:0;font-size:16px}
-    .update-chip{font-size:11px;padding:3px 9px;border-radius:999px;
-      background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.08);
-      color:#c9c2ba;letter-spacing:.06em;text-transform:uppercase}
-    .update-when{margin-left:auto;font-size:12px;color:var(--muted,#a9a29a)}
-    .update-entry p{margin:0;color:var(--muted,#a9a29a);font-size:14px;line-height:1.55}
-    @media (prefers-reduced-motion:reduce){.update-entry{transition:none}
-      .update-entry:hover{transform:none}}
-
     /* Idle state: Billy beside the message, clock resting at zero. */
     .countdown-card{position:relative}
     .countdown-mascot{position:absolute;left:26px;top:50%;transform:translateY(-50%);
@@ -141,9 +121,10 @@
       filter:drop-shadow(0 6px 18px rgba(233,166,92,.28))}
     .countdown-card.idle{border-color:rgba(255,255,255,.1);
       background:radial-gradient(120% 140% at 50% -20%,rgba(233,166,92,.08),rgba(20,18,16,.9));
-      /* Reserve room on the left so Billy sits beside the message rather than
-         on top of the numbers. Only in the idle state, where he appears. */
-      padding-left:150px}
+      /* Room on the left so Billy sits beside the message rather than on top of
+         the numbers, matched on the right so the clock stays centred in the
+         card instead of being pushed across. Only in the idle state. */
+      padding-left:150px;padding-right:150px}
     .countdown-card.idle .countdown-title{font-size:23px}
     .countdown-card.idle .countdown-unit strong{color:rgba(255,255,255,.35)}
     .countdown-card.idle .countdown-sep{color:rgba(255,255,255,.12)}
@@ -154,7 +135,7 @@
         width:60px;height:60px}
       /* Billy stacks above the text here, so the space reserved beside him on a
          wide screen would just be a wasted margin. */
-      .countdown-card.idle{padding-left:24px}
+      .countdown-card.idle{padding-left:24px;padding-right:24px}
     }
 </style>
   <style>
