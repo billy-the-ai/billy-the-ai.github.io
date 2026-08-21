@@ -86,6 +86,53 @@
     .team-tag{font-size:12px;padding:4px 10px;border-radius:999px;
       background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.08);color:#c9c2ba}
     @media (prefers-reduced-motion:reduce){.team-card{transition:none}.team-card:hover{transform:none}}
+
+    /* Release countdown. Big numerals with the unit under each, so it reads at
+       a glance the way a launch timer should. */
+    .countdown-card{margin:0 0 22px;padding:26px 24px;border-radius:22px;
+      border:1px solid rgba(233,166,92,.3);
+      background:radial-gradient(120% 140% at 50% -20%,rgba(233,166,92,.16),rgba(20,18,16,.9));
+      text-align:center}
+    .countdown-top{display:flex;gap:10px;justify-content:center;align-items:center;
+      margin-bottom:6px}
+    .countdown-kicker{font-size:12px;letter-spacing:.16em;text-transform:uppercase;
+      color:#e9a65c;font-weight:700}
+    .countdown-version{font-size:12px;padding:3px 10px;border-radius:999px;
+      background:rgba(233,166,92,.16);border:1px solid rgba(233,166,92,.35);color:#f4d9b4}
+    .countdown-title{margin:0 0 6px;font-size:26px}
+    .countdown-note{margin:0 auto 20px;max-width:560px;color:var(--muted,#a9a29a);
+      font-size:14px;line-height:1.5}
+    .countdown-clock{display:flex;justify-content:center;align-items:flex-start;gap:6px}
+    .countdown-unit{min-width:74px;display:flex;flex-direction:column;align-items:center}
+    .countdown-unit strong{font-size:clamp(34px,6vw,52px);line-height:1;
+      font-variant-numeric:tabular-nums;letter-spacing:.02em}
+    .countdown-unit span{margin-top:6px;font-size:11px;letter-spacing:.18em;
+      color:var(--muted,#a9a29a)}
+    .countdown-sep{font-style:normal;font-size:clamp(28px,5vw,44px);line-height:1;
+      color:rgba(255,255,255,.25);margin-top:2px}
+    .countdown-when{margin:18px 0 0;font-size:13px;color:var(--muted,#a9a29a)}
+    .countdown-card.releasing{border-color:rgba(111,224,165,.5)}
+    .countdown-card.releasing .countdown-kicker{color:#6fe0a5}
+
+    /* Update log entries, rebuilt as a timeline. */
+    .update-entry{position:relative;padding:16px 18px 16px 22px;margin-bottom:12px;
+      border-radius:16px;border:1px solid var(--line-soft);background:rgba(255,255,255,.02);
+      transition:border-color .2s ease,transform .2s ease}
+    .update-entry:hover{border-color:rgba(233,166,92,.35);transform:translateX(2px)}
+    .update-entry::before{content:'';position:absolute;left:8px;top:22px;width:7px;height:7px;
+      border-radius:50%;background:#e9a65c}
+    .update-entry.cat-fix::before{background:#ff7f79}
+    .update-entry.cat-dashboard::before{background:#87bfff}
+    .update-entry.cat-patch::before{background:#6fe0a5}
+    .update-entry-head{display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin-bottom:6px}
+    .update-entry h3{margin:0;font-size:16px}
+    .update-chip{font-size:11px;padding:3px 9px;border-radius:999px;
+      background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.08);
+      color:#c9c2ba;letter-spacing:.06em;text-transform:uppercase}
+    .update-when{margin-left:auto;font-size:12px;color:var(--muted,#a9a29a)}
+    .update-entry p{margin:0;color:var(--muted,#a9a29a);font-size:14px;line-height:1.55}
+    @media (prefers-reduced-motion:reduce){.update-entry{transition:none}
+      .update-entry:hover{transform:none}}
 </style>
   <style>
     /* Live counters. Values tween between polls so the number moves smoothly
@@ -334,7 +381,7 @@
 
 <section class="page" id="premium"><div class="page-head"><div><span class="eyebrow">Billy Premium</span><h1>More room to grow.</h1><p>Every safety feature stays free, always. Premium raises the limits on the things big servers run out of.</p></div><div class="head-actions"><button class="button" id="premiumRefresh">Refresh</button></div></div><div id="premiumState"></div><div class="plan-grid"><article class="plan" id="planFree"><header><h3>Free</h3><div class="plan-price">$0<span>/month</span></div><p>Everything a server needs to run safely.</p></header><ul class="plan-list" id="freeList"></ul><div class="plan-detail"><p><b>What you get</b> — every safety feature Billy has, with no limits on protection: AutoMod, anti-raid, anti-nuke, verification, honeypots, warnings, timeouts, bans, tickets and appeals.</p><p><b>Where it stops</b> — 15 knowledge sources, 50 blocked words, 3 giveaways at once, 2 role panels, 15 custom commands, 3 scheduled events.</p></div><footer><span class="plan-current" id="freeCurrent">Current plan</span></footer></article><article class="plan featured" id="planPremium"><span class="plan-flag">Recommended</span><header><h3>Premium</h3><div class="plan-price" id="premiumPrice">—<span>/month</span></div><p>For communities that have outgrown the free limits.</p></header><ul class="plan-list" id="premiumList"></ul><div class="plan-detail"><p><b>Everything in Free</b>, then more room: 100 knowledge sources, 500 blocked words, 25 giveaways, 20 role panels, 150 custom commands and 30 scheduled events.</p><p><b>Also included</b> — priority AI when Billy is busy, your own embed colour, and longer history in recaps and exports.</p><p>Protection is never part of the paid plan. A server that cannot pay is never a less safe server.</p></div><footer><button class="button amber plan-cta" id="premiumUpgrade">Upgrade this server</button><small class="plan-note" id="premiumNote"></small></footer></article></div><article class="panel"><header class="panel-head"><div><h2>What Premium does not change</h2><span>Protection is never paywalled</span></div></header><div class="panel-body"><ul class="plan-list plain"><li>AutoMod spam, mention, caps, and blocked-word filters</li><li>Anti-raid detection, lockdown, and the verification gate</li><li>Anti-nuke protection against a compromised staff account</li><li>Warnings, timeouts, bans, tickets, and moderation logs</li></ul><p class="field-hint">A server that cannot pay is never a less safe server.</p></div></article></section>
 
-<section class="page" id="updates"><div class="page-head"><div><span class="eyebrow">Changelog</span><h1>What's new in Billy.</h1><p>Every bot update, dashboard change, and patch note staff publish with <code>/updates post</code> appears here automatically.</p></div><div class="head-actions"><button class="button" id="updatesRefresh">Refresh</button></div></div><div class="update-filters" id="updateFilters"></div><article class="panel"><header class="panel-head"><div><h2>Update log</h2><span id="updatesSubtitle">Loading Billy's published updates…</span></div></header><div class="panel-body" id="updateFeed"><div class="empty-note"><strong>Loading updates</strong>Billy is fetching the published changelog.</div></div></article></section>
+<section class="page" id="updates"><div class="page-head"><div><span class="eyebrow">Changelog</span><h1>What's new in Billy.</h1><p>Every bot update, dashboard change and fix, recorded as it ships.</p></div><div class="head-actions"><button class="button" id="updatesRefresh">Refresh</button></div></div><section class="countdown-card" id="countdownCard" hidden><div class="countdown-top"><span class="countdown-kicker" id="countdownKicker">Next update</span><span class="countdown-version" id="countdownVersion"></span></div><h2 class="countdown-title" id="countdownTitle"></h2><p class="countdown-note" id="countdownNote"></p><div class="countdown-clock" id="countdownClock"><div class="countdown-unit"><strong id="cdDays">00</strong><span>DAY</span></div><i class="countdown-sep">:</i><div class="countdown-unit"><strong id="cdHours">00</strong><span>HRS</span></div><i class="countdown-sep">:</i><div class="countdown-unit"><strong id="cdMins">00</strong><span>MIN</span></div><i class="countdown-sep">:</i><div class="countdown-unit"><strong id="cdSecs">00</strong><span>SEC</span></div></div><p class="countdown-when" id="countdownWhen"></p></section><div class="update-filters" id="updateFilters"></div><article class="panel"><header class="panel-head"><div><h2>Update log</h2><span id="updatesSubtitle">Loading Billy's published updates…</span></div></header><div class="panel-body" id="updateFeed"><div class="empty-note"><strong>Loading updates</strong>Billy is fetching the published changelog.</div></div></article></section>
 
 <section class="page" id="team"><div class="page-head"><div><span class="eyebrow">Who builds Billy</span><h1>The people behind it.</h1><p>A small team running Billy for real communities.</p></div></div><div class="team-grid"><article class="team-card"><div class="team-avatar"><img src="/team/adrian.png" alt=""/></div><h3 class="team-name">Adrian</h3><p class="team-role">Founder &amp; Developer</p><div class="team-tags"><span class="team-tag">Billy</span><span class="team-tag">Backend</span><span class="team-tag">Community</span></div></article><article class="team-card"><div class="team-avatar"><img src="/team/josh.png" alt=""/></div><h3 class="team-name">Josh</h3><p class="team-role">Community Manager</p><div class="team-tags"><span class="team-tag">Community</span><span class="team-tag">Support</span></div></article><article class="team-card"><div class="team-avatar"><img src="/team/isaiah.png" alt=""/></div><h3 class="team-name">Isaiah</h3><p class="team-role">Community Manager</p><div class="team-tags"><span class="team-tag">Community</span><span class="team-tag">Support</span></div></article></div></section><section class="page" id="settings"><div class="page-head"><div><span class="eyebrow">Server configuration</span><h1>Billy, your way.</h1><p>Only administrators can change these settings for <span class="server-name">Billy The AI • Official</span>.</p></div><button class="button amber" id="saveSettings">Save changes</button></div><article class="panel"><header class="panel-head"><div><h2>Core settings</h2><span>Saved separately for every server you manage</span></div></header><div class="panel-body"><div class="setting-row"><div><b>Question channel</b><small>Billy answers support questions here even when not directly mentioned</small></div><select class="field" id="questionChannel"><option value="">Choose a channel</option></select></div><div class="setting-row"><div><b>Response style</b><small>Choose how Billy normally answers in this server</small></div><select class="field" id="responseStyle"><option value="balanced">Balanced</option><option value="concise">Concise</option><option value="friendly">Friendly</option><option value="detailed">Detailed</option></select></div><div class="setting-row"><div><b>Automatic knowledge updates</b><small>Keep approved knowledge channels in sync without requiring /rescan</small></div><button class="switch on" id="automaticKnowledge" aria-label="Toggle automatic knowledge updates" aria-pressed="true"></button></div><div class="setting-row"><div><b>Human-only moderation decisions</b><small>Billy can organize evidence but never punish a member automatically</small></div><button class="switch on" id="humanModeration" aria-label="Toggle human-only moderation decisions" aria-pressed="true"></button></div><div class="setting-row"><div><b>Timezone</b><small>Used for streak resets, scheduled events, and summaries. Search a country, city, or US state — or pick an exact IANA zone from the list.</small></div><div class="timezone-helper"><input class="field" id="timezoneLookup" list="timezoneAliasList" placeholder="Search: Puerto Rico, Texas, Tokyo…" autocomplete="off"/><select class="field" id="timezone"><option value="UTC">UTC</option></select><small class="timezone-status" id="timezoneLookupStatus" role="status" aria-live="polite"></small></div></div><datalist id="timezoneAliasList"></datalist></div></article></section>
 
@@ -1453,8 +1500,8 @@ setOverviewText('moderationFalsePositivesNote',falsePositives?'Reviews staff dis
     }
     document.addEventListener('click',event=>{const control=event.target.closest('.demo-action');if(!control)return;event.preventDefault();event.stopImmediatePropagation();runAction(control)},true);
     /* ---- Update log -------------------------------------------------
-       Reads the changelog Billy publishes with /updates post. It is public
-       read-only data, so it loads without a Discord session. */
+       Reads the changelog Billy records as each release ships. It is public
+       read-only data, so it loads without a Discord session.*/
     const UPDATE_KINDS={bot:'Bot update',dashboard:'Dashboard',patch:'Patch notes',fix:'Fix',announcement:'Announcement'};
     let updateEntries=[],updateFilter='all';
     function updateWhen(value){
@@ -1483,7 +1530,7 @@ setOverviewText('moderationFalsePositivesNote',falsePositives?'Reviews staff dis
       const rows=updateFilter==='all'?updateEntries:updateEntries.filter(entry=>(entry.category||'bot')===updateFilter);
       feed.replaceChildren();
       if(!rows.length){
-        feed.append(makeEmptyNote('No updates published yet',"Staff publish these with /updates post in Discord. They appear here the moment they're posted."));
+        feed.append(makeEmptyNote('No updates published yet',"Billy records each release as it ships, and they appear here automatically."));
         return
       }
       const list=document.createElement('div');list.className='update-feed';
@@ -1509,6 +1556,55 @@ setOverviewText('moderationFalsePositivesNote',falsePositives?'Reviews staff dis
       });
       feed.append(list);
     }
+
+    /* Ticking release countdown. The server sends its own clock alongside the
+       release time, so a viewer whose computer clock is wrong still sees the
+       right number instead of a nonsense one. */
+    let countdownTarget=null,countdownTimer=null,countdownSkewMs=0;
+    function pad(value){return String(Math.max(0,value)).padStart(2,'0')}
+    function tickCountdown(){
+      const card=document.getElementById('countdownCard');
+      if(!card||!countdownTarget)return;
+      const now=Date.now()+countdownSkewMs;
+      let remaining=Math.floor((countdownTarget-now)/1000);
+      const releasing=remaining<=0;
+      card.classList.toggle('releasing',releasing);
+      if(releasing)remaining=0;
+      const days=Math.floor(remaining/86400);
+      const hours=Math.floor(remaining%86400/3600);
+      const mins=Math.floor(remaining%3600/60);
+      const secs=remaining%60;
+      document.getElementById('cdDays').textContent=pad(days);
+      document.getElementById('cdHours').textContent=pad(hours);
+      document.getElementById('cdMins').textContent=pad(mins);
+      document.getElementById('cdSecs').textContent=pad(secs);
+      const kicker=document.getElementById('countdownKicker');
+      if(kicker)kicker.textContent=releasing?'Releasing now':'Next update';
+    }
+    function showCountdown(upcoming,serverTime){
+      const card=document.getElementById('countdownCard');
+      if(!card)return;
+      if(countdownTimer){clearInterval(countdownTimer);countdownTimer=null}
+      if(!upcoming||!upcoming.release_at){card.hidden=true;countdownTarget=null;return}
+      const target=Date.parse(upcoming.release_at);
+      if(Number.isNaN(target)){card.hidden=true;return}
+      countdownTarget=target;
+      const server=serverTime?Date.parse(serverTime):NaN;
+      countdownSkewMs=Number.isNaN(server)?0:server-Date.now();
+      document.getElementById('countdownTitle').textContent=upcoming.title||'Next update';
+      const version=document.getElementById('countdownVersion');
+      version.textContent=upcoming.version?'v'+upcoming.version:'';
+      version.hidden=!upcoming.version;
+      const note=document.getElementById('countdownNote');
+      note.textContent=upcoming.note||'';
+      note.hidden=!upcoming.note;
+      const when=document.getElementById('countdownWhen');
+      when.textContent='Planned for '+new Date(target).toLocaleString(undefined,
+        {dateStyle:'full',timeStyle:'short'})+' your time';
+      card.hidden=false;
+      tickCountdown();
+      countdownTimer=setInterval(tickCountdown,1000);
+    }
     async function loadUpdates(){
       const subtitle=document.getElementById('updatesSubtitle'),badge=document.getElementById('updatesCount');
       if(!apiBase){
@@ -1519,6 +1615,7 @@ setOverviewText('moderationFalsePositivesNote',falsePositives?'Reviews staff dis
         const response=await fetch(apiBase+'/api/updates?limit=50',{cache:'no-store'});
         const data=await response.json();
         updateEntries=Array.isArray(data.updates)?data.updates:[];
+        showCountdown(data.upcoming,data.server_time);
         if(subtitle)subtitle.textContent=updateEntries.length?updateEntries.length+' published update'+(updateEntries.length===1?'':'s'):'Nothing published yet';
         if(badge)badge.textContent=updateEntries.length?String(updateEntries.length):'';
         renderUpdateFilters();renderUpdateFeed();
