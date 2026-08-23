@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>Is Billy working?</title>
+<meta name="description" content="Live status for Billy The AI — whether Billy is answering, remembering, and connected to Discord."/>
+<link rel="icon" href="/favicon.svg"/>
+<style>
+  @font-face{font-family:CuteDino;src:url('/fonts/Cute-Dino.otf') format('opentype');font-display:swap}
+  :root{
+    --bg:#0c0b09; --surface:#15130f; --surface-2:#1c1812; --line:#312a1f;
+    --line-soft:#242018; --cream:#fff8ec; --muted:#aaa397; --amber:#e9a65c;
+    --amber-2:#ffd49f; --green:#6fe0a5; --red:#ff7f79; --blue:#87bfff;
+  }
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--bg);color:var(--cream);
+    font-family:'Segoe UI',system-ui,-apple-system,sans-serif;
+    -webkit-font-smoothing:antialiased}
+  .wrap{max-width:760px;margin:0 auto;padding:56px 20px 80px}
+  .brand{display:flex;align-items:center;gap:12px;margin-bottom:44px}
+  .brand img{width:40px;height:40px;border-radius:11px}
+  .brand b{font-family:CuteDino,'Segoe UI',sans-serif;font-weight:400;font-size:21px;
+    letter-spacing:.02em}
+  .brand span{color:var(--muted);font-size:11px;letter-spacing:.18em;text-transform:uppercase;
+    display:block;margin-top:2px}
+
+  /* The headline answers the question people came to ask, before any detail. */
+  .headline{display:flex;align-items:center;gap:16px;padding:26px 24px;border-radius:20px;
+    border:1px solid var(--line);background:var(--surface);margin-bottom:14px}
+  .beacon{width:15px;height:15px;border-radius:50%;background:var(--muted);flex:none}
+  .beacon.up{background:var(--green);box-shadow:0 0 0 6px rgba(111,224,165,.14)}
+  .beacon.down{background:var(--red);box-shadow:0 0 0 6px rgba(255,127,121,.14)}
+  .headline h1{margin:0;font-family:CuteDino,'Segoe UI',sans-serif;font-weight:400;
+    font-size:clamp(23px,4.4vw,31px);letter-spacing:.01em}
+  .headline p{margin:5px 0 0;color:var(--muted);font-size:13px}
+
+  .parts{display:grid;gap:10px;margin-bottom:22px}
+  .part{display:flex;align-items:center;gap:14px;padding:16px 18px;border-radius:15px;
+    border:1px solid var(--line-soft);background:rgba(255,255,255,.02)}
+  .dot{width:10px;height:10px;border-radius:50%;background:var(--muted);flex:none}
+  .dot.up{background:var(--green)} .dot.down{background:var(--red)}
+  .part b{font-size:15px;font-weight:600} .part small{color:var(--muted);font-size:12.5px}
+  .part div{min-width:0}
+
+  .facts{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:10px}
+  .fact{padding:15px 17px;border-radius:15px;border:1px solid var(--line-soft);
+    background:rgba(255,255,255,.02)}
+  .fact b{display:block;font-size:20px;margin-bottom:3px}
+  .fact small{color:var(--muted);font-size:11px;letter-spacing:.1em;text-transform:uppercase}
+
+  footer{margin-top:30px;color:var(--muted);font-size:12.5px;line-height:1.7}
+  footer a{color:var(--amber-2)}
+  .skeleton{color:var(--muted)}
+  @media (prefers-reduced-motion:no-preference){
+    .beacon.up{animation:pulse 2.6s ease-in-out infinite}
+    @keyframes pulse{0%,100%{opacity:1}50%{opacity:.55}}
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="brand">
+    <img src="/billy-icon.webp" alt=""/>
+    <div><b>Billy The AI</b><span>Status</span></div>
+  </div>
+
+  <section class="headline">
+    <div class="beacon" id="beacon"></div>
+    <div>
+      <h1 id="headline">Checking…</h1>
+      <p id="subline">Asking Billy how he is doing.</p>
+    </div>
+  </section>
+
+  <div class="parts" id="parts">
+    <div class="part"><span class="dot"></span><div><b class="skeleton">Loading…</b></div></div>
+  </div>
+
+  <div class="facts" id="facts"></div>
+
+  <footer>
+    <p id="checked">—</p>
+    <p>This page asks Billy directly every 30 seconds and is never cached, so it
+       cannot show "working" while he is down.
+       <a href="/dashboard/">Control room</a> · <a href="/">Home</a></p>
+  </footer>
+</div>
+
+<script>
+const API = "https://billyserverai.duckdns.org/api/status";
+
+function ago(iso){
+  if(!iso) return "";
+  const seconds = Math.max(0, (Date.now() - Date.parse(iso)) / 1000);
+  if(seconds < 90) return Math.round(seconds) + "s ago";
+  if(seconds < 5400) return Math.round(seconds / 60) + " min ago";
+  if(seconds < 172800) return Math.round(seconds / 3600) + "h ago";
+  return Math.round(seconds / 86400) + " days ago";
+}
+
+function since(iso){
+  if(!iso) return "unknown";
+  const seconds = Math.max(0, (Date.now() - Date.parse(iso)) / 1000);
+  if(seconds < 5400) return Math.round(seconds / 60) + " min";
+  if(seconds < 172800) return Math.round(seconds / 3600) + " hours";
+  return Math.round(seconds / 86400) + " days";
+}
+
+function render(data){
+  const ok = !!data.ok;
+  const beacon = document.getElementById("beacon");
+  beacon.className = "beacon " + (ok ? "up" : "down");
+  document.getElementById("headline").textContent =
+    ok ? "Billy is working." : "Billy is having trouble.";
+  document.getElementById("subline").textContent = ok
+    ? "Everything is responding normally."
+    : "Something below is not responding. Staff can see the detail in the control room.";
+
+  document.getElementById("parts").innerHTML = (data.parts || []).map(part => `
+    <div class="part">
+      <span class="dot ${part.ok ? "up" : "down"}"></span>
+      <div><b>${escapeHtml(part.name)}</b><br><small>${escapeHtml(part.note || "")}</small></div>
+    </div>`).join("");
+
+  const facts = [];
+  if(data.servers) facts.push(["Servers", data.servers.toLocaleString()]);
+  if(data.awake_since) facts.push(["Awake for", since(data.awake_since)]);
+  if(data.last_backup) facts.push(["Last backup", ago(data.last_backup)]);
+  document.getElementById("facts").innerHTML = facts.map(([label, value]) => `
+    <div class="fact"><b>${escapeHtml(String(value))}</b><small>${escapeHtml(label)}</small></div>
+  `).join("");
+
+  document.getElementById("checked").textContent = "Checked " + ago(data.checked_at) + ".";
+}
+
+/* Billy's own words go on the page, so they are escaped rather than trusted. */
+function escapeHtml(text){
+  return String(text).replace(/[&<>"']/g, c => (
+    {"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]
+  ));
+}
+
+async function check(){
+  try{
+    const response = await fetch(API + "?t=" + Date.now(), {cache:"no-store"});
+    if(!response.ok) throw new Error("HTTP " + response.status);
+    render(await response.json());
+  }catch(error){
+    /* Unreachable is itself an answer, and the honest one: if this page cannot
+       reach Billy, neither can Discord. */
+    document.getElementById("beacon").className = "beacon down";
+    document.getElementById("headline").textContent = "Billy cannot be reached.";
+    document.getElementById("subline").textContent =
+      "The status service did not answer. Billy is most likely offline.";
+    document.getElementById("parts").innerHTML =
+      '<div class="part"><span class="dot down"></span><div><b>No answer from Billy</b><br>' +
+      '<small>' + escapeHtml(String(error.message || error)) + '</small></div></div>';
+    document.getElementById("facts").innerHTML = "";
+    document.getElementById("checked").textContent = "Last tried just now.";
+  }
+}
+
+check();
+setInterval(check, 30000);
+</script>
+</body>
+</html>
