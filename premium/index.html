@@ -1,0 +1,215 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>Billy Premium</title>
+<meta name="description" content="Billy Premium - more answers, staff tools and a link to your game. Every safety feature stays free, in every server, forever."/>
+<link rel="icon" href="/favicon.svg"/>
+<meta property="og:title" content="Billy Premium"/>
+<meta property="og:description" content="More answers and less work for your staff. Safety is never sold."/>
+<meta property="og:image" content="/og.png"/>
+<style>
+  @font-face{font-family:CuteDino;src:url('/fonts/Cute-Dino.otf') format('opentype');font-display:swap}
+  :root{
+    --bg:#0c0b09; --surface:#15130f; --surface-2:#1c1812; --line:#312a1f;
+    --line-soft:#242018; --cream:#fff8ec; --muted:#aaa397; --amber:#e9a65c;
+    --amber-2:#ffd49f; --green:#6fe0a5;
+  }
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--bg);color:var(--cream);
+    font-family:'Segoe UI',system-ui,-apple-system,sans-serif;-webkit-font-smoothing:antialiased}
+  a{color:var(--amber-2)}
+  .wrap{max-width:1000px;margin:0 auto;padding:56px 20px 90px}
+
+  .brand{display:flex;align-items:center;gap:12px;margin-bottom:42px}
+  .brand img{width:40px;height:40px;border-radius:11px}
+  .brand b{font-family:CuteDino,'Segoe UI',sans-serif;font-weight:400;font-size:21px;
+    letter-spacing:.02em}
+  .brand span{color:var(--muted);font-size:11px;letter-spacing:.18em;text-transform:uppercase;
+    display:block;margin-top:2px}
+
+  h1{font-family:CuteDino,'Segoe UI',sans-serif;font-weight:400;
+    font-size:clamp(30px,6vw,46px);margin:0 0 12px;letter-spacing:.01em}
+  .lede{color:var(--muted);font-size:16px;max-width:640px;line-height:1.65;margin:0 0 38px}
+
+  .plans{display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:18px;
+    margin-bottom:44px;align-items:stretch}
+  .plan{border:1px solid var(--line);border-radius:20px;background:var(--surface);
+    padding:28px 25px;display:flex;flex-direction:column}
+  .plan.paid{border-color:rgba(233,166,92,.45);
+    background:radial-gradient(130% 130% at 50% -25%,rgba(233,166,92,.13),var(--surface))}
+  .kicker{font-size:11px;letter-spacing:.16em;text-transform:uppercase;color:var(--muted);
+    font-weight:700}
+  .plan.paid .kicker{color:var(--amber)}
+  .plan h2{font-family:CuteDino,'Segoe UI',sans-serif;font-weight:400;font-size:28px;
+    margin:9px 0 2px}
+  .price{font-family:CuteDino,'Segoe UI',sans-serif;font-size:42px;margin:8px 0 0;
+    line-height:1.1}
+  .price small{font-family:'Segoe UI',sans-serif;font-size:13px;color:var(--muted);
+    margin-left:7px;letter-spacing:.01em}
+  .plan p.sub{color:var(--muted);font-size:14px;line-height:1.6;margin:12px 0 20px}
+  ul{list-style:none;padding:0;margin:0 0 24px}
+  li{padding:7px 0 7px 25px;position:relative;font-size:14.5px;line-height:1.55}
+  li::before{content:'';position:absolute;left:5px;top:15px;width:7px;height:7px;
+    border-radius:50%;background:var(--green)}
+  .plan.paid li::before{background:var(--amber)}
+  li b{font-weight:700}
+
+  .cta{display:block;text-align:center;padding:15px 18px;border-radius:13px;font-weight:800;
+    font-size:15px;text-decoration:none;margin-top:auto;transition:background .15s ease}
+  .cta.primary{background:var(--amber);color:#2a1c0c}
+  .cta.primary:hover{background:var(--amber-2)}
+  .cta.ghost{border:1px solid var(--line);color:var(--cream)}
+  .cta.ghost:hover{background:var(--surface-2)}
+  .cta.pending{background:var(--surface-2);border:1px solid var(--line);color:var(--muted);
+    cursor:default}
+  .under{text-align:center;color:var(--muted);font-size:12.5px;margin:10px 0 0;line-height:1.55}
+
+  .free-note{border:1px solid rgba(111,224,165,.3);background:rgba(111,224,165,.06);
+    border-radius:19px;padding:24px 26px;margin-bottom:44px}
+  .free-note h3{margin:0 0 9px;font-size:17.5px}
+  .free-note p{margin:0;color:var(--muted);font-size:14.5px;line-height:1.65}
+  .free-note b{color:var(--cream)}
+
+  h3.section{font-family:CuteDino,'Segoe UI',sans-serif;font-weight:400;font-size:25px;
+    margin:0 0 18px}
+  .faq{display:grid;gap:12px;margin-bottom:40px}
+  .faq div{border:1px solid var(--line-soft);border-radius:15px;padding:17px 19px;
+    background:rgba(255,255,255,.02)}
+  .faq b{display:block;margin-bottom:6px;font-size:15px}
+  .faq span{color:var(--muted);font-size:14px;line-height:1.65}
+
+  footer{border-top:1px solid var(--line-soft);padding-top:22px;color:var(--muted);
+    font-size:13px;line-height:1.8}
+  footer a{color:var(--muted);text-decoration:none}
+  footer a:hover{color:var(--cream)}
+  @media (max-width:640px){.wrap{padding:36px 16px 70px}}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="brand">
+    <img src="/billy-icon.webp" alt=""/>
+    <div><b>Billy The AI</b><span>Premium</span></div>
+  </div>
+
+  <h1>Billy Premium</h1>
+  <p class="lede">
+    More answers, tools that save your staff hours, and a direct link between Billy and your
+    game. Everything that keeps your server and its members safe stays free &mdash; on every
+    plan, in every server, permanently.
+  </p>
+
+  <div class="plans">
+    <section class="plan">
+      <span class="kicker">Free</span>
+      <h2>Core</h2>
+      <div class="price">$0<small>/ forever</small></div>
+      <p class="sub">Everything a community needs to run safely. No trial, no card, no expiry.</p>
+      <ul>
+        <li><b>150 Billy answers a day</b></li>
+        <li>Anti-raid, honeypot traps and lockdown</li>
+        <li>Scam reports and the staff watchlist</li>
+        <li>Warnings, timeouts, kicks and bans</li>
+        <li>Tickets, appeals and transcripts</li>
+        <li>Levels, leaderboards, giveaways and events</li>
+        <li>Billy learns your server and answers questions</li>
+        <li>Nightly backups of everything he knows</li>
+      </ul>
+      <a class="cta ghost" href="/">Add Billy free</a>
+      <p class="under">Already what most servers ever need.</p>
+    </section>
+
+    <section class="plan paid">
+      <span class="kicker">Billy Premium</span>
+      <h2>Community Pro</h2>
+      <div class="price">$4.99<small>/ server / month</small></div>
+      <p class="sub">For servers where staff time, not features, is the thing in short supply.</p>
+      <ul>
+        <li><b>1,500 Billy answers a day</b> &mdash; ten times the free share</li>
+        <li>Billy writes ticket replies for staff to send with one press</li>
+        <li>Alerts when a ticket has been waiting too long</li>
+        <li>Connect your game: look up players, check bans, verify accounts</li>
+        <li>Staff reports &mdash; time saved, what gets used, shift handover</li>
+        <li>Your own colours on Billy's embeds</li>
+        <li>Priority answers when Billy is busy</li>
+      </ul>
+      <a class="cta pending" id="buy" href="#" aria-disabled="true">Checkout opening soon</a>
+      <p class="under" id="buy-note">
+        Payment is handled by Discord. Cancel any time.
+      </p>
+    </section>
+  </div>
+
+  <div class="free-note">
+    <h3>Safety is never sold</h3>
+    <p>
+      Anti-raid, honeypot traps, lockdown, raid cleanup, scam reports, the watchlist,
+      warnings, bans, member history, the evidence vault and backups are
+      <b>free in every server, permanently</b>. A community should never be less protected
+      because it cannot pay, and a bot that holds safety hostage does not deserve to be
+      installed. Premium is scale and staff time &mdash; never protection.
+    </p>
+  </div>
+
+  <h3 class="section">Questions</h3>
+  <div class="faq">
+    <div><b>What happens when the free answers run out?</b><span>
+      Billy says so once, then goes quiet until midnight UTC rather than repeating himself.
+      Moderation, tickets, protection and every other feature keep working exactly as normal
+      &mdash; only the AI answers pause.</span></div>
+    <div><b>Is it per server or per account?</b><span>
+      Per server. Premium applies to the one server you buy it for, and the allowance is
+      counted per server so one busy community can never spend another's share.</span></div>
+    <div><b>Can I cancel?</b><span>
+      Any time. The server drops back to the free plan at the end of the period, and nothing
+      you have set up, taught Billy, or logged is deleted.</span></div>
+    <div><b>Does Billy stop working without premium?</b><span>
+      No. Free is a real plan, not a trial. Most servers never need more than it.</span></div>
+    <div><b>Where do I actually pay?</b><span>
+      Inside Discord. Run <code>/premium buy</code> in your server and Discord takes the
+      payment on its own screens, with the card you already have on file. This site never
+      sees, handles or stores card details.</span></div>
+    <div><b>How do I turn it on after paying?</b><span>
+      You don't. Billy is told the moment the payment goes through and switches premium on
+      by himself &mdash; and he checks again every hour, so a purchase made while he was
+      restarting still lands. Run <code>/premium compare</code> to see the plan and today's
+      answer count.</span></div>
+  </div>
+
+  <footer>
+    <a href="/">Home</a> &middot; <a href="/commands/">Commands</a> &middot;
+    <a href="/dashboard/">Control room</a> &middot; <a href="/status/">Status</a> &middot;
+    <a href="/terms/">Terms</a> &middot; <a href="/privacy/">Privacy</a>
+    <br/>Prices in USD. Billing and card handling are done entirely by our payment provider.
+  </footer>
+</div>
+
+<script>
+/* Billing runs through Discord, so the purchase happens inside Discord itself
+   and nothing on this site ever touches a card number. There is no checkout
+   URL to paste: the button simply points people at the command that opens
+   Discord's own purchase screen.
+
+   Flip this to true once DISCORD_PREMIUM_SKU_ID is set on the bot and
+   monetization is live. Until then the button stays honest rather than
+   promising a purchase that would fail. */
+const BILLING_LIVE = false;
+
+(function () {
+  var button = document.getElementById("buy");
+  var note = document.getElementById("buy-note");
+  if (!button || !BILLING_LIVE) return;
+  button.textContent = "Get Billy Premium";
+  button.href = "/";
+  button.className = "cta primary";
+  button.removeAttribute("aria-disabled");
+  if (note) {
+    note.innerHTML = "Run <code>/premium buy</code> in your server. "
+      + "Payment is handled by Discord — cancel any time.";
+  }
+})();
+</script>
+</body>
+</html>
