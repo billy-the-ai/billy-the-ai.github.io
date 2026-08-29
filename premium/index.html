@@ -137,7 +137,7 @@
       </ul>
       <a class="cta pending" id="buy" href="#" aria-disabled="true">Checkout opening soon</a>
       <p class="under" id="buy-note">
-        Payment is handled by Discord. Cancel any time.
+        Google Pay, PayPal, Apple Pay or card. Cancel any time.
       </p>
     </section>
   </div>
@@ -167,10 +167,10 @@
       you have set up, taught Billy, or logged is deleted.</span></div>
     <div><b>Does Billy stop working without premium?</b><span>
       No. Free is a real plan, not a trial. Most servers never need more than it.</span></div>
-    <div><b>Where do I actually pay?</b><span>
-      Inside Discord. Run <code>/premium buy</code> in your server and Discord takes the
-      payment on its own screens, with the card you already have on file. This site never
-      sees, handles or stores card details.</span></div>
+    <div><b>How can I pay?</b><span>
+      Google Pay, PayPal, Apple Pay or any major card. Run <code>/premium buy</code> in your
+      server and Billy hands you a secure checkout page hosted by our payment provider &mdash;
+      this site never sees, handles or stores card details.</span></div>
     <div><b>How do I turn it on after paying?</b><span>
       You don't. Billy is told the moment the payment goes through and switches premium on
       by himself &mdash; and he checks again every hour, so a purchase made while he was
@@ -187,10 +187,11 @@
 </div>
 
 <script>
-/* Billing runs through Discord, so the purchase happens inside Discord itself
-   and nothing on this site ever touches a card number. There is no checkout
-   URL to paste: the button simply points people at the command that opens
-   Discord's own purchase screen.
+/* Checkout is hosted by the payment provider, which is what makes Google Pay,
+   PayPal and Apple Pay available without this site ever touching a card
+   number. There is no checkout URL to paste here: each link is generated per
+   server so the payment can be matched back to the server that made it, which
+   is why the button points at the command rather than a fixed address.
 
    Flip this to true once DISCORD_PREMIUM_SKU_ID is set on the bot and
    monetization is live. Until then the button stays honest rather than
@@ -207,7 +208,7 @@ const BILLING_LIVE = false;
   button.removeAttribute("aria-disabled");
   if (note) {
     note.innerHTML = "Run <code>/premium buy</code> in your server. "
-      + "Payment is handled by Discord — cancel any time.";
+      + "Google Pay, PayPal, Apple Pay or card — cancel any time.";
   }
 })();
 </script>
