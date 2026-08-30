@@ -1,0 +1,132 @@
+/* Billy motion layer
+ *
+ * Additive only. The site already animates a fair amount -- thirteen keyframe
+ * sets, a status ribbon, tilting cards -- so this deliberately does not touch
+ * any of that. It adds the things Monkey Doo's site does that Billy's did not:
+ * bold repeating section bands, depth that moves with the scroll, numbers that
+ * count themselves up, and buttons that answer a press.
+ *
+ * Everything here is scoped under its own class names so it cannot collide
+ * with the existing stylesheet, and every effect is switched off wholesale for
+ * anyone who has asked their system for less motion.
+ */
+
+/* ---------------------------------------------------------------- bands --
+ * A wide strip of repeating words between sections. It reads as a graphic
+ * rather than as text, which is what makes it work as a divider.
+ * Two copies of the row are laid end to end and the pair is translated by
+ * exactly half its width, so the loop has no seam.
+ */
+.billy-band {
+  --billy-band-speed: 26s;
+  overflow: hidden;
+  border-block: 1px solid rgba(233, 166, 92, 0.22);
+  background: linear-gradient(90deg,
+    rgba(233, 166, 92, 0.06), rgba(233, 166, 92, 0.13), rgba(233, 166, 92, 0.06));
+  padding: 14px 0;
+  margin: 64px 0;
+  -webkit-mask-image: linear-gradient(90deg, transparent, #000 9%, #000 91%, transparent);
+          mask-image: linear-gradient(90deg, transparent, #000 9%, #000 91%, transparent);
+}
+
+.billy-band__row {
+  display: flex;
+  width: max-content;
+  gap: 42px;
+  padding-right: 42px;
+  animation: billy-band-scroll var(--billy-band-speed) linear infinite;
+}
+
+.billy-band:hover .billy-band__row { animation-play-state: paused; }
+
+.billy-band b {
+  font-size: clamp(19px, 3.1vw, 34px);
+  font-weight: 800;
+  letter-spacing: 0.045em;
+  text-transform: uppercase;
+  color: rgba(255, 248, 236, 0.16);
+  white-space: nowrap;
+  -webkit-text-stroke: 1px rgba(233, 166, 92, 0.42);
+}
+
+/* Every third word is solid, so the strip has rhythm instead of reading as
+   one long grey smear. */
+.billy-band b:nth-child(3n + 1) {
+  color: rgba(233, 166, 92, 0.92);
+  -webkit-text-stroke: 0;
+}
+
+@keyframes billy-band-scroll {
+  from { transform: translate3d(0, 0, 0); }
+  to   { transform: translate3d(-50%, 0, 0); }
+}
+
+/* --------------------------------------------------------------- reveal --
+ * Sections rise into place as they enter the viewport. Done with a
+ * scroll-driven timeline where the browser supports one, so there is no
+ * scroll listener and nothing to throttle. Browsers without it are given the
+ * finished state immediately -- never a blank section.
+ */
+.billy-reveal { opacity: 1; }
+
+@supports (animation-timeline: view()) {
+  .billy-reveal {
+    opacity: 0.001;
+    animation: billy-rise linear both;
+    animation-timeline: view();
+    animation-range: entry 8% cover 34%;
+  }
+}
+
+@keyframes billy-rise {
+  from { opacity: 0.001; transform: translate3d(0, 26px, 0) scale(0.985); }
+  to   { opacity: 1;     transform: none; }
+}
+
+/* ------------------------------------------------------------- parallax --
+ * Depth on scroll. The transform is written by script into a custom property
+ * so the compositor does the work and layout is never touched.
+ */
+.billy-parallax {
+  will-change: transform;
+  transform: translate3d(0, var(--billy-shift, 0px), 0);
+}
+
+/* ---------------------------------------------------------------- float --
+ * A slow idle drift, for a mascot or a badge that should not sit dead still.
+ */
+.billy-float { animation: billy-drift 6.5s ease-in-out infinite; }
+
+@keyframes billy-drift {
+  0%, 100% { transform: translate3d(0, 0, 0) rotate(-0.6deg); }
+  50%      { transform: translate3d(0, -11px, 0) rotate(0.6deg); }
+}
+
+/* --------------------------------------------------------------- press --
+ * Buttons that answer. Lift on hover, and genuinely go down on press --
+ * the missing half of the interaction on most sites.
+ */
+.billy-press {
+  transition: transform 0.16s cubic-bezier(0.2, 0.8, 0.3, 1), box-shadow 0.16s ease;
+}
+.billy-press:hover { transform: translateY(-2px); }
+.billy-press:active { transform: translateY(1px) scale(0.985); transition-duration: 0.05s; }
+
+/* --------------------------------------------------------------- count --
+ * Numbers hold their final width while counting, so the line beside them
+ * cannot jitter as digits change.
+ */
+.billy-count { font-variant-numeric: tabular-nums; }
+
+/* ------------------------------------------------------------ reduced --
+ * One switch, honoured for everything above. Motion is a preference, and a
+ * site that ignores it is unusable for the people who set it.
+ */
+@media (prefers-reduced-motion: reduce) {
+  .billy-band__row { animation: none; transform: none; }
+  .billy-float { animation: none; }
+  .billy-parallax { transform: none; }
+  .billy-press { transition: none; }
+  .billy-press:hover, .billy-press:active { transform: none; }
+  .billy-reveal { opacity: 1 !important; transform: none !important; animation: none !important; }
+}

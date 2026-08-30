@@ -6,6 +6,7 @@
 <title>Billy Premium</title>
 <meta name="description" content="Billy Premium - more answers, staff tools and a link to your game. Every safety feature stays free, in every server, forever."/>
 <link rel="icon" href="/favicon.svg"/>
+<link rel="stylesheet" href="/motion.css"/>
 <meta property="og:title" content="Billy Premium"/>
 <meta property="og:description" content="More answers and less work for your staff. Safety is never sold."/>
 <meta property="og:image" content="/og.png"/>
@@ -90,7 +91,7 @@
 <body>
 <div class="wrap">
   <div class="brand">
-    <img src="/billy-icon.webp" alt=""/>
+    <img src="/billy-icon.webp" alt="" data-billy-float/>
     <div><b>Billy The AI</b><span>Premium</span></div>
   </div>
 
@@ -101,14 +102,14 @@
     plan, in every server, permanently.
   </p>
 
-  <div class="plans">
+  <div class="plans" data-billy-reveal>
     <section class="plan">
       <span class="kicker">Free</span>
       <h2>Core</h2>
       <div class="price">$0<small>/ forever</small></div>
       <p class="sub">Everything a community needs to run safely. No trial, no card, no expiry.</p>
       <ul>
-        <li><b>150 Billy answers a day</b></li>
+        <li><b><span data-billy-count="150">0</span> Billy answers a day</b></li>
         <li>Anti-raid, honeypot traps and lockdown</li>
         <li>Scam reports and the staff watchlist</li>
         <li>Warnings, timeouts, kicks and bans</li>
@@ -117,7 +118,7 @@
         <li>Billy learns your server and answers questions</li>
         <li>Nightly backups of everything he knows</li>
       </ul>
-      <a class="cta ghost" href="/">Add Billy free</a>
+      <a class="cta ghost" href="/" data-billy-press>Add Billy free</a>
       <p class="under">Already what most servers ever need.</p>
     </section>
 
@@ -127,7 +128,7 @@
       <div class="price">$4.99<small>/ server / month</small></div>
       <p class="sub">For servers where staff time, not features, is the thing in short supply.</p>
       <ul>
-        <li><b>1,500 Billy answers a day</b> &mdash; ten times the free share</li>
+        <li><b><span data-billy-count="1500">0</span> Billy answers a day</b> &mdash; ten times the free share</li>
         <li>Billy writes ticket replies for staff to send with one press</li>
         <li>Alerts when a ticket has been waiting too long</li>
         <li>Connect your game: look up players, check bans, verify accounts</li>
@@ -135,14 +136,16 @@
         <li>Your own colours on Billy's embeds</li>
         <li>Priority answers when Billy is busy</li>
       </ul>
-      <a class="cta pending" id="buy" href="#" aria-disabled="true">Checkout opening soon</a>
+      <a class="cta pending" id="buy" href="#" aria-disabled="true" data-billy-press>Checkout opening soon</a>
       <p class="under" id="buy-note">
         Google Pay, PayPal, Apple Pay or card. Cancel any time.
       </p>
     </section>
   </div>
 
-  <div class="free-note">
+
+  <div class="billy-band" data-billy-band="Safety is never sold · 27 servers · Anti-raid always free · Tickets answered faster · Backups every night · Billy learns your server" data-billy-speed="34s"></div>
+  <div class="free-note" data-billy-reveal>
     <h3>Safety is never sold</h3>
     <p>
       Anti-raid, honeypot traps, lockdown, raid cleanup, scam reports, the watchlist,
@@ -154,7 +157,7 @@
   </div>
 
   <h3 class="section">Questions</h3>
-  <div class="faq">
+  <div class="faq" data-billy-reveal>
     <div><b>What happens when the free answers run out?</b><span>
       Billy says so once, then goes quiet until midnight UTC rather than repeating himself.
       Moderation, tickets, protection and every other feature keep working exactly as normal
@@ -403,5 +406,6 @@ const BILLING_LIVE = false;
   updateLink();
 })();
 </script>
+<script src="/motion.js" defer></script>
 </body>
 </html>
