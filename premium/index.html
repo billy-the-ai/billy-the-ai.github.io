@@ -82,6 +82,17 @@
   .sheet-plan{color:var(--amber);font-size:13px;font-weight:700;letter-spacing:.02em;
     margin:4px 0 0}
 
+  /* Billy Moderator. Red, and deliberately still: Ultimate is the tier named
+     for a moving colour, and two animated cards on one page cancel each other
+     out. */
+  .plan.moderator{border-color:rgba(220,56,56,.5);
+    background:radial-gradient(130% 130% at 50% -25%,rgba(220,56,56,.14),var(--surface))}
+  .plan.moderator .kicker{color:#ff7a6b}
+  .plan.moderator .price{font-size:30px;color:#ff7a6b}
+  .plan.moderator li::before{background:#e03838}
+  .plan.moderator .cta{border:1px solid rgba(220,56,56,.45);color:#ffb3a8;
+    background:rgba(220,56,56,.10);cursor:default}
+
   /* Motion is decoration here, never information: everything above still reads
      correctly when the colours stop. */
   @media (prefers-reduced-motion: reduce){
@@ -132,8 +143,8 @@
   <h1>Billy Premium</h1>
   <p class="lede">
     More answers, tools that save your staff hours, and a direct link between Billy and your
-    game. Everything that keeps your server and its members safe stays free &mdash; on every
-    plan, in every server, permanently.
+    game. Two plans you can buy, one you can only win. Everything that keeps your server and
+    its members safe stays free &mdash; on every plan, in every server, permanently.
   </p>
 
   <div class="plans" data-billy-reveal>
@@ -198,6 +209,29 @@
       <a class="cta pending" id="buy-ultimate" href="#" aria-disabled="true" data-billy-press>Checkout opening soon</a>
       <p class="under" id="buy-ultimate-note">
         Google Pay, PayPal, Apple Pay or card. Cancel any time.
+      </p>
+    </section>
+
+    <section class="plan moderator">
+      <span class="kicker">Billy Moderator</span>
+      <h2>Moderator</h2>
+      <div class="price">Not for sale</div>
+      <p class="sub">
+        The top tier, and the only one you cannot buy. It is given to moderators,
+        and given away in the Billy official server.
+      </p>
+      <ul>
+        <li><b>Everything unlimited</b> &mdash; every limit in Billy lifted, with no ceiling
+          on anything</li>
+        <li><b>Every command</b>, including all of Ultimate's network tools</li>
+        <li><b>No daily answer cap</b> at all</li>
+        <li>Red embeds and a 🛡️ on Billy's name in your server</li>
+        <li>Never expires unless it is taken back</li>
+      </ul>
+      <span class="cta" aria-disabled="true">Given, not sold</span>
+      <p class="under">
+        Win it in a giveaway in the Billy official server, or receive it as a
+        Billy moderator.
       </p>
     </section>
   </div>
