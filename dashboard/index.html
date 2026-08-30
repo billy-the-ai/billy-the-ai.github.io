@@ -649,29 +649,61 @@
       if(!status)return 'Could not reach Billy. The bot may be offline or restarting.';
       return (error&&error.message)||'Request failed.'
     }
-    async function discoverApi(){
+    /* One request to /api/health, with the time budget the caller asks for.
+       Returns {health} on success or {error} describing what went wrong. */
+    async function probeHealth(candidate,budget){
+      let timeout;
+      try{
+        const controller=new AbortController();timeout=setTimeout(()=>controller.abort(),budget);
+        const response=await fetch(candidate+'/api/health',{cache:'no-store',signal:controller.signal});
+        const health=await response.json().catch(()=>null);
+        if(!response.ok)return {error:`${candidate} returned HTTP ${response.status}.`};
+        if(health&&health.ok)return {health};
+        return {error:`${candidate} returned an invalid health response.`}
+      }catch(error){
+        return {error:`${candidate}: ${error&&error.name==='AbortError'?'timed out':(error&&error.message)||'connection failed'}.`}
+      }finally{if(timeout)clearTimeout(timeout)}
+    }
+    /* Budgets, in order. The old single 3000ms attempt was below what the
+       endpoint actually costs -- a cold TLS handshake alone measured up to
+       0.71s, a first request 2.55s, and Billy's own healthcheck has gone past
+       5s right after a restart. One slow answer must not be treated as an
+       outage, so a slow round is followed by a patient one. */
+    const HEALTH_BUDGETS=[6000,12000];
+    async function discoverApi(budgets){
       const configured=(window.BILLY_DASHBOARD_API_URL||'').replace(/\/$/,'');
       const candidates=[configured,'http://localhost:8787','http://127.0.0.1:8787'].filter((value,index,list)=>value&&list.indexOf(value)===index);
       const attempts=[];
       dashboardConnection={state:'checking',endpoint:configured,error:'',health:null};
-      for(const candidate of candidates){
-        let timeout;
-        try{
-          const controller=new AbortController();timeout=setTimeout(()=>controller.abort(),3000);
-          const response=await fetch(candidate+'/api/health',{cache:'no-store',signal:controller.signal});
-          const health=await response.json().catch(()=>null);
-          if(!response.ok){attempts.push(`${candidate} returned HTTP ${response.status}.`);continue}
-          if(health&&health.ok){
+      for(const budget of (budgets||HEALTH_BUDGETS)){
+        for(const candidate of candidates){
+          const {health,error}=await probeHealth(candidate,budget);
+          if(health){
             apiBase=candidate;
             dashboardConnection={state:'connected',endpoint:candidate,error:'',health};
             return health
           }
-          attempts.push(`${candidate} returned an invalid health response.`)
-        }catch(error){
-          attempts.push(`${candidate}: ${error&&error.name==='AbortError'?'timed out':(error&&error.message)||'connection failed'}.`)
-        }finally{if(timeout)clearTimeout(timeout)}
+          attempts.push(error)
+        }
       }
       apiBase='';dashboardConnection={state:'unreachable',endpoint:configured||candidates[0]||'',error:attempts.join(' '),health:null};return null
+    }
+    /* Keep looking after a failure, so the room returns on its own when Billy
+       does. Without this the only cure was a manual reload -- and the failure
+       is likeliest during a restart, which is exactly when somebody loads the
+       dashboard to check whether Billy is back. */
+    let reconnectTimer=null,reconnectBusy=false;
+    function scheduleReconnect(){
+      if(reconnectTimer)return;
+      reconnectTimer=setInterval(async()=>{
+        if(reconnectBusy)return;              // a slow probe must not stack up
+        reconnectBusy=true;
+        try{await connectDashboard()}finally{reconnectBusy=false}
+      },15000)
+    }
+    function stopReconnect(){
+      if(!reconnectTimer)return;
+      clearInterval(reconnectTimer);reconnectTimer=null
     }
     function eventLabel(item){const d=item.data||{};if(item.type==='message')return ['Message activity',(d.user||'Member')+' in #'+(d.channel||'channel'),'↗'];if(item.type==='member_join')return ['Member joined',(d.user||'A member')+' joined • '+number(d.member_count)+' members','＋'];if(item.type==='voice_state')return ['Voice activity',(d.user||'Member')+' • '+(d.before||'Not connected')+' → '+(d.after||'Disconnected'),'◉'];return [String(item.type||'server update').replaceAll('_',' '),'Billy recorded a server update','◎']}
     function makeEmptyNote(title,copy){const note=document.createElement('div'),heading=document.createElement('strong'),textNode=document.createTextNode(copy);note.className='empty-note';heading.textContent=title;note.append(heading,textNode);return note}
@@ -797,7 +829,11 @@
       copy.textContent='Live server data is only visible to the bot owner while Billy is running. '
         +'Everything else about Billy works normally in Discord — use his slash commands there.';
       const hint=document.createElement('small');
-      hint.textContent='If you host Billy, check the bot is running and that its address is reachable.';
+      // A page that is retrying but silent about it reads as a page that gave
+      // up, and sends people off to reload something that was about to fix
+      // itself.
+      hint.textContent='Still checking every few seconds — this page reconnects on its own '
+        +'if Billy is restarting. If you host Billy, check he is running and reachable.';
       card.append(title,copy,hint);
       main.prepend(card);
     }
@@ -809,9 +845,12 @@
         // Present a calm, intentional state instead.
         liveStatus.lastChild.textContent=' Owner sign-in required';
         modePill.textContent='Preview';login.href='#';
-        showOwnerOnlyNotice();return
+        showOwnerOnlyNotice();
+        scheduleReconnect();          // and keep trying quietly
+        return
       }
       /* Billy answered, so undo anything a previous failed attempt hid. */
+      stopReconnect();
       restorePages();
       const staleNotice=document.getElementById('ownerOnlyNotice');
       if(staleNotice)staleNotice.remove();
