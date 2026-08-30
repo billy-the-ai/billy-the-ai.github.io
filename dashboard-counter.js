@@ -42,7 +42,10 @@
   function parseValue(text) {
     var raw = String(text == null ? "" : text).trim();
     if (!raw || raw === "—") return null;           // the em-dash placeholder
-    var match = raw.match(/^(-?[\d,]*\.?\d+)\s*(.*)$/);
+    // The separator is kept as part of the suffix. Skipping it with \s* meant
+    // "1 saved warnings" was rebuilt as "1saved warnings", because the space
+    // was consumed by the pattern and never put back.
+    var match = raw.match(/^(-?[\d,]*\.?\d+)(.*)$/);
     if (!match) return null;
     var number = parseFloat(match[1].replace(/,/g, ""));
     if (!isFinite(number)) return null;
@@ -59,17 +62,38 @@
 
   function easeOut(t) { return 1 - Math.pow(1 - t, 3); }
 
+  /* Write, and remember exactly what was written.
+   *
+   * handle() compares against this instead of a flag. A flag set and cleared
+   * around the write is useless here: MutationObserver reports afterwards, by
+   * which time it has already been cleared, so the animation's own frames
+   * looked like fresh external values and each one started another animation.
+   */
+  function paint(el, text) {
+    el.dataset.billyOwn = text;
+    el.textContent = text;
+  }
+
   function animate(el, from, to, decimals, suffix) {
     var started = null;
     var finished = false;
 
+    // Retires any animation still running on this element, so two can never
+    // paint it at the same time.
+    var generation = (parseInt(el.dataset.billyRun, 10) || 0) + 1;
+    el.dataset.billyRun = String(generation);
+
+    function current() {
+      return String(generation) === el.dataset.billyRun;
+    }
+
     function settle() {
       if (finished) return;
       finished = true;
-      el.dataset.billyWriting = "1";
-      el.textContent = format(to, decimals, suffix);
-      delete el.dataset.billyWriting;
-      el.classList.remove("billy-up", "billy-down");
+      if (current()) {
+        paint(el, format(to, decimals, suffix));
+        el.classList.remove("billy-up", "billy-down");
+      }
       document.removeEventListener("visibilitychange", settle);
     }
 
@@ -80,20 +104,21 @@
     window.setTimeout(settle, DURATION + 400);
 
     function step(now) {
-      if (finished) return;
+      if (finished || !current()) return;
       if (started === null) started = now;
       var progress = Math.min((now - started) / DURATION, 1);
       if (progress >= 1) { settle(); return; }
-      el.dataset.billyWriting = "1";
-      el.textContent = format(from + (to - from) * easeOut(progress), decimals, suffix);
-      delete el.dataset.billyWriting;
+      paint(el, format(from + (to - from) * easeOut(progress), decimals, suffix));
       window.requestAnimationFrame(step);
     }
     window.requestAnimationFrame(step);
   }
 
   function handle(el) {
-    if (el.dataset.billyWriting) return;                 // our own write
+    // Our own paint, not a new value from the dashboard. Compared by content
+    // rather than by a flag, because a flag cannot survive until the observer
+    // runs -- which is what made this recurse without end.
+    if (el.textContent === el.dataset.billyOwn) return;
     var parsed = parseValue(el.textContent);
     if (!parsed) return;
 
