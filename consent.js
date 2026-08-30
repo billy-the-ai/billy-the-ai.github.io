@@ -60,6 +60,47 @@
   // Refusal until told otherwise.
   publish(read() || { analytics: false });
 
+
+  /* --------------------------------------------------------- describing --
+   * The wording is generated from what is actually configured. A banner that
+   * lists trackers the site does not run, or stays silent about ones it does,
+   * is worse than no banner -- so this reads the real list rather than
+   * repeating a sentence written months earlier.
+   */
+
+  function providers() {
+    var list = window.billyAnalyticsConfigured;
+    return (list && list.length) ? list.slice() : [];
+  }
+
+  function joinNames(names) {
+    if (names.length === 1) return names[0];
+    return names.slice(0, -1).join(", ") + " and " + names[names.length - 1];
+  }
+
+  function describeSite() {
+    var names = providers();
+    if (!names.length) {
+      return "Billy&rsquo;s site uses <b>no tracking cookies</b>. The only things stored " +
+        "are what is needed for the pages to work and to keep you signed in to the " +
+        "control room. Optional analytics are <b>off</b> and load nothing unless you " +
+        "allow them.";
+    }
+    return "Some things here are needed for the pages to work and to keep you signed " +
+      "in to the control room. Separately, we would like to use <b>" + joinNames(names) +
+      "</b> to see which pages get read. <b>Nothing is loaded until you say yes.</b>";
+  }
+
+  function describeAnalytics() {
+    var names = providers();
+    if (!names.length) {
+      return "Anonymous counts of which pages get read. <b>None are in use today</b> " +
+        "&mdash; this only takes effect if any are ever added.";
+    }
+    return joinNames(names) + ". Used to count which pages get read. Declining stops " +
+      "them loading at all, and withdrawing later switches off any already running.";
+  }
+
   /* ------------------------------------------------------------ styles -- */
 
   var CSS = [
@@ -145,9 +186,7 @@
 
     node.innerHTML =
       '<h2>Cookies on this site</h2>' +
-      '<p>Billy&rsquo;s site uses <b>no tracking cookies</b>. The only things stored are ' +
-      'what is needed for the pages to work and to keep you signed in to the control room. ' +
-      'Optional analytics are <b>off</b> and load nothing unless you allow them.</p>' +
+      '<p>' + describeSite() + '</p>' +
       (showDetail
         ? '<div class="billy-consent__detail">' +
             '<div class="billy-consent__item">' +
@@ -160,8 +199,7 @@
               '<input type="checkbox" id="billy-consent-analytics"' +
                 (current.analytics ? " checked" : "") + '/>' +
               '<span><label for="billy-consent-analytics"><strong>Analytics</strong></label>' +
-              '<small>Anonymous counts of which pages get read, so the docs can be improved. ' +
-              '<b>None are in use today</b> &mdash; this only takes effect if any are ever added.</small></span>' +
+              '<small>' + describeAnalytics() + '</small></span>' +
             '</div>' +
           '</div>'
         : '') +
