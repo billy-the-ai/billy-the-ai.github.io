@@ -55,6 +55,40 @@
   li::before{content:'';position:absolute;left:5px;top:15px;width:7px;height:7px;
     border-radius:50%;background:var(--green)}
   .plan.paid li::before{background:var(--amber)}
+
+  /* Billy Ultimate. The card actually cycles rather than being labelled as
+     cycling: a paying tier called "rainbow" that sits still is a broken
+     promise on the page that sells it. */
+  .plan.ultimate{border-color:transparent;position:relative;
+    background:radial-gradient(130% 130% at 50% -25%,rgba(150,120,255,.14),var(--surface))}
+  .plan.ultimate::before{content:'';position:absolute;inset:-1px;border-radius:21px;
+    padding:1px;pointer-events:none;
+    background:linear-gradient(120deg,#ff5f6d,#ffc371,#7ee8a2,#4facfe,#c471ed,#ff5f6d);
+    background-size:300% 300%;animation:billyRainbow 9s linear infinite;
+    -webkit-mask:linear-gradient(#000 0 0) content-box,linear-gradient(#000 0 0);
+    -webkit-mask-composite:xor;mask:linear-gradient(#000 0 0) content-box,
+    linear-gradient(#000 0 0);mask-composite:exclude}
+  @keyframes billyRainbow{0%{background-position:0% 50%}100%{background-position:300% 50%}}
+  .plan.ultimate .kicker,.plan.ultimate .price{
+    background:linear-gradient(120deg,#ff8a9b,#ffd79a,#9ff0bd,#8ecbff,#d79bff,#ff8a9b);
+    background-size:300% 300%;animation:billyRainbow 9s linear infinite;
+    -webkit-background-clip:text;background-clip:text;color:transparent}
+  .plan.ultimate .price small{-webkit-text-fill-color:var(--muted);color:var(--muted)}
+  .plan.ultimate li::before{
+    background:linear-gradient(120deg,#ff5f6d,#4facfe,#c471ed);}
+  .plan.ultimate .cta.pending{border-color:rgba(196,113,237,.4)}
+  .tier-note{color:var(--muted);font-size:13px;line-height:1.6;margin:-28px 0 40px;
+    max-width:640px}
+  .sheet-plan{color:var(--amber);font-size:13px;font-weight:700;letter-spacing:.02em;
+    margin:4px 0 0}
+
+  /* Motion is decoration here, never information: everything above still reads
+     correctly when the colours stop. */
+  @media (prefers-reduced-motion: reduce){
+    .plan.ultimate::before,.plan.ultimate .kicker,.plan.ultimate .price{animation:none}
+    .plan.ultimate .kicker,.plan.ultimate .price{
+      -webkit-text-fill-color:#c9a6ff;color:#c9a6ff}
+  }
   li b{font-weight:700}
 
   .cta{display:block;text-align:center;padding:15px 18px;border-radius:13px;font-weight:800;
@@ -141,7 +175,42 @@
         Google Pay, PayPal, Apple Pay or card. Cancel any time.
       </p>
     </section>
+
+    <section class="plan ultimate">
+      <span class="kicker">Billy Ultimate</span>
+      <h2>Network</h2>
+      <div class="price">$8.99<small>/ server / month</small></div>
+      <p class="sub">
+        Everything in Premium, with no limits on any of it &mdash; plus the one thing
+        no single server can build for itself.
+      </p>
+      <ul>
+        <li><b>Unlimited</b> knowledge, custom commands, giveaways, events and blocked words</li>
+        <li><b>Network reputation checks</b> &mdash; see whether someone was removed from
+          other fan-game communities before they cause trouble in yours</li>
+        <li><b>Network sweeps</b> &mdash; scan every member you already have against the
+          whole network in one command</li>
+        <li><b>Cross-server broadcasts</b> &mdash; one announcement to every server you own</li>
+        <li><b>Deep insights</b> &mdash; the numbers behind your community, not just a count</li>
+        <li>Rainbow embeds that shift colour, and a 🌈 on Billy's name here</li>
+        <li>Everything in Billy Premium</li>
+      </ul>
+      <a class="cta pending" id="buy-ultimate" href="#" aria-disabled="true" data-billy-press>Checkout opening soon</a>
+      <p class="under" id="buy-ultimate-note">
+        Google Pay, PayPal, Apple Pay or card. Cancel any time.
+      </p>
+    </section>
   </div>
+
+  <p class="tier-note" data-billy-reveal>
+    <b>About the network.</b> Billy is in <span data-billy-count="27">27</span> Gorilla Tag
+    fan-game communities. Ultimate lets yours ask what the others already learned &mdash;
+    but only ever as a <b>count</b>. Billy never passes on another server's name, its
+    moderators, or the reasons they wrote, and a community that changed its mind and
+    lifted a ban does not keep it on someone's record. It is a reason to look more
+    closely, never a reason to punish on its own. Any server can opt out of contributing
+    with <code>/ultimate sharing</code>, free or paid.
+  </p>
 
 
   <div class="billy-band" data-billy-band="Safety is never sold · 27 servers · Anti-raid always free · Tickets answered faster · Backups every night · Billy learns your server" data-billy-speed="34s"></div>
@@ -205,6 +274,7 @@
     <div class="sheet-body">
       <div>
         <h3 class="sheet-label">Choose a way to pay</h3>
+        <p class="sheet-plan" id="pay-plan">Billy Premium</p>
         <div class="methods" role="radiogroup" aria-labelledby="pay-title">
           <button type="button" class="method" data-method="card" role="radio"
                   aria-checked="true">
@@ -245,7 +315,7 @@
       <div class="summary">
         <div class="row"><span>Price</span><b>$4.99</b></div>
         <div class="row"><span>Billed</span><b>Monthly</b></div>
-        <div class="row total"><span>Total</span><b>$4.99<small>/mo</small></b></div>
+        <div class="row total"><span>Total</span><b id="pay-total">$4.99<small>/mo</small></b></div>
 
         <label class="coupon-label" for="coupon">Have a coupon code?</label>
         <div class="coupon">
@@ -335,26 +405,54 @@
    fail -- the dialog itself still opens so the flow can be reviewed. */
 const BILLING_LIVE = false;
 
+/* Every paid plan in one place. The dialog reads the plan off whichever
+   button opened it, so it can never show one price and check out another --
+   which, before this existed, is exactly what a second plan would have done. */
+var BILLY_PLANS = {
+  premium: {
+    button: "buy", note: "buy-note",
+    label: "Billy Premium", cta: "Get Billy Premium", total: "$4.99"
+  },
+  ultimate: {
+    button: "buy-ultimate", note: "buy-ultimate-note",
+    label: "Billy Ultimate", cta: "Get Billy Ultimate", total: "$8.99"
+  }
+};
+
 (function () {
-  var openers = [document.getElementById("buy")];
   var sheet = document.getElementById("pay-sheet");
   var go = document.getElementById("pay-go");
-  var note = document.getElementById("buy-note");
   var coupon = document.getElementById("coupon");
+  var totalEl = document.getElementById("pay-total");
+  var planEl = document.getElementById("pay-plan");
   var methods = [].slice.call(document.querySelectorAll(".method"));
   var lastFocused = null;
   var chosen = "card";
+  var plan = "premium";
 
   if (!sheet || !go) return;
 
-  if (BILLING_LIVE && openers[0]) {
-    openers[0].textContent = "Get Billy Premium";
-    openers[0].className = "cta primary";
-    openers[0].removeAttribute("aria-disabled");
-    if (note) {
-      note.innerHTML = "Google Pay, PayPal, Apple Pay or card. Cancel any time.";
+  Object.keys(BILLY_PLANS).forEach(function (key) {
+    var config = BILLY_PLANS[key];
+    var button = document.getElementById(config.button);
+    if (!button) { return; }
+    button.addEventListener("click", function (event) {
+      plan = key;
+      openSheet(event);
+    });
+    if (BILLING_LIVE) {
+      button.textContent = config.cta;
+      // Ultimate keeps its rainbow edge rather than being painted gold.
+      button.className = key === "ultimate" ? "cta ghost" : "cta primary";
+      button.removeAttribute("aria-disabled");
+      var note = document.getElementById(config.note);
+      if (note) {
+        note.innerHTML = "Google Pay, PayPal, Apple Pay or card. Cancel any time.";
+      }
     }
-  } else {
+  });
+
+  if (!BILLING_LIVE) {
     go.textContent = "Checkout opening soon";
     go.classList.add("pending");
     go.removeAttribute("href");
@@ -362,6 +460,10 @@ const BILLING_LIVE = false;
 
   function openSheet(event) {
     if (event) { event.preventDefault(); }
+    var config = BILLY_PLANS[plan] || BILLY_PLANS.premium;
+    if (planEl) { planEl.textContent = config.label; }
+    if (totalEl) { totalEl.innerHTML = config.total + "<small>/mo</small>"; }
+    updateLink();
     lastFocused = document.activeElement;
     sheet.hidden = false;
     document.body.style.overflow = "hidden";
@@ -375,7 +477,6 @@ const BILLING_LIVE = false;
     if (lastFocused && lastFocused.focus) { lastFocused.focus(); }
   }
 
-  openers.forEach(function (el) { if (el) { el.addEventListener("click", openSheet); } });
   document.getElementById("pay-close").addEventListener("click", closeSheet);
   // Clicking the dimmed area closes, but a click inside the card must not.
   sheet.addEventListener("click", function (e) { if (e.target === sheet) { closeSheet(); } });
@@ -396,7 +497,8 @@ const BILLING_LIVE = false;
     if (!BILLING_LIVE) { return; }
     // The server is chosen on the dashboard, so the method and coupon ride
     // along in the URL and are applied when the checkout is created.
-    var url = "/dashboard/?plan=premium&pay=" + encodeURIComponent(chosen);
+    var url = "/dashboard/?plan=" + encodeURIComponent(plan)
+      + "&pay=" + encodeURIComponent(chosen);
     var code = (coupon && coupon.value || "").trim();
     if (code) { url += "&coupon=" + encodeURIComponent(code); }
     go.setAttribute("href", url);
