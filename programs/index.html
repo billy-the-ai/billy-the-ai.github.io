@@ -1,0 +1,279 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>Billy Programs</title>
+<meta name="description" content="Join a Billy program: help moderate across the communities that use Billy, or test features before anyone else."/>
+<link rel="icon" href="/favicon.svg"/>
+<link rel="stylesheet" href="/motion.css"/>
+<meta property="og:title" content="Billy Programs"/>
+<meta property="og:description" content="Moderator and Beta Tester programs for Billy The AI."/>
+<meta property="og:image" content="/og.png"/>
+<style>
+  @font-face{font-family:CuteDino;src:url('/fonts/Cute-Dino.otf') format('opentype');font-display:swap}
+  :root{
+    --bg:#0c0b09; --surface:#15130f; --surface-2:#1c1812; --line:#312a1f;
+    --line-soft:#242018; --cream:#fff8ec; --muted:#aaa397; --amber:#e9a65c;
+    --amber-2:#ffd49f; --green:#6fe0a5;
+  }
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--bg);color:var(--cream);
+    font-family:'Segoe UI',system-ui,-apple-system,sans-serif;-webkit-font-smoothing:antialiased}
+  a{color:var(--amber-2)}
+  .wrap{max-width:1060px;margin:0 auto;padding:52px 20px 80px}
+
+  .brand{display:flex;align-items:center;gap:12px;margin-bottom:34px}
+  .brand img{width:40px;height:40px;border-radius:11px}
+  .brand b{font-family:CuteDino,'Segoe UI',sans-serif;font-weight:400;font-size:21px}
+  .brand span{color:var(--muted);font-size:11px;letter-spacing:.18em;text-transform:uppercase;
+    display:block;margin-top:2px}
+
+  h1.page{font-family:CuteDino,'Segoe UI',sans-serif;font-weight:400;
+    font-size:clamp(34px,6vw,52px);line-height:1.14;letter-spacing:.015em;margin:0 0 12px}
+  p.page-lede{color:var(--muted);font-size:16px;line-height:1.65;max-width:600px;margin:0 0 40px}
+
+  /* One block per program, each carrying its own colour so the two are
+     instantly distinguishable rather than two identical cards. */
+  .program{position:relative;border-radius:26px;overflow:hidden;padding:44px 38px 40px;
+    margin-bottom:22px;border:1px solid rgba(233,166,92,.35)}
+  .program.mod{background:radial-gradient(120% 130% at 20% 16%,#c8862f 0%,#9a6620 34%,#3a2810 68%,#140f07 100%)}
+  .program.tester{border-color:rgba(96,196,86,.38);
+    background:radial-gradient(120% 130% at 20% 16%,#4f9e34 0%,#33701f 34%,#173b12 68%,#080f06 100%)}
+
+  .program-grid{display:grid;grid-template-columns:1.08fr .92fr;gap:30px;align-items:center}
+  .program h2{font-family:CuteDino,'Segoe UI',sans-serif;font-weight:400;line-height:1.12;
+    font-size:clamp(32px,5.4vw,52px);letter-spacing:.015em;margin:0 0 14px;color:#fff3d6;
+    text-shadow:0 4px 0 rgba(30,18,4,.36)}
+  .program p.lede{margin:0 0 26px;font-size:15.5px;line-height:1.62;max-width:430px;color:#fdeccd}
+  .program.tester p.lede{color:#e9f7df}
+
+  .perks{display:flex;gap:24px;margin:0 0 28px;flex-wrap:wrap}
+  .perk{text-align:center;width:100px}
+  .perk i{display:flex;align-items:center;justify-content:center;width:56px;height:56px;
+    margin:0 auto 9px;border-radius:50%;background:#fff6e4}
+  .perk svg{width:28px;height:28px;fill:#2a1c0c}
+  .perk b{display:block;font-size:13px;font-weight:700;line-height:1.35;color:#fff3d6}
+  .program.tester .perk i{background:#f0fbe9}
+  .program.tester .perk b{color:#e9f7df}
+
+  .apply{display:inline-flex;align-items:center;justify-content:center;
+    min-width:280px;padding:18px 32px;border-radius:999px;background:var(--amber);
+    color:#231603;font-weight:900;font-size:18px;text-decoration:none;
+    border:3px solid #1b1206;box-shadow:0 7px 0 #1b1206}
+  .apply:hover{background:var(--amber-2)}
+  .program.tester .apply{background:#77d95f;color:#0e2408}
+  .program.tester .apply:hover{background:#96e881}
+  .apply.pending{background:#2b2318;color:#c9bda9;cursor:default}
+  .program.tester .apply.pending{background:#1d2b18;color:#bcd0b3}
+  .apply-note{margin:13px 0 0;font-size:12.8px;color:#f3dcb4}
+  .program.tester .apply-note{color:#d8ecce}
+
+  .art{display:flex;align-items:center;justify-content:center}
+  .art img,.art svg{width:100%;max-width:300px;height:auto;
+    filter:drop-shadow(0 18px 28px rgba(0,0,0,.48))}
+
+  h3.section{font-family:CuteDino,'Segoe UI',sans-serif;font-weight:400;font-size:26px;
+    margin:48px 0 16px}
+  ol.steps{counter-reset:s;list-style:none;padding:0;margin:0}
+  ol.steps li{counter-increment:s;position:relative;padding:12px 0 12px 46px;
+    font-size:14.8px;line-height:1.6;color:var(--muted);border-bottom:1px solid var(--line-soft)}
+  ol.steps li:last-child{border-bottom:0}
+  ol.steps li::before{content:counter(s);position:absolute;left:0;top:11px;width:29px;height:29px;
+    border-radius:50%;background:var(--surface-2);border:1px solid var(--line);color:var(--amber);
+    font-weight:800;font-size:13px;display:flex;align-items:center;justify-content:center}
+  ol.steps b{color:var(--cream)}
+
+  .honest{border:1px solid rgba(111,224,165,.3);background:rgba(111,224,165,.06);
+    border-radius:18px;padding:22px 24px;margin-top:22px}
+  .honest b{color:var(--cream)}
+  .honest p{margin:0;color:var(--muted);font-size:14.5px;line-height:1.65}
+
+  footer{border-top:1px solid var(--line-soft);margin-top:48px;padding-top:22px;
+    color:var(--muted);font-size:13px;line-height:1.8}
+  footer a{color:var(--muted);text-decoration:none}
+  footer a:hover{color:var(--cream)}
+
+  @media (max-width:820px){
+    .program{padding:34px 22px 30px}
+    .program-grid{grid-template-columns:1fr;gap:22px}
+    .art{order:-1}
+    .art img,.art svg{max-width:190px}
+    .apply{min-width:0;width:100%}
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="brand">
+    <img src="/billy-icon.webp" alt="" data-billy-float/>
+    <div><b>Billy The AI</b><span>Programs</span></div>
+  </div>
+
+  <h1 class="page">Billy Programs</h1>
+  <p class="page-lede">
+    Two ways to help build Billy. Moderators keep the communities that use him running;
+    testers break the new things before they reach 27 servers.
+  </p>
+
+  <!-- Moderator -->
+  <section class="program mod" id="moderator" data-billy-reveal>
+    <div class="program-grid">
+      <div>
+        <h2>Moderator Program</h2>
+        <p class="lede">
+          Help run Billy across the communities that use him. Moderators get features
+          before anyone else, a say in what gets built next, and the Billy Moderator role.
+        </p>
+        <div class="perks">
+          <div class="perk">
+            <i><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 5c-5 0-9 4.5-9 7s4 7 9 7 9-4.5 9-7-4-7-9-7Zm0 11a4 4 0 1 1 0-8 4 4 0 0 1 0 8Zm0-6a2 2 0 1 0 0 4 2 2 0 0 0 0-4Z"/></svg></i>
+            <b>Early features</b>
+          </div>
+          <div class="perk">
+            <i><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2a10 10 0 1 0 0 20 10 10 0 0 0 0-20Zm-1 6.2 5.5 3.3a.6.6 0 0 1 0 1L11 15.8a.6.6 0 0 1-.9-.5V8.7a.6.6 0 0 1 .9-.5Z"/></svg></i>
+            <b>Shape what gets built</b>
+          </div>
+          <div class="perk">
+            <i><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2.6 14.4 7l4.9.7-3.6 3.4.9 4.8L12 13.6 7.4 15.9l.9-4.8L4.7 7.7 9.6 7 12 2.6Zm-3.4 15 1.3 5.4L12 21.4l2.1 1.6 1.3-5.4A8.9 8.9 0 0 1 12 18.4a8.9 8.9 0 0 1-3.4-.8Z"/></svg></i>
+            <b>Moderator role</b>
+          </div>
+        </div>
+        <a class="apply pending" id="apply-mod" href="#" aria-disabled="true" data-billy-press>
+          Applications opening soon
+        </a>
+        <p class="apply-note" id="note-mod">
+          Reviewed by the Billy team. Everyone gets an answer either way.
+        </p>
+      </div>
+      <div class="art">
+        <img src="/billy-mod-mallet.png" width="780" height="689"
+             alt="A wooden mallet with a MOD badge"/>
+      </div>
+    </div>
+  </section>
+
+  <!-- Beta tester -->
+  <section class="program tester" id="tester" data-billy-reveal>
+    <div class="program-grid">
+      <div>
+        <h2>Beta Tester Program</h2>
+        <p class="lede">
+          Try Billy's new features before release and say when something is not ready.
+          A tester saying "this is confusing" is what stops it reaching everybody.
+        </p>
+        <div class="perks">
+          <div class="perk">
+            <i><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M13 2v7.1l5.6 9.2A2.5 2.5 0 0 1 16.5 22h-9a2.5 2.5 0 0 1-2.1-3.7L11 9.1V2h2Zm-2.6 9.9-2.2 3.6h7.6l-2.2-3.6-.6-1V4h-2v4.9l-.6 1Z"/></svg></i>
+            <b>Test first</b>
+          </div>
+          <div class="perk">
+            <i><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M20.3 5.7a1 1 0 0 1 0 1.4L10 17.4a1 1 0 0 1-1.4 0l-4.9-4.9a1 1 0 0 1 1.4-1.4l4.2 4.2 9.6-9.6a1 1 0 0 1 1.4 0Z"/></svg></i>
+            <b>Report what breaks</b>
+          </div>
+          <div class="perk">
+            <i><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2.6 14.4 7l4.9.7-3.6 3.4.9 4.8L12 13.6 7.4 15.9l.9-4.8L4.7 7.7 9.6 7 12 2.6Zm-3.4 15 1.3 5.4L12 21.4l2.1 1.6 1.3-5.4A8.9 8.9 0 0 1 12 18.4a8.9 8.9 0 0 1-3.4-.8Z"/></svg></i>
+            <b>Tester role</b>
+          </div>
+        </div>
+        <a class="apply pending" id="apply-tester" href="#" aria-disabled="true" data-billy-press>
+          Applications opening soon
+        </a>
+        <p class="apply-note" id="note-tester">
+          Reviewed by the Billy team. Everyone gets an answer either way.
+        </p>
+      </div>
+      <div class="art">
+        <!-- Drawn here for now. Swap for the artwork file once it is saved to
+             the repo; the markup only needs the img swapped back in. -->
+        <svg viewBox="0 0 200 260" role="img" aria-label="A test tube labelled TESTER"
+             class="tester-art">
+          <g transform="rotate(14 100 130)">
+            <g stroke="#12160f" stroke-width="9" stroke-linejoin="round" stroke-linecap="round">
+              <path d="M68 74h64v112a32 32 0 0 1-64 0V74Z" fill="#ffffff"/>
+              <path d="M70 140h60v46a30 30 0 0 1-60 0v-46Z" fill="#4caf27" stroke="none"/>
+              <path d="M68 74h64v112a32 32 0 0 1-64 0V74Z" fill="none"/>
+              <ellipse cx="100" cy="66" rx="34" ry="12" fill="#f4f6f2"/>
+              <path d="M66 66v12h68V66" fill="#ffffff"/>
+            </g>
+            <rect x="56" y="92" width="88" height="30" rx="4" fill="#ffffff"
+                  stroke="#12160f" stroke-width="7"/>
+            <text x="100" y="113" text-anchor="middle" font-family="'Segoe UI',sans-serif"
+                  font-size="20" font-weight="900" fill="#12160f" letter-spacing="1">TESTER</text>
+            <rect x="80" y="150" width="9" height="52" rx="4.5" fill="#ffffff" opacity=".45"/>
+          </g>
+        </svg>
+      </div>
+    </div>
+  </section>
+
+  <div class="billy-band"
+       data-billy-band="Moderator program · Beta tester program · Early features · Shape the roadmap · Help real communities"
+       data-billy-speed="34s"></div>
+
+  <h3 class="section">How applying works</h3>
+  <ol class="steps" data-billy-reveal>
+    <li><b>Fill in the form.</b> A few questions about your experience and the community
+      you help run. It takes about five minutes.</li>
+    <li><b>Billy files it.</b> Your application goes straight to the team's review channel
+      and is checked against your Discord account.</li>
+    <li><b>A person reads it.</b> Not the bot. Someone on the team decides, and the
+      decision is recorded with a reason.</li>
+    <li><b>You hear back either way.</b> Including if the answer is no, and why.</li>
+  </ol>
+
+  <div class="honest">
+    <p>
+      <b>Being straight about this:</b> places in both programs are limited and most
+      applications are declined, usually because the timing is wrong rather than the
+      person. Applying does not affect how Billy treats you or your server in any way,
+      and you can apply again later.
+    </p>
+  </div>
+
+  <footer>
+    <a href="/">Home</a> &middot; <a href="/commands/">Commands</a> &middot;
+    <a href="/premium/">Premium</a> &middot; <a href="/status/">Status</a> &middot;
+    <a href="/terms/">Terms</a> &middot; <a href="/privacy/">Privacy</a> &middot;
+    <a href="#" onclick="window.billyConsentReopen();return false;">Cookie choices</a>
+  </footer>
+</div>
+
+<script>
+/* One published form link per program.
+   These must be the SHARE links (Send -> the link icon), not the /edit
+   address from the browser bar: an /edit link sends everyone who cannot edit
+   the form to a Google sign-in page instead of the questions.
+
+   The tester link below was checked and loads without a sign-in. The
+   moderator one is still blank, so its button says so rather than pointing
+   applicants at a wall. */
+const FORMS = {
+  "apply-mod": "",
+  "apply-tester": "https://forms.gle/agY3gDyHWsoWu6GEA",
+};
+
+(function () {
+  Object.keys(FORMS).forEach(function (id) {
+    var url = FORMS[id];
+    if (!url) return;
+    var button = document.getElementById(id);
+    if (!button) return;
+    button.textContent = "Apply to join";
+    button.href = url;
+    button.target = "_blank";
+    button.rel = "noopener noreferrer";
+    button.classList.remove("pending");
+    button.removeAttribute("aria-disabled");
+    var note = document.getElementById("note-" + id.split("-")[1]);
+    if (note) {
+      note.textContent = "Opens the application form. Reviewed by the Billy team, "
+        + "and everyone gets an answer either way.";
+    }
+  });
+})();
+</script>
+<script src="/motion.js" defer></script>
+<script src="/analytics.js" defer></script><script src="/consent.js" defer></script>
+</body>
+</html>
