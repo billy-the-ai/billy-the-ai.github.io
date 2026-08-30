@@ -59,7 +59,7 @@
   .apply-note{margin:14px 0 0;font-size:13px;color:#f3dcb4}
 
   .mallet{display:flex;align-items:center;justify-content:center}
-  .mallet-svg{width:100%;max-width:320px;height:auto;
+  .mallet-img{width:100%;max-width:340px;height:auto;
     filter:drop-shadow(0 20px 30px rgba(0,0,0,.5))}
 
   h2.section{font-family:CuteDino,'Segoe UI',sans-serif;font-weight:400;font-size:27px;
@@ -95,7 +95,7 @@
     .hero{padding:38px 24px 34px}
     .hero-grid{grid-template-columns:1fr;gap:26px}
     .mallet{order:-1}
-    .mallet-svg{max-width:200px}
+    .mallet-img{max-width:210px}
     .apply{min-width:0;width:100%}
   }
 </style>
@@ -140,32 +140,8 @@
       </div>
 
       <div class="mallet">
-        <svg viewBox="0 0 260 300" role="img" aria-label="Moderator mallet" class="mallet-svg">
-          <defs>
-            <linearGradient id="wood" x1="0" y1="0" x2="1" y2="1">
-              <stop offset="0" stop-color="#a9742f"/><stop offset=".5" stop-color="#8a5c22"/>
-              <stop offset="1" stop-color="#6b4519"/>
-            </linearGradient>
-            <linearGradient id="woodTop" x1="0" y1="0" x2="0" y2="1">
-              <stop offset="0" stop-color="#c08c42"/><stop offset="1" stop-color="#94631f"/>
-            </linearGradient>
-            <linearGradient id="grip" x1="0" y1="0" x2="1" y2="0">
-              <stop offset="0" stop-color="#9c6a2a"/><stop offset=".45" stop-color="#7d5320"/>
-              <stop offset="1" stop-color="#5d3d14"/>
-            </linearGradient>
-          </defs>
-          <g stroke="#1b1206" stroke-width="7" stroke-linejoin="round">
-            <rect x="106" y="132" width="34" height="148" rx="15" fill="url(#grip)"/>
-            <rect x="96" y="268" width="54" height="26" rx="11" fill="#5d3d14"/>
-            <rect x="26" y="44" width="200" height="104" rx="26" fill="url(#wood)"/>
-            <rect x="40" y="52" width="172" height="34" rx="16" fill="url(#woodTop)"/>
-            <rect x="52" y="40" width="26" height="112" rx="11" fill="#4f3312"/>
-            <rect x="174" y="40" width="26" height="112" rx="11" fill="#4f3312"/>
-            <circle cx="126" cy="96" r="35" fill="#e9a65c"/>
-          </g>
-          <text x="126" y="105" text-anchor="middle" font-family="'Segoe UI',sans-serif"
-                font-size="24" font-weight="900" fill="#231603" letter-spacing="1">MOD</text>
-        </svg>
+        <img src="/billy-mod-mallet.png" width="760" height="760"
+             alt="A wooden mallet with a MOD badge" class="mallet-img"/>
       </div>
     </div>
   </section>
