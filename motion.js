@@ -96,16 +96,40 @@
     el.classList.add("billy-count");
     var duration = parseInt(el.dataset.billyDuration, 10) || 1400;
     var started = null;
+    var done = false;
 
-    function step(now) {
-      if (started === null) started = now;
-      var progress = Math.min((now - started) / duration, 1);
-      var value = target * easeOut(progress);
+    function show(value) {
       el.textContent = value.toLocaleString(undefined, {
         minimumFractionDigits: decimals, maximumFractionDigits: decimals,
       }) + suffix;
-      if (progress < 1) window.requestAnimationFrame(step);
     }
+
+    function finish() {
+      if (done) return;
+      done = true;
+      show(target);
+      document.removeEventListener("visibilitychange", finish);
+    }
+
+    function step(now) {
+      if (done) return;
+      if (started === null) started = now;
+      var progress = Math.min((now - started) / duration, 1);
+      if (progress >= 1) { finish(); return; }
+      show(target * easeOut(progress));
+      window.requestAnimationFrame(step);
+    }
+
+    // An interrupted count must never leave a WRONG number on the page.
+    // requestAnimationFrame is throttled to nothing in a background tab, which
+    // froze these part-way and left "105 Billy answers a day" on screen --
+    // a false claim about the product, sitting there indefinitely.
+    // So: snap to the real value if the tab is hidden, and keep a watchdog in
+    // case frames stop arriving for any other reason.
+    document.addEventListener("visibilitychange", finish);
+    window.setTimeout(finish, duration + 600);
+    if (document.visibilityState === "hidden") { finish(); return; }
+
     window.requestAnimationFrame(step);
   }
 
@@ -143,6 +167,8 @@
       var onScreen = box.bottom > 0 && box.top < (window.innerHeight ||
         document.documentElement.clientHeight);
       if (onScreen || !seen) {
+        // Zero it only at the moment the animation genuinely starts, so the
+        // correct figure is what sits in the markup until then.
         countUp(el);
       } else {
         seen.observe(el);

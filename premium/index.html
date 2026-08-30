@@ -109,7 +109,7 @@
       <div class="price">$0<small>/ forever</small></div>
       <p class="sub">Everything a community needs to run safely. No trial, no card, no expiry.</p>
       <ul>
-        <li><b><span data-billy-count="150">0</span> Billy answers a day</b></li>
+        <li><b><span data-billy-count="150">150</span> Billy answers a day</b></li>
         <li>Anti-raid, honeypot traps and lockdown</li>
         <li>Scam reports and the staff watchlist</li>
         <li>Warnings, timeouts, kicks and bans</li>
@@ -128,7 +128,7 @@
       <div class="price">$4.99<small>/ server / month</small></div>
       <p class="sub">For servers where staff time, not features, is the thing in short supply.</p>
       <ul>
-        <li><b><span data-billy-count="1500">0</span> Billy answers a day</b> &mdash; ten times the free share</li>
+        <li><b><span data-billy-count="1500">1,500</span> Billy answers a day</b> &mdash; ten times the free share</li>
         <li>Billy writes ticket replies for staff to send with one press</li>
         <li>Alerts when a ticket has been waiting too long</li>
         <li>Connect your game: look up players, check bans, verify accounts</li>
@@ -184,7 +184,7 @@
   <footer>
     <a href="/">Home</a> &middot; <a href="/commands/">Commands</a> &middot;
     <a href="/dashboard/">Control room</a> &middot; <a href="/status/">Status</a> &middot;
-    <a href="/terms/">Terms</a> &middot; <a href="/privacy/">Privacy</a>
+    <a href="/terms/">Terms</a> &middot; <a href="/privacy/">Privacy</a> &middot; <a href="#" onclick="window.billyConsentReopen();return false;">Cookie choices</a>
     <br/>Prices in USD. Billing and card handling are done entirely by our payment provider.
   </footer>
 </div>
@@ -407,5 +407,5 @@ const BILLING_LIVE = false;
 })();
 </script>
 <script src="/motion.js" defer></script>
-</body>
+<script src="/consent.js" defer></script></body>
 </html>
