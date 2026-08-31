@@ -1183,27 +1183,51 @@ setOverviewText('moderationFalsePositivesNote',falsePositives?'Reviews staff dis
       document.querySelectorAll('.server-name').forEach(node=>node.textContent=name);
       setOverviewText('overviewSources','Loading sources…');setOverviewText('overviewMembers','Loading members…');
       try{
-        await Promise.all([loadOptionalDashboardData(guildId),loadTicketDesign(guildId)]);
-        await refreshOverviewStats(guildId);
-        /* An older copy of loadGuild used to fetch these and was overridden by
-           this one, so approved knowledge sources, settings and the activity
-           cards silently stopped rendering even when the server had them. */
-        await loadKnowledgeAndSettings(guildId);
-        void loadActivityCards(guildId);
+        /* ONE wave, not four.
+           These used to run one after another: tickets, then overview, then
+           knowledge and settings, then features. Nothing in any of them needs
+           a result from an earlier one, so all that sequencing bought was
+           three extra round trips at 0.7-1.2s each -- three to five seconds of
+           "Loading…" for about seven milliseconds of actual database work.
+
+           allSettled rather than all: with six requests in flight together,
+           one failing endpoint must not blank the other five. */
+        const results=await Promise.allSettled([
+          loadOptionalDashboardData(guildId),
+          loadTicketDesign(guildId),
+          refreshOverviewStats(guildId),
+          /* An older copy of loadGuild used to fetch these and was overridden
+             by this one, so approved knowledge sources, settings and the
+             activity cards silently stopped rendering even when the server
+             had them. */
+          loadKnowledgeAndSettings(guildId),
+          loadActivityCards(guildId)
+        ]);
+        const failed=results.filter(r=>r.status==='rejected');
+        if(failed.length===results.length){
+          showToast(explainApiError(failed[0].reason),'Could not load live data')
+        } else if(failed.length){
+          /* Partial failure is worth knowing about but must not look like the
+             whole dashboard broke, because most of it just loaded. */
+          console.warn('Some dashboard data did not load',failed.map(f=>f.reason))
+        }
         startStatsPolling(guildId);
         startStream(guildId);
         void loadPremium();
       }catch(error){showToast(explainApiError(error),'Could not load live data')}
     }
     async function loadKnowledgeAndSettings(guildId){
-      const [knowledge,settings]=await Promise.all([
+      /* /features used to be fetched AFTER knowledge and settings came back,
+         which made it a whole extra round trip for data that depends on
+         neither of them. All three go together now. */
+      const [knowledge,settings,features]=await Promise.all([
         optionalGuildRequest(guildId,'/knowledge'),
-        optionalGuildRequest(guildId,'/settings')
+        optionalGuildRequest(guildId,'/settings'),
+        optionalGuildRequest(guildId,'/features')
       ]);
       if(knowledge)renderKnowledge(knowledge);
       if(settings&&settings.settings){renderSettings(settings.settings);renderAutomationCards(settings.settings)}
       else renderAutomationCards(null);
-      const features=await optionalGuildRequest(guildId,'/features');
       renderFeatureCards(features&&features.features)
     }
     /* ---- Modules: the page that actually changes Billy ------------------
