@@ -435,10 +435,14 @@
    number. The dialog above only chooses a method and collects a coupon; both
    travel to the provider's page, where the details are actually entered.
 
-   Flip this to true once the payment keys are set on the bot. Until then the
-   Purchase button says so rather than sending anyone to a checkout that would
-   fail -- the dialog itself still opens so the flow can be reviewed. */
-const BILLING_LIVE = false;
+   This is no longer flipped by hand. Billy's public /api/health reports
+   `payments_available` -- a boolean, never a key or a secret -- and the page
+   asks on load, so the buttons switch on by themselves the moment payments are
+   configured on the server. It stays false if the answer is no OR the request
+   fails, so the failure direction is always "the button says soon" rather than
+   "the button opens a checkout that errors". */
+let BILLING_LIVE = false;
+const BILLY_API = "https://billyserverai.duckdns.org";
 
 /* Every paid plan in one place. The dialog reads the plan off whichever
    button opened it, so it can never show one price and check out another --
@@ -479,23 +483,53 @@ var BILLY_PLANS = {
       plan = key;
       openSheet(event);
     });
-    if (BILLING_LIVE) {
-      button.textContent = config.cta;
-      // Ultimate keeps its rainbow edge rather than being painted gold.
-      button.className = key === "ultimate" ? "cta ghost" : "cta primary";
-      button.removeAttribute("aria-disabled");
-      var note = document.getElementById(config.note);
-      if (note) {
-        note.innerHTML = "Google Pay, PayPal, Apple Pay or card. Cancel any time.";
-      }
-    }
   });
 
-  if (!BILLING_LIVE) {
-    go.textContent = "Checkout opening soon";
-    go.classList.add("pending");
-    go.removeAttribute("href");
+  /* Called once now, and again if /api/health says checkout is ready. */
+  function applyBillingState() {
+    Object.keys(BILLY_PLANS).forEach(function (key) {
+      var config = BILLY_PLANS[key];
+      var button = document.getElementById(config.button);
+      if (!button) { return; }
+      if (BILLING_LIVE) {
+        button.textContent = config.cta;
+        // Ultimate and Infinity keep their own edge rather than being painted gold.
+        button.className = (key === "premium") ? "cta primary" : "cta ghost";
+        button.removeAttribute("aria-disabled");
+      } else {
+        button.textContent = "Checkout opening soon";
+        button.className = "cta pending";
+        button.setAttribute("aria-disabled", "true");
+      }
+    });
+    if (BILLING_LIVE) {
+      go.textContent = "Continue to checkout";
+      go.classList.remove("pending");
+      updateLink();
+    } else {
+      go.textContent = "Checkout opening soon";
+      go.classList.add("pending");
+      go.removeAttribute("href");
+    }
   }
+  applyBillingState();
+
+  /* Ask Billy whether a checkout can actually be opened. A boolean is all that
+     crosses: no key, id or secret is exposed by this endpoint. */
+  (function () {
+    var controller = new AbortController();
+    var timeout = setTimeout(function () { controller.abort(); }, 8000);
+    fetch(BILLY_API + "/api/health", { cache: "no-store", signal: controller.signal })
+      .then(function (response) { return response.ok ? response.json() : null; })
+      .then(function (health) {
+        if (health && health.payments_available) {
+          BILLING_LIVE = true;
+          applyBillingState();
+        }
+      })
+      .catch(function () { /* stays "opening soon", which is the safe direction */ })
+      .finally(function () { clearTimeout(timeout); });
+  })();
 
   function openSheet(event) {
     if (event) { event.preventDefault(); }
