@@ -216,10 +216,10 @@
     <section class="plan infinity cosmic">
       <span class="kicker">Billy Infinity</span>
       <h2>Infinity</h2>
-      <div class="price">Not for sale</div>
+      <div class="price">$19.99<small>/ server / month</small></div>
       <p class="sub">
-        The top tier, and the only one you cannot buy. It is given out by Billy&rsquo;s owner,
-        and won in the Billy official server.
+        The most Billy can be. Every limit gone, every command, and no daily
+        answer cap at all.
       </p>
       <ul>
         <li><b>Everything unlimited</b> &mdash; every limit in Billy lifted, with no ceiling
@@ -227,12 +227,12 @@
         <li><b>Every command</b>, including all of Ultimate's network tools</li>
         <li><b>No daily answer cap</b> at all</li>
         <li>Cosmic embeds and a 🌌 on Billy's name in your server</li>
-        <li>Never expires unless it is taken back</li>
+        <li>Everything in Ultimate, with no ceiling anywhere</li>
       </ul>
-      <span class="cta" aria-disabled="true">Given, not sold</span>
-      <p class="under">
-        Win it in a giveaway in the Billy official server, or receive it
-        directly from Billy&rsquo;s owner.
+      <a class="cta pending" id="buy-infinity" href="#" aria-disabled="true" data-billy-press>Checkout opening soon</a>
+      <p class="under" id="buy-infinity-note">
+        Google Pay, PayPal, Apple Pay or card. Cancel any time.
+        Also given out by Billy&rsquo;s owner and won in the official server.
       </p>
     </section>
   </div>
@@ -451,6 +451,10 @@ var BILLY_PLANS = {
   ultimate: {
     button: "buy-ultimate", note: "buy-ultimate-note",
     label: "Billy Ultimate", cta: "Get Billy Ultimate", total: "$8.99"
+  },
+  infinity: {
+    button: "buy-infinity", note: "buy-infinity-note",
+    label: "Billy Infinity", cta: "Get Billy Infinity", total: "$19.99"
   }
 };
 
