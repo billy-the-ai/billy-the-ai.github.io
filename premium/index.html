@@ -85,13 +85,14 @@
   /* Billy Moderator. Red, and deliberately still: Ultimate is the tier named
      for a moving colour, and two animated cards on one page cancel each other
      out. */
-  .plan.moderator{border-color:rgba(220,56,56,.5);
-    background:radial-gradient(130% 130% at 50% -25%,rgba(220,56,56,.14),var(--surface))}
-  .plan.moderator .kicker{color:#ff7a6b}
-  .plan.moderator .price{font-size:30px;color:#ff7a6b}
-  .plan.moderator li::before{background:#e03838}
-  .plan.moderator .cta{border:1px solid rgba(220,56,56,.45);color:#ffb3a8;
-    background:rgba(220,56,56,.10);cursor:default}
+  .plan.infinity{border-color:rgba(139,92,246,.55)}
+  .plan.infinity .kicker{color:#c9a6ff}
+  .plan.infinity .price{font-size:30px;color:#d8c8ff}
+  .plan.infinity h2,.plan.infinity li,.plan.infinity .sub{color:#efeaff}
+  .plan.infinity li::before{background:#a78bfa}
+  .plan.infinity .cta{border:1px solid rgba(167,139,250,.5);color:#e6dcff;
+    background:rgba(139,92,246,.16);cursor:default}
+  .cosmic{position:relative;overflow:hidden;isolation:isolate;background:linear-gradient(160deg,#140d2b 0%,#1d1140 45%,#0d0a1f 100%)}.cosmic::before{content:'';position:absolute;inset:-40%;z-index:0;pointer-events:none;background:radial-gradient(38% 30% at 22% 28%,rgba(139,92,246,.42),transparent 70%),radial-gradient(32% 26% at 78% 70%,rgba(56,189,248,.30),transparent 70%),radial-gradient(30% 24% at 62% 20%,rgba(236,72,153,.26),transparent 70%);animation:cosmicDrift 42s linear infinite}.cosmic::after{content:'';position:absolute;inset:0;z-index:1;pointer-events:none;opacity:.9;background-image:radial-gradient(1.6px 1.6px at 18% 22%,rgba(255,255,255,.95),transparent 55%),radial-gradient(1.3px 1.3px at 72% 12%,rgba(255,255,255,.85),transparent 55%),radial-gradient(1.8px 1.8px at 42% 68%,rgba(255,255,255,.90),transparent 55%),radial-gradient(1.2px 1.2px at 88% 48%,rgba(214,222,255,.80),transparent 55%),radial-gradient(1.5px 1.5px at 8% 76%,rgba(255,255,255,.80),transparent 55%),radial-gradient(1.1px 1.1px at 58% 88%,rgba(214,222,255,.75),transparent 55%),radial-gradient(1.4px 1.4px at 32% 40%,rgba(255,255,255,.70),transparent 55%),radial-gradient(1.0px 1.0px at 92% 84%,rgba(255,255,255,.65),transparent 55%);background-size:220px 220px,300px 300px,260px 260px,340px 340px,200px 200px,280px 280px,320px 320px,240px 240px;animation:cosmicStars 90s linear infinite}.cosmic>*{position:relative;z-index:2}@keyframes cosmicDrift{0%{transform:rotate(0deg) scale(1)}50%{transform:rotate(180deg) scale(1.12)}100%{transform:rotate(360deg) scale(1)}}@keyframes cosmicStars{0%{background-position:0 0,0 0,0 0,0 0,0 0,0 0,0 0,0 0}100%{background-position:220px 440px,-300px 300px,260px 520px,-340px 340px,200px 400px,-280px 280px,320px 640px,-240px 240px}}@media (prefers-reduced-motion:reduce){.cosmic::before,.cosmic::after{animation:none}}
 
   /* Motion is decoration here, never information: everything above still reads
      correctly when the colours stop. */
@@ -212,26 +213,26 @@
       </p>
     </section>
 
-    <section class="plan moderator">
-      <span class="kicker">Billy Moderator</span>
-      <h2>Moderator</h2>
+    <section class="plan infinity cosmic">
+      <span class="kicker">Billy Infinity</span>
+      <h2>Infinity</h2>
       <div class="price">Not for sale</div>
       <p class="sub">
-        The top tier, and the only one you cannot buy. It is given to moderators,
-        and given away in the Billy official server.
+        The top tier, and the only one you cannot buy. It is given out by Billy&rsquo;s owner,
+        and won in the Billy official server.
       </p>
       <ul>
         <li><b>Everything unlimited</b> &mdash; every limit in Billy lifted, with no ceiling
           on anything</li>
         <li><b>Every command</b>, including all of Ultimate's network tools</li>
         <li><b>No daily answer cap</b> at all</li>
-        <li>Red embeds and a 🛡️ on Billy's name in your server</li>
+        <li>Cosmic embeds and a 🌌 on Billy's name in your server</li>
         <li>Never expires unless it is taken back</li>
       </ul>
       <span class="cta" aria-disabled="true">Given, not sold</span>
       <p class="under">
-        Win it in a giveaway in the Billy official server, or receive it as a
-        Billy moderator.
+        Win it in a giveaway in the Billy official server, or receive it
+        directly from Billy&rsquo;s owner.
       </p>
     </section>
   </div>
