@@ -1,0 +1,272 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>The Billy Network | Billy the AI</title>
+<meta name="description" content="Billy is installed across Gorilla Tag fan-game communities at once. This is what that network looks like, live."/>
+<link rel="icon" href="/icon.png" sizes="512x512" type="image/png"/>
+<link rel="stylesheet" href="/motion.css"/>
+<style>
+  :root{--bg:#0b0a08;--surface:rgba(20,18,14,.72);--line:rgba(255,226,190,.17);
+    --cream:#fff8ec;--muted:#a9a29a;--amber:#e9a65c;--amber-2:#f4c187;--green:#6fe0a5}
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--bg);color:var(--cream);
+    font-family:'Segoe UI',system-ui,sans-serif;line-height:1.6;
+    -webkit-font-smoothing:antialiased}
+  a{color:inherit}
+  .wrap{max-width:1080px;margin:0 auto;padding:0 22px}
+
+  /* Nav matches the rest of the site. Plain anchors, so they always navigate. */
+  .nav{display:flex;align-items:center;gap:14px;padding:18px 0;border-bottom:1px solid var(--line)}
+  .nav .brand{display:flex;align-items:center;gap:10px;font-weight:900;letter-spacing:.06em;
+    text-decoration:none}
+  .nav .brand img{width:30px;height:30px;border-radius:9px}
+  .nav .spacer{margin-left:auto}
+  .nav a.link{color:var(--muted);text-decoration:none;font-weight:700;font-size:14px}
+  .nav a.link:hover{color:var(--cream)}
+  .nav a.cta{background:var(--amber);color:#2a1c0c;text-decoration:none;font-weight:900;
+    padding:9px 15px;border-radius:11px;font-size:14px}
+
+  header.hero{padding:64px 0 34px;text-align:center}
+  .kicker{font-size:11px;letter-spacing:.2em;text-transform:uppercase;color:var(--amber);
+    font-weight:800;margin:0 0 12px}
+  h1{font-size:clamp(30px,6vw,52px);line-height:1.1;margin:0 0 14px;font-weight:800}
+  header.hero p{color:var(--muted);max-width:60ch;margin:0 auto;font-size:16px}
+
+  .stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(190px,1fr));gap:16px;
+    margin:38px 0 12px}
+  .stat{border:1px solid var(--line);border-radius:18px;background:var(--surface);padding:22px}
+  .stat b{display:block;font-size:clamp(26px,4vw,38px);line-height:1.1;
+    font-variant-numeric:tabular-nums}
+  .stat span{display:block;color:var(--muted);font-size:12.5px;margin-top:6px;
+    letter-spacing:.02em}
+  .stat small{display:block;color:#7d766c;font-size:11px;margin-top:8px;line-height:1.5}
+
+  .live{display:inline-flex;align-items:center;gap:8px;font-size:12px;color:var(--muted);
+    border:1px solid var(--line);border-radius:999px;padding:6px 13px}
+  .dot{width:8px;height:8px;border-radius:50%;background:var(--green);
+    box-shadow:0 0 0 0 rgba(111,224,165,.6);animation:pulse 2.4s ease-out infinite}
+  .dot.bad{background:#ff9f8a;animation:none}
+  @keyframes pulse{70%{box-shadow:0 0 0 9px rgba(111,224,165,0)}
+    100%{box-shadow:0 0 0 0 rgba(111,224,165,0)}}
+
+  section.block{padding:44px 0;border-top:1px solid var(--line);margin-top:44px}
+  h2{font-size:clamp(22px,3.4vw,30px);margin:0 0 10px}
+  section.block>p{color:var(--muted);max-width:68ch;margin:0 0 22px}
+
+  .parts{display:grid;gap:10px;max-width:640px}
+  .part{display:flex;align-items:center;gap:12px;border:1px solid var(--line);
+    border-radius:13px;background:var(--surface);padding:13px 16px}
+  .part b{font-size:14px}
+  .part span{margin-left:auto;font-size:12px;color:var(--muted)}
+
+  .cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:16px}
+  .card{border:1px solid var(--line);border-radius:18px;background:var(--surface);padding:22px}
+  .card h3{margin:0 0 8px;font-size:17px}
+  .card p{margin:0;color:var(--muted);font-size:13.5px;line-height:1.6}
+
+  .promise{border:1px solid rgba(111,224,165,.3);background:rgba(111,224,165,.06);
+    border-radius:18px;padding:24px;margin-top:26px}
+  .promise h3{margin:0 0 8px;font-size:17px}
+  .promise p{margin:0 0 10px;color:#cfc7ba;font-size:13.5px;line-height:1.65}
+  .promise p:last-child{margin:0}
+
+  footer{border-top:1px solid var(--line);margin-top:52px;padding:28px 0 48px;
+    color:var(--muted);font-size:13px;display:flex;gap:18px;flex-wrap:wrap}
+  footer a{color:var(--muted)}
+
+  @media (prefers-reduced-motion:reduce){.dot{animation:none}}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <nav class="nav">
+    <a class="brand" href="/"><img src="/billy-icon.webp" alt=""/> BILLY</a>
+    <span class="spacer"></span>
+    <a class="link" href="/">Home</a>
+    <a class="link" href="/commands">Commands</a>
+    <a class="link" href="/premium/">Subscriptions</a>
+    <a class="cta" href="https://discord.com/oauth2/authorize?client_id=1515868648819003402&amp;scope=bot%20applications.commands">Add to Discord</a>
+  </nav>
+
+  <header class="hero">
+    <p class="kicker">The Billy Network</p>
+    <h1>One bot. Every fan game.</h1>
+    <p>
+      Billy is not installed in one community &mdash; he is installed across a whole set of
+      Gorilla Tag fan-game servers at once. That is the thing no single server can build
+      for itself, and this is what it looks like right now.
+    </p>
+    <p style="margin-top:18px">
+      <span class="live"><i class="dot" id="liveDot"></i><span id="liveText">Checking Billy…</span></span>
+    </p>
+  </header>
+
+  <div class="stats" id="stats">
+    <article class="stat"><b id="nCommunities">—</b><span>Communities</span>
+      <small>Servers Billy is in right now.</small></article>
+    <article class="stat"><b id="nMembers">—</b><span>Members reached</span>
+      <small>Everyone in those communities combined.</small></article>
+    <article class="stat"><b id="nQuestions">—</b><span>Questions answered</span>
+      <small>Every answer Billy has given.</small></article>
+    <article class="stat"><b id="nKnowledge">—</b><span>Approved knowledge sources</span>
+      <small>Channels communities let Billy learn from.</small></article>
+    <article class="stat"><b id="nMessages">—</b><span>Messages understood</span>
+      <small>What Billy has read to answer from.</small></article>
+    <article class="stat"><b id="nModeration">—</b><span>Moderation actions</span>
+      <small>Recorded by staff, never taken automatically.</small></article>
+  </div>
+
+  <section class="block">
+    <h2>Is Billy working?</h2>
+    <p>The same checks Billy runs on himself. No account needed &mdash; &ldquo;is Billy
+      down?&rdquo; is the one question nobody should have to log in to answer.</p>
+    <div class="parts" id="parts">
+      <div class="part"><b>Loading…</b><span>checking</span></div>
+    </div>
+    <p style="margin-top:16px;font-size:12.5px" id="checkedAt"></p>
+  </section>
+
+  <section class="block">
+    <h2>What a network makes possible</h2>
+    <p>A bot in one server only knows that server. Billy sees the same people move between
+      fan games, and that changes what he can tell you.</p>
+    <div class="cards">
+      <article class="card">
+        <h3>Reputation, before the trouble</h3>
+        <p>Check whether someone was removed from other fan-game communities before they
+          settle into yours. Counts only &mdash; never a server&rsquo;s name.</p>
+      </article>
+      <article class="card">
+        <h3>Sweep who you already have</h3>
+        <p>Scan every current member against the network in one command, and see who is
+          worth a closer look.</p>
+      </article>
+      <article class="card">
+        <h3>One announcement, every server</h3>
+        <p>Run several fan-game servers? Say it once and Billy posts it in all of them.</p>
+      </article>
+      <article class="card">
+        <h3>Knowledge that stays current</h3>
+        <p>Billy follows the channels each community approves and keeps its answers
+          specific to that server.</p>
+      </article>
+    </div>
+
+    <div class="promise">
+      <h3>What the network never does</h3>
+      <p>A reputation check reports <b>numbers</b>. Billy never passes on another
+        server&rsquo;s name, its moderators, or the reasons they wrote &mdash; those are
+        someone else&rsquo;s private staff decisions and not his to hand out.</p>
+      <p>A community that changed its mind and lifted a ban does not leave it on
+        somebody&rsquo;s record. It is a reason to look more closely, never a reason to
+        punish on its own, and Billy never acts on it by himself.</p>
+      <p>Any server can stop contributing with <code>/ultimate sharing</code> &mdash;
+        free or paid, no questions.</p>
+    </div>
+  </section>
+
+  <footer>
+    <a href="/">Billy the AI</a>
+    <a href="/commands">Command library</a>
+    <a href="/premium/">Subscriptions</a>
+    <a href="https://discord.gg/uXHNJz6fDh">Official Discord</a>
+    <a href="/privacy">Privacy</a>
+  </footer>
+</div>
+
+<script>
+/* Everything on this page comes from Billy's own public status endpoint, which
+   needs no account and returns aggregate counts only -- no server is named and
+   nothing can be traced back to one community. */
+(function () {
+  var API = "https://billyserverai.duckdns.org";
+
+  function number(value) {
+    return typeof value === "number" ? value.toLocaleString() : "—";
+  }
+
+  /* Count up to the real figure. The value is written FIRST and the animation
+     only decorates it, so a reader who arrives mid-count or has motion turned
+     off still sees the true number rather than a frozen partial one. */
+  function show(id, value) {
+    var node = document.getElementById(id);
+    if (!node || typeof value !== "number") { return; }
+    node.textContent = number(value);
+    if (window.matchMedia("(prefers-reduced-motion: reduce)").matches || value < 50) { return; }
+    var started = null, duration = 900;
+    function step(now) {
+      if (started === null) { started = now; }
+      var progress = Math.min((now - started) / duration, 1);
+      var eased = 1 - Math.pow(1 - progress, 3);
+      node.textContent = number(Math.round(value * eased));
+      if (progress < 1) { requestAnimationFrame(step); }
+      else { node.textContent = number(value); }
+    }
+    requestAnimationFrame(step);
+  }
+
+  function renderParts(parts, ok) {
+    var box = document.getElementById("parts");
+    box.replaceChildren();
+    (parts || []).forEach(function (part) {
+      var row = document.createElement("div");
+      row.className = "part";
+      var dot = document.createElement("i");
+      dot.className = "dot" + (part.ok ? "" : " bad");
+      var name = document.createElement("b");
+      name.textContent = part.name;
+      var note = document.createElement("span");
+      note.textContent = part.note || (part.ok ? "working" : "not working");
+      row.append(dot, name, note);
+      box.append(row);
+    });
+    var dot = document.getElementById("liveDot");
+    var text = document.getElementById("liveText");
+    if (ok) { dot.className = "dot"; text.textContent = "Billy is online"; }
+    else { dot.className = "dot bad"; text.textContent = "Billy is having trouble"; }
+  }
+
+  var controller = new AbortController();
+  var timeout = setTimeout(function () { controller.abort(); }, 12000);
+
+  fetch(API + "/api/status", { cache: "no-store", signal: controller.signal })
+    .then(function (response) { return response.ok ? response.json() : null; })
+    .then(function (data) {
+      if (!data) { throw new Error("no data"); }
+      var n = data.network || {};
+      show("nCommunities", n.communities);
+      show("nMembers", n.members);
+      show("nQuestions", n.questions_answered);
+      show("nKnowledge", n.knowledge_sources);
+      show("nMessages", n.messages_understood);
+      show("nModeration", n.moderation_actions);
+      renderParts(data.parts, data.ok);
+      if (data.checked_at) {
+        document.getElementById("checkedAt").textContent =
+          "Checked " + new Date(data.checked_at).toLocaleString() + ".";
+      }
+    })
+    .catch(function () {
+      /* Say so plainly rather than leaving dashes that look like zero. */
+      document.getElementById("liveDot").className = "dot bad";
+      document.getElementById("liveText").textContent = "Could not reach Billy";
+      document.getElementById("parts").replaceChildren();
+      var row = document.createElement("div");
+      row.className = "part";
+      var name = document.createElement("b");
+      name.textContent = "Billy did not answer";
+      var note = document.createElement("span");
+      note.textContent = "he may be restarting";
+      row.append(name, note);
+      document.getElementById("parts").append(row);
+    })
+    .finally(function () { clearTimeout(timeout); });
+})();
+</script>
+<script src="/motion.js" defer></script>
+<script src="/analytics.js" defer></script><script src="/consent.js" defer></script>
+</body>
+</html>
