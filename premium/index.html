@@ -79,6 +79,17 @@
   .plan.ultimate .cta.pending{border-color:rgba(196,113,237,.4)}
   .tier-note{color:var(--muted);font-size:13px;line-height:1.6;margin:-28px 0 40px;
     max-width:640px}
+  .billing-switch{display:flex;justify-content:center;gap:8px;margin:0 0 26px;flex-wrap:wrap}
+  .billing-switch[hidden]{display:none}
+  .switch-group{display:inline-flex;border:1px solid var(--line);border-radius:999px;padding:4px;
+    background:rgba(20,18,14,.7)}
+  .switch-group button{border:0;background:transparent;color:var(--muted);font-weight:800;
+    font-size:12.5px;padding:8px 16px;border-radius:999px;cursor:pointer;transition:.16s ease}
+  .switch-group button[aria-pressed="true"]{background:var(--amber);color:#2a1c0c}
+  .save-flag{display:inline-flex;align-items:center;font-size:11px;font-weight:900;
+    letter-spacing:.06em;text-transform:uppercase;color:#6fe0a5;
+    background:rgba(111,224,165,.14);border-radius:999px;padding:5px 10px}
+  .period-note{color:var(--muted);font-size:12px;margin:8px 0 0;text-align:center;width:100%}
   .sheet-plan{color:var(--amber);font-size:13px;font-weight:700;letter-spacing:.02em;
     margin:4px 0 0}
 
@@ -148,6 +159,18 @@
     its members safe stays free &mdash; on every plan, in every server, permanently.
   </p>
 
+  <div class="billing-switch" id="billingSwitch" hidden>
+    <div class="switch-group" role="group" aria-label="Billing period">
+      <button type="button" id="periodMonthly" aria-pressed="true">Monthly</button>
+      <button type="button" id="periodAnnual" aria-pressed="false">Yearly</button>
+    </div>
+    <span class="save-flag" id="saveFlag" hidden>2 months free</span>
+    <div class="switch-group" role="group" aria-label="How many servers">
+      <button type="button" id="scopeOne" aria-pressed="true">One server</button>
+      <button type="button" id="scopeAll" aria-pressed="false">All my servers</button>
+    </div>
+    <p class="period-note" id="periodNote"></p>
+  </div>
   <div class="plans" data-billy-reveal>
     <section class="plan">
       <span class="kicker">Free</span>
@@ -447,6 +470,31 @@ const BILLY_API = "https://billyserverai.duckdns.org";
 /* Every paid plan in one place. The dialog reads the plan off whichever
    button opened it, so it can never show one price and check out another --
    which, before this existed, is exactly what a second plan would have done. */
+/* What a plan costs per month, so yearly and bundle totals can be shown
+   without this page ever deciding a real price -- the provider still does that
+   at checkout. Ten months for a year (two free) and three servers for the
+   bundle, matching ANNUAL_MONTHS_CHARGED and BUNDLE_MULTIPLIER on the bot. */
+var BILLY_MONTHLY = {premium: 4.99, ultimate: 8.99, infinity: 19.99};
+var ANNUAL_MONTHS_CHARGED = 10;
+var BUNDLE_MULTIPLIER = 3;
+var billingPeriod = "monthly";
+var billingScope = "one";
+var billingOptions = [];
+
+function planPrice(key) {
+  var monthly = BILLY_MONTHLY[key];
+  if (typeof monthly !== "number") { return null; }
+  var amount = monthly * (billingScope === "all" ? BUNDLE_MULTIPLIER : 1);
+  if (billingPeriod === "annual") { amount = amount * ANNUAL_MONTHS_CHARGED; }
+  return amount;
+}
+
+function priceLabel(key) {
+  var amount = planPrice(key);
+  if (amount === null) { return ""; }
+  return "$" + amount.toFixed(2);
+}
+
 var BILLY_PLANS = {
   premium: {
     button: "buy", note: "buy-note",
@@ -514,6 +562,74 @@ var BILLY_PLANS = {
   }
   applyBillingState();
 
+  /* The switches appear only for combinations Billy reports as configured.
+     A yearly toggle that leads to a checkout which cannot open is worse than
+     no toggle at all -- this page already learned that with BILLING_LIVE. */
+  function hasOption(period, bundle) {
+    return billingOptions.some(function (option) {
+      return option.period === period && !!option.bundle === bundle;
+    });
+  }
+
+  function paintPrices() {
+    Object.keys(BILLY_PLANS).forEach(function (key) {
+      var card = document.getElementById(BILLY_PLANS[key].button);
+      if (!card) { return; }
+      var price = card.closest(".plan") && card.closest(".plan").querySelector(".price");
+      if (!price) { return; }
+      var shown = priceLabel(key);
+      if (!shown) { return; }
+      price.innerHTML = shown + "<small>/ " +
+        (billingScope === "all" ? "all servers" : "server") + " / " +
+        (billingPeriod === "annual" ? "year" : "month") + "</small>";
+    });
+    var note = document.getElementById("periodNote");
+    if (note) {
+      note.textContent = billingScope === "all"
+        ? "One subscription covers every server you own, however many that is."
+        : "";
+    }
+    var flag = document.getElementById("saveFlag");
+    if (flag) { flag.hidden = billingPeriod !== "annual"; }
+  }
+
+  function press(onId, offId, pressedOn) {
+    var on = document.getElementById(onId), off = document.getElementById(offId);
+    if (on) { on.setAttribute("aria-pressed", pressedOn ? "true" : "false"); }
+    if (off) { off.setAttribute("aria-pressed", pressedOn ? "false" : "true"); }
+  }
+
+  function setUpBillingSwitches() {
+    var box = document.getElementById("billingSwitch");
+    if (!box || !billingOptions.length) { return; }
+    box.hidden = false;
+    var annualButton = document.getElementById("periodAnnual");
+    var bundleButton = document.getElementById("scopeAll");
+    if (annualButton && !hasOption("annual", false) && !hasOption("annual", true)) {
+      annualButton.hidden = true;
+    }
+    if (bundleButton && !hasOption("monthly", true) && !hasOption("annual", true)) {
+      bundleButton.hidden = true;
+    }
+    document.getElementById("periodMonthly").addEventListener("click", function () {
+      billingPeriod = "monthly"; press("periodMonthly", "periodAnnual", true); paintPrices();
+    });
+    if (annualButton) {
+      annualButton.addEventListener("click", function () {
+        billingPeriod = "annual"; press("periodMonthly", "periodAnnual", false); paintPrices();
+      });
+    }
+    document.getElementById("scopeOne").addEventListener("click", function () {
+      billingScope = "one"; press("scopeOne", "scopeAll", true); paintPrices();
+    });
+    if (bundleButton) {
+      bundleButton.addEventListener("click", function () {
+        billingScope = "all"; press("scopeOne", "scopeAll", false); paintPrices();
+      });
+    }
+    paintPrices();
+  }
+
   /* Ask Billy whether a checkout can actually be opened. A boolean is all that
      crosses: no key, id or secret is exposed by this endpoint. */
   (function () {
@@ -522,10 +638,13 @@ var BILLY_PLANS = {
     fetch(BILLY_API + "/api/health", { cache: "no-store", signal: controller.signal })
       .then(function (response) { return response.ok ? response.json() : null; })
       .then(function (health) {
-        if (health && health.payments_available) {
+        if (!health) { return; }
+        billingOptions = health.billing_options || [];
+        if (health.payments_available) {
           BILLING_LIVE = true;
           applyBillingState();
         }
+        setUpBillingSwitches();
       })
       .catch(function () { /* stays "opening soon", which is the safe direction */ })
       .finally(function () { clearTimeout(timeout); });
@@ -534,8 +653,16 @@ var BILLY_PLANS = {
   function openSheet(event) {
     if (event) { event.preventDefault(); }
     var config = BILLY_PLANS[plan] || BILLY_PLANS.premium;
-    if (planEl) { planEl.textContent = config.label; }
-    if (totalEl) { totalEl.innerHTML = config.total + "<small>/mo</small>"; }
+    if (planEl) {
+      planEl.textContent = config.label
+        + (billingScope === "all" ? " — every server you own" : "")
+        + (billingPeriod === "annual" ? " (yearly)" : "");
+    }
+    if (totalEl) {
+      var shown = priceLabel(plan) || config.total;
+      totalEl.innerHTML = shown + "<small>" +
+        (billingPeriod === "annual" ? "/yr" : "/mo") + "</small>";
+    }
     updateLink();
     lastFocused = document.activeElement;
     sheet.hidden = false;
@@ -571,6 +698,8 @@ var BILLY_PLANS = {
     // The server is chosen on the dashboard, so the method and coupon ride
     // along in the URL and are applied when the checkout is created.
     var url = "/dashboard/?plan=" + encodeURIComponent(plan)
+      + "&period=" + encodeURIComponent(billingPeriod)
+      + (billingScope === "all" ? "&bundle=1" : "")
       + "&pay=" + encodeURIComponent(chosen);
     var code = (coupon && coupon.value || "").trim();
     if (code) { url += "&coupon=" + encodeURIComponent(code); }
