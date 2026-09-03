@@ -1239,14 +1239,14 @@ setOverviewText('moderationFalsePositivesNote',falsePositives?'Reviews staff dis
        the server always answers with the state it saved, and the page redraws
        from THAT rather than from what the form happened to contain. If Billy
        clamps or rejects a value, what you end up looking at is the truth. */
-    let moduleState=null,moduleChannels=[],moduleFeatureStates=null;
+    let moduleState=null,moduleChannels=[],moduleRoles=[],moduleFeatureStates=null;
 
     async function loadModules(guildId){
       const body=document.getElementById('modulesBody');
       if(!body||!guildId)return;
       try{
         const data=await api('/api/guilds/'+guildId+'/modules');
-        moduleState=data.modules;moduleChannels=data.channels||[];
+        moduleState=data.modules;moduleChannels=data.channels||[];moduleRoles=data.roles||[];
         drawModules()
       }catch(error){
         body.replaceChildren(makeEmptyNote('Could not load modules',explainApiError(error)))
@@ -1345,6 +1345,8 @@ setOverviewText('moderationFalsePositivesNote',falsePositives?'Reviews staff dis
        honest about being set up in Discord and say which command does it,
        because a switch that silently does nothing is worse than no switch. */
     const MODULE_CATALOGUE=[
+      {key:'channels',icon:'#️⃣',name:'Billy\u2019s channels',configurable:true,
+       blurb:'Where Billy posts welcomes, boosts, activity, reports and each log.'},
       {key:'starboard',icon:'⭐',name:'Starboard',badge:'new',configurable:true,
        blurb:'Collect the messages your community reacts to most into one channel.'},
       {key:'autopurge',icon:'🧹',name:'Self-clearing channels',badge:'new',configurable:true,
@@ -1355,9 +1357,9 @@ setOverviewText('moderationFalsePositivesNote',falsePositives?'Reviews staff dis
        blurb:'A role that comes back when a member rejoins, so a mute cannot be escaped.'},
       {key:'afk',icon:'💤',name:'Away messages',badge:'new',command:'/afk',
        blurb:'Members say where they went and Billy tells anyone who pings them.'},
-      {key:'recap',icon:'☀️',name:'Daily recap',command:'/recap on',
+      {key:'recap',icon:'☀️',name:'Daily recap',configurable:true,
        blurb:'A morning digest of yesterday: chat, voice, joins, moderation and tickets.'},
-      {key:'copilot',icon:'🧭',name:'Mod copilot',command:'/copilot on',
+      {key:'copilot',icon:'🧭',name:'Mod copilot',configurable:true,
        blurb:'Briefings about repeat warnings, unclaimed tickets and new-account clusters.'},
       {key:'honeypots',icon:'🍯',name:'Honeypot traps',command:'/protect honeypot',
        blurb:'Channels no real member should post in, to catch bots automatically.'},
@@ -1365,6 +1367,8 @@ setOverviewText('moderationFalsePositivesNote',falsePositives?'Reviews staff dis
        blurb:'Replies your staff wrote, triggered by a name or a keyword.'},
       {key:'events',icon:'🎮',name:'Playtests and events',command:'/event create',
        blurb:'Event cards with RSVP, reminders and start pings in each member timezone.'},
+      {key:'levels',icon:'📈',name:'Level rewards',configurable:true,
+       blurb:'Which role a member earns at which level.'},
       {key:'xp_events',icon:'⚡',name:'XP events',command:'/xpevent start',
        blurb:'Double XP weekends that start, announce and end themselves.'},
       {key:'profiles',icon:'🎯',name:'Player profiles',command:'/profile set',
@@ -1393,6 +1397,10 @@ setOverviewText('moderationFalsePositivesNote',falsePositives?'Reviews staff dis
       if(entry.key==='starboard')return !!(moduleState&&moduleState.starboard&&moduleState.starboard.enabled);
       if(entry.key==='autopurge')return !!(moduleState&&moduleState.autopurge&&moduleState.autopurge.channels.length);
       if(entry.key==='automod')return !!(moduleState&&moduleState.automod&&moduleState.automod.enabled);
+      if(entry.key==='channels')return !!(moduleState&&moduleState.channels&&
+        Object.values(moduleState.channels.fields||{}).some(f=>f.channel_id));
+      if(entry.key==='levels')return !!(moduleState&&moduleState.levels&&
+        moduleState.levels.rewards.length);
       const state=moduleFeatureStates&&moduleFeatureStates[entry.key];
       return !!(state&&state.enabled)
     }
@@ -1534,6 +1542,139 @@ setOverviewText('moderationFalsePositivesNote',falsePositives?'Reviews staff dis
                     minutes:Number(r.querySelector('input').value)}))
           .filter(entry=>entry.channel_id)}));
       if(moduleView==='autopurge')body.append(apCard);
+
+      /* ---- Billy's channels ---- */
+      if(moduleView==='channels'){
+        const ch=moduleState.channels||{fields:{}};
+        const card=moduleCard('#️⃣','Billy\u2019s channels',
+          'Where Billy posts each kind of message. Leave one blank to stop him posting it.',
+          true,()=>{});
+        card.toggle.remove();          /* nothing to switch: it is all channels */
+        const pickers={};
+        Object.entries(ch.fields).forEach(([name,field])=>{
+          const select=channelOptions(field.channel_id,true);
+          /* An explicit "off" option, because "stop posting there" has to be
+             expressible -- not just "I cannot find the right channel". */
+          const none=select.querySelector('option[value=""]');
+          if(none)none.textContent='Do not post this';
+          pickers[name]=select;
+          card.bodyEl.append(moduleRow(field.label,'',select));
+        });
+        const status=moduleActions(card,()=>{
+          const fields={};
+          Object.entries(pickers).forEach(([name,select])=>{fields[name]=select.value});
+          return saveModule('channels',{fields:fields});
+        });
+        void status;
+        body.append(card);
+      }
+
+      /* ---- Level rewards ---- */
+      if(moduleView==='levels'){
+        const lv=moduleState.levels||{rewards:[]};
+        const card=moduleCard('📈','Level rewards',
+          'Give a role automatically when a member reaches a level.',
+          lv.rewards.length>0,()=>{});
+        card.toggle.remove();
+        const list=document.createElement('div');list.className='purge-list';
+        function addReward(level,roleId){
+          const row=document.createElement('div');row.className='purge-row';
+          const roleSelect=document.createElement('select');roleSelect.className='field';
+          const blank=document.createElement('option');blank.value='';blank.textContent='Choose a role';
+          roleSelect.append(blank);
+          (moduleRoles||[]).forEach(r=>{
+            const option=document.createElement('option');
+            option.value=r.id;
+            option.textContent='@'+r.name+(r.usable?'':' — Billy cannot give this');
+            if(!r.usable)option.disabled=true;
+            if(String(r.id)===String(roleId))option.selected=true;
+            roleSelect.append(option)
+          });
+          const levelInput=document.createElement('input');
+          levelInput.className='field';levelInput.type='number';
+          levelInput.min='1';levelInput.max='500';levelInput.value=level||5;
+          const remove=document.createElement('button');
+          remove.type='button';remove.textContent='✕';
+          remove.setAttribute('aria-label','Remove this reward');
+          remove.addEventListener('click',()=>row.remove());
+          row.append(roleSelect,levelInput,remove);
+          list.append(row);
+        }
+        lv.rewards.forEach(r=>addReward(r.level,r.role_id));
+        if(!lv.rewards.length){
+          const note=document.createElement('small');
+          note.style.color='var(--muted)';
+          note.textContent='No level rewards yet. Add one below.';
+          list.append(note);
+        }
+        const add=document.createElement('button');
+        add.className='button';add.type='button';add.textContent='Add a reward';
+        add.addEventListener('click',()=>addReward());
+        card.bodyEl.append(
+          moduleBlock('Rewards','Each row is a role and the level that earns it. Billy can only give roles below his own.',list),
+          add);
+        moduleActions(card,()=>saveModule('levels',{
+          rewards:[...list.querySelectorAll('.purge-row')].map(r=>({
+            role_id:r.querySelector('select').value,
+            level:Number(r.querySelector('input').value)})).filter(x=>x.role_id)}));
+        body.append(card);
+      }
+
+      /* ---- Daily recap ---- */
+      if(moduleView==='recap'){
+        const rc=moduleState.recap||{};
+        const card=moduleCard('☀️','Daily recap',
+          'A morning digest of yesterday: chat, voice, joins, moderation and waiting tickets.',
+          !!rc.enabled,async(toggle)=>{
+            const turningOn=!toggle.classList.contains('on');
+            if(turningOn&&!rcChannel.value){
+              rcStatus.className='mod-status bad';rcStatus.textContent='Choose a channel first.';return}
+            try{
+              const result=await saveModule('recap',turningOn
+                ?{enabled:true,channel_id:rcChannel.value,hour_utc:Number(rcHour.value)}
+                :{enabled:false});
+              moduleState=result.modules;drawModules()
+            }catch(error){rcStatus.className='mod-status bad';rcStatus.textContent=explainApiError(error)}
+          });
+        const rcChannel=channelOptions(rc.channel_id,true);
+        const rcHour=document.createElement('input');
+        rcHour.className='field';rcHour.type='number';rcHour.min='0';rcHour.max='23';
+        rcHour.value=typeof rc.hour_utc==='number'?rc.hour_utc:9;
+        card.bodyEl.append(
+          moduleRow('Channel','Where the digest is posted.',rcChannel),
+          moduleRow('Hour (UTC)','What time it goes out, 0 to 23.',rcHour));
+        const rcStatus=moduleActions(card,()=>saveModule('recap',{
+          enabled:true,channel_id:rcChannel.value,hour_utc:Number(rcHour.value)}));
+        body.append(card);
+      }
+
+      /* ---- Mod copilot ---- */
+      if(moduleView==='copilot'){
+        const cp=moduleState.copilot||{};
+        const card=moduleCard('🧭','Mod copilot',
+          'Briefings about repeat warnings, unclaimed tickets and clusters of new accounts.',
+          !!cp.enabled,async(toggle)=>{
+            const turningOn=!toggle.classList.contains('on');
+            if(turningOn&&!cpChannel.value){
+              cpStatus.className='mod-status bad';cpStatus.textContent='Choose a channel first.';return}
+            try{
+              const result=await saveModule('copilot',turningOn
+                ?{enabled:true,channel_id:cpChannel.value,sensitivity:Number(cpSens.value)}
+                :{enabled:false});
+              moduleState=result.modules;drawModules()
+            }catch(error){cpStatus.className='mod-status bad';cpStatus.textContent=explainApiError(error)}
+          });
+        const cpChannel=channelOptions(cp.channel_id,true);
+        const cpSens=document.createElement('input');
+        cpSens.className='field';cpSens.type='number';cpSens.min='1';cpSens.max='5';
+        cpSens.value=typeof cp.sensitivity==='number'?cp.sensitivity:3;
+        card.bodyEl.append(
+          moduleRow('Channel','A private staff channel, not a public one.',cpChannel),
+          moduleRow('Sensitivity','1 speaks up rarely, 5 speaks up often.',cpSens));
+        const cpStatus=moduleActions(card,()=>saveModule('copilot',{
+          enabled:true,channel_id:cpChannel.value,sensitivity:Number(cpSens.value)}));
+        body.append(card);
+      }
 
       /* ---- AutoMod ---- */
       const am=moduleState.automod;
