@@ -37,6 +37,11 @@
     .billy-dot{width:9px;height:9px;border-radius:50%;background:#5a5145;flex:0 0 9px}
     .billy-mic.live .billy-dot{background:#ff7f79;animation:billyRec 1.1s ease-in-out infinite}
     @keyframes billyRec{0%,100%{opacity:1}50%{opacity:.25}}
+    .billy-voice{display:inline-flex;align-items:center;gap:8px;color:#7d7568;
+      font-size:11px;font-weight:800;letter-spacing:.06em;text-transform:uppercase}
+    .billy-voice select{border:1px solid var(--line);border-radius:999px;
+      padding:9px 12px;background:#12100c;color:var(--cream);font-size:12.5px;
+      font-weight:600;max-width:210px;text-transform:none;letter-spacing:0}
     .billy-typed{display:flex;gap:8px}
     .billy-typed input{width:min(320px,60vw);padding:10px 14px;border:1px solid var(--line);
       border-radius:999px;background:#12100c;color:var(--cream);font-size:13px}
@@ -663,6 +668,9 @@
       <button type="button" class="billy-mic" id="billyMic">
         <span class="billy-dot"></span><span id="billyMicLabel">Start talking</span>
       </button>
+      <label class="billy-voice"><span>Voice</span>
+        <select id="billyVoice" aria-label="Billy’s voice"></select>
+      </label>
       <form class="billy-typed" id="billyForm" autocomplete="off">
         <input id="billyText" placeholder="…or type it instead" maxlength="400">
         <button type="submit">Ask</button>
@@ -3734,32 +3742,147 @@ setOverviewText('moderationFalsePositivesNote',falsePositives?'Reviews staff dis
       resize();
       requestAnimationFrame(draw);
 
-      /* ---- Speaking -------------------------------------------------------- */
+      /* ---- Speaking --------------------------------------------------------
+         Three Chrome bugs are worked around here and each one produced a
+         different "glitch": cancel-then-speak dropping the utterance, the
+         fifteen-second cutoff truncating long answers, and the engine
+         pausing itself mid-queue. */
       const synth=window.speechSynthesis;
-      function pickVoice(){
-        if(!synth)return null;
-        const voices=synth.getVoices()||[];
-        return voices.find(v=>/en-GB/i.test(v.lang)&&/male|daniel|george/i.test(v.name))
-          ||voices.find(v=>/en/i.test(v.lang)&&/male|david|alex|daniel/i.test(v.name))
-          ||voices.find(v=>/en-GB/i.test(v.lang))
-          ||voices.find(v=>/^en/i.test(v.lang))||voices[0]||null;
+      const voiceSelect=document.getElementById('billyVoice');
+      const VOICE_KEY='billy.voice';
+      /* Chrome stops speaking at roughly fifteen seconds. Sentence-sized
+         chunks stay well under it and also give the jaw a natural pause. */
+      const SPEECH_CHUNK=170;
+      let voices=[],britishNoticeShown=false;
+
+      function englishVoices(){
+        const all=(synth&&synth.getVoices?synth.getVoices():[])||[];
+        const english=all.filter(v=>/^en/i.test(v.lang||''));
+        /* British first, because that is what was asked for, then the rest. */
+        english.sort((a,b)=>{
+          const rank=v=>/en[-_]GB/i.test(v.lang)?0:(/en[-_](AU|IE|NZ|ZA|IN)/i.test(v.lang)?1:2);
+          return rank(a)-rank(b)||String(a.name).localeCompare(String(b.name));
+        });
+        return english.length?english:all;
       }
+
+      function fillVoices(){
+        if(!voiceSelect)return;
+        voices=englishVoices();
+        if(!voices.length)return;
+        let saved=null;
+        try{saved=localStorage.getItem(VOICE_KEY)}catch(e){}
+        voiceSelect.textContent='';
+        voices.forEach((v,i)=>{
+          const option=document.createElement('option');
+          option.value=String(i);
+          option.textContent=v.name+(/en[-_]GB/i.test(v.lang)?'  \u00b7 British':'');
+          voiceSelect.append(option);
+        });
+        let index=voices.findIndex(v=>v.name===saved);
+        if(index<0)index=0;   /* englishVoices() already put British first */
+        voiceSelect.value=String(index);
+
+        /* The voice list comes from the operating system and the browser, not
+           from Billy. A machine with no UK English voice installed simply has
+           no British option, and without saying so this looks like a bug in
+           the picker rather than a missing Windows language pack. */
+        if(!voices.some(v=>/en[-_]GB/i.test(v.lang||''))&&!britishNoticeShown){
+          britishNoticeShown=true;
+          note.textContent='No British voice is installed on this computer, so '
+            +'only the ones above are available. On Windows: Settings → Time '
+            +'& Language → Speech → Manage voices → add English '
+            +'(United Kingdom). Chrome also offers “Google UK English” '
+            +'once it has loaded its online voices.';
+        }
+      }
+
+      function chosenVoice(){
+        if(!voices.length)voices=englishVoices();
+        const index=parseInt(voiceSelect&&voiceSelect.value,10);
+        return voices[isNaN(index)?0:index]||voices[0]||null;
+      }
+
+      if(voiceSelect){
+        voiceSelect.addEventListener('change',()=>{
+          const v=chosenVoice();
+          try{if(v)localStorage.setItem(VOICE_KEY,v.name)}catch(e){}
+          /* Say the name in the new voice so the choice is audible at once. */
+          if(v&&synth){try{synth.cancel()}catch(e){}
+            const demo=new SpeechSynthesisUtterance('Right then. This is how I sound.');
+            demo.voice=v;demo.rate=1.03;demo.pitch=0.9;
+            setTimeout(()=>synth.speak(demo),90);
+          }
+        });
+      }
+      fillVoices();
+      /* The list arrives asynchronously in Chrome; the old code called
+         pickVoice() here and discarded the answer, which is why the first
+         reply often used the wrong voice. */
+      if(synth&&'onvoiceschanged' in synth)synth.onvoiceschanged=fillVoices;
+
+      function chunkForSpeech(value){
+        const out=[];
+        let buffer='';
+        String(value||'').split(/(?<=[.!?])\s+/).forEach(part=>{
+          if(!part)return;
+          if((buffer+' '+part).trim().length<=SPEECH_CHUNK){
+            buffer=(buffer+' '+part).trim();return;
+          }
+          if(buffer){out.push(buffer);buffer=''}
+          let rest=part;
+          while(rest.length>SPEECH_CHUNK){
+            let cut=rest.lastIndexOf(' ',SPEECH_CHUNK);
+            if(cut<SPEECH_CHUNK*0.5)cut=SPEECH_CHUNK;
+            out.push(rest.slice(0,cut).trim());
+            rest=rest.slice(cut).trim();
+          }
+          buffer=rest;
+        });
+        if(buffer)out.push(buffer);
+        return out;
+      }
+
+      let speechQueue=[],speakingNow=false;
+      function speakNext(){
+        if(!speechQueue.length){
+          speakingNow=false;amp=0;setMode('idle','Idle');
+          if(listening)listen();       /* the mic comes back only now */
+          return;
+        }
+        const chunk=speechQueue.shift();
+        const utterance=new SpeechSynthesisUtterance(chunk);
+        const voice=chosenVoice();
+        if(voice)utterance.voice=voice;
+        utterance.rate=1.04;utterance.pitch=0.85;
+        utterance.onboundary=()=>{amp=0.55+Math.random()*0.45};
+        utterance.onend=speakNext;
+        utterance.onerror=speakNext;
+        try{synth.speak(utterance)}catch(e){speakNext()}
+      }
+
       function say(spoken,written){
         caption.className='billy-caption';
         caption.textContent=written||spoken;
-        if(!synth||!spoken){setMode('idle','Idle');return}
-        try{synth.cancel()}catch(e){}
-        const u=new SpeechSynthesisUtterance(spoken);
-        const v=pickVoice(); if(v)u.voice=v;
-        u.rate=1.02; u.pitch=0.82;
+        if(!synth||!spoken){setMode('idle','Idle');if(listening)listen();return}
+        /* Billy must not hear himself. Left open, the microphone transcribes
+           his own answer and he replies to it. */
+        pauseRecognition();
         setMode('speaking','Speaking');
-        /* No audio to analyse, so the jaw is kicked once per word and decays.
-           It is procedural, but it is synced to the real word timing. */
-        u.onboundary=()=>{amp=0.55+Math.random()*0.45};
-        u.onend=()=>{amp=0;setMode('idle','Idle');if(listening)listen()};
-        u.onerror=()=>{amp=0;setMode('idle','Idle')};
-        synth.speak(u);
+        speakingNow=true;
+        speechQueue=chunkForSpeech(spoken);
+        try{synth.cancel()}catch(e){}
+        /* cancel() then speak() in the same tick is the Chrome bug that
+           swallowed the first words of an answer. */
+        setTimeout(speakNext,90);
       }
+
+      /* Chrome pauses its own synthesiser during long queues. Resuming only
+         when it is genuinely paused avoids the stutter the usual
+         pause/resume ticker causes. */
+      setInterval(()=>{
+        try{if(synth&&speakingNow&&synth.paused)synth.resume()}catch(e){}
+      },2500);
 
       /* ---- Asking Billy ---------------------------------------------------- */
       async function ask(question){
@@ -3783,16 +3906,39 @@ setOverviewText('moderationFalsePositivesNote',falsePositives?'Reviews staff dis
           caption.textContent='';
           note.textContent=(typeof explainApiError==='function')
             ?explainApiError(error):(error&&error.message||'Billy could not answer.');
+          if(listening)listen();
         }
       }
 
-      /* ---- Listening -------------------------------------------------------- */
+      /* ---- Listening --------------------------------------------------------
+         Continuous, with a silence timer. Waiting for Chrome's isFinal was
+         what made this feel slow: it arrives well after a person has stopped
+         talking, and sometimes not until the session closes. */
       const Recognition=window.SpeechRecognition||window.webkitSpeechRecognition;
-      let recogniser=null, listening=false;
+      const SILENCE_MS=900;
+      let recogniser=null,listening=false,silenceTimer=null,pending='',paused=false;
+
       function listen(){
-        if(!recogniser)return;
-        try{recogniser.start()}catch(e){/* already running */}
+        if(!recogniser||!listening)return;
+        paused=false;
+        try{recogniser.start()}catch(e){/* already running: harmless */}
       }
+      function pauseRecognition(){
+        if(!recogniser)return;
+        paused=true;
+        clearTimeout(silenceTimer);
+        pending='';
+        try{recogniser.stop()}catch(e){}
+      }
+      function submitHeard(value){
+        clearTimeout(silenceTimer);
+        const heard=String(value||'').trim();
+        pending='';
+        if(!heard)return;
+        if(mode==='thinking'||mode==='speaking')return;
+        ask(heard);
+      }
+
       if(!Recognition){
         micBtn.disabled=true;
         micLabel.textContent='Voice not supported here';
@@ -3802,32 +3948,47 @@ setOverviewText('moderationFalsePositivesNote',falsePositives?'Reviews staff dis
         recogniser=new Recognition();
         recogniser.lang='en-GB';
         recogniser.interimResults=true;
-        recogniser.continuous=false;
-        recogniser.onstart=()=>{if(mode!=='speaking')setMode('listening','Listening')};
-        recogniser.onresult=e=>{
-          let text='',final=false;
-          for(let i=e.resultIndex;i<e.results.length;i++){
-            text+=e.results[i][0].transcript;
-            if(e.results[i].isFinal)final=true;
+        /* One long session instead of one per sentence. The old restart loop
+           left a gap on every utterance and dropped whatever landed in it. */
+        recogniser.continuous=true;
+        recogniser.maxAlternatives=1;
+        recogniser.onstart=()=>{if(mode!=='speaking'&&mode!=='thinking')setMode('listening','Listening')};
+        recogniser.onresult=event=>{
+          if(paused||mode==='speaking')return;
+          let finalText='',interim='';
+          for(let i=event.resultIndex;i<event.results.length;i++){
+            const result=event.results[i];
+            if(result.isFinal)finalText+=result[0].transcript;
+            else interim+=result[0].transcript;
           }
-          caption.className='billy-caption you';
-          caption.textContent='\u201c'+text.trim()+'\u201d';
-          if(final&&text.trim())ask(text.trim());
+          const shown=(finalText+' '+interim).trim();
+          if(shown){
+            caption.className='billy-caption you';
+            caption.textContent='\u201c'+shown+'\u201d';
+            pending=shown;
+          }
+          clearTimeout(silenceTimer);
+          if(finalText.trim()){submitHeard(finalText.trim());return}
+          /* Send when they stop talking rather than when Chrome gets round
+             to admitting they stopped. */
+          if(shown)silenceTimer=setTimeout(()=>submitHeard(pending),SILENCE_MS);
         };
         recogniser.onerror=event=>{
-          if(event.error==='not-allowed'){
+          if(event.error==='not-allowed'||event.error==='service-not-allowed'){
             listening=false;micBtn.classList.remove('live');
             micLabel.textContent='Start talking';
             note.textContent='Your browser blocked the microphone. Allow it for '
               +'this page and press the button again.';
             setMode('idle','Idle');
           }
+          /* "no-speech" and "aborted" are normal and self-correct on restart. */
         };
         recogniser.onend=()=>{
-          /* Chrome stops recognition on every pause. Restarting is what makes
-             it feel like an open microphone rather than a walkie-talkie. */
-          if(listening&&mode!=='speaking'&&mode!=='thinking')setTimeout(listen,220);
-          else if(!listening&&mode==='listening')setMode('idle','Idle');
+          if(listening&&!paused&&mode!=='speaking'&&mode!=='thinking'){
+            setTimeout(listen,120);
+          }else if(!listening&&mode==='listening'){
+            setMode('idle','Idle');
+          }
         };
         micBtn.addEventListener('click',()=>{
           listening=!listening;
@@ -3839,7 +4000,7 @@ setOverviewText('moderationFalsePositivesNote',falsePositives?'Reviews staff dis
               +'changes your server still needs a click.';
             listen();
           }else{
-            try{recogniser.stop()}catch(e){}
+            pauseRecognition();
             setMode('idle','Idle');
           }
         });
@@ -3853,10 +4014,6 @@ setOverviewText('moderationFalsePositivesNote',falsePositives?'Reviews staff dis
         ask(question);
       });
 
-      /* Voices load asynchronously in Chrome. */
-      if(synth&&typeof synth.onvoiceschanged!=='undefined'){
-        synth.onvoiceschanged=pickVoice;
-      }
       [...document.querySelectorAll('.nav-btn')].forEach(b=>{
         b.addEventListener('click',()=>{if(b.dataset.page==='billy')setTimeout(resize,60)});
       });
