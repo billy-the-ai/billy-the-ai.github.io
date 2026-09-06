@@ -3753,7 +3753,7 @@ setOverviewText('moderationFalsePositivesNote',falsePositives?'Reviews staff dis
       /* Chrome stops speaking at roughly fifteen seconds. Sentence-sized
          chunks stay well under it and also give the jaw a natural pause. */
       const SPEECH_CHUNK=170;
-      let voices=[],britishNoticeShown=false;
+      let voices=[],britishNoticeShown=false,standingNote='';
 
       function englishVoices(){
         const all=(synth&&synth.getVoices?synth.getVoices():[])||[];
@@ -3789,11 +3789,12 @@ setOverviewText('moderationFalsePositivesNote',falsePositives?'Reviews staff dis
            the picker rather than a missing Windows language pack. */
         if(!voices.some(v=>/en[-_]GB/i.test(v.lang||''))&&!britishNoticeShown){
           britishNoticeShown=true;
-          note.textContent='No British voice is installed on this computer, so '
+          standingNote='No British voice is installed on this computer, so '
             +'only the ones above are available. On Windows: Settings → Time '
             +'& Language → Speech → Manage voices → add English '
             +'(United Kingdom). Chrome also offers “Google UK English” '
             +'once it has loaded its online voices.';
+          note.textContent=standingNote;
         }
       }
 
@@ -3898,7 +3899,7 @@ setOverviewText('moderationFalsePositivesNote',falsePositives?'Reviews staff dis
         try{
           const result=await api('/api/voice/ask',
             {method:'POST',body:{guild_id:guildId,question:question}});
-          note.textContent='';
+          note.textContent=standingNote;
           say(result.spoken||result.answer,result.answer);
         }catch(error){
           setMode('idle','Idle');
