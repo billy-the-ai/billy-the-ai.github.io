@@ -1130,16 +1130,23 @@
       if(!main||document.getElementById('ownerOnlyNotice'))return;
       const card=document.createElement('div');
       card.id='ownerOnlyNotice';card.className='owner-notice';
-      const title=document.createElement('b');title.textContent='This control room is private';
+      // This notice has ONE cause: the browser could not reach Billy's API.
+      // It is not a permission check and it does not know who is looking, so
+      // it must not imply anybody lacks access. The old wording -- "this
+      // control room is private, only the bot owner can see live data" -- sent
+      // somebody away believing they were not allowed in, when Billy was
+      // simply restarting and would have been back in a minute.
+      const title=document.createElement('b');title.textContent='Billy is not answering right now';
       const copy=document.createElement('p');
-      copy.textContent='Live server data is only visible to the bot owner while Billy is running. '
-        +'Everything else about Billy works normally in Discord — use his slash commands there.';
+      copy.textContent='This usually means he is restarting, which takes about a minute. '
+        +'The page reconnects on its own — you do not need to reload it, and this '
+        +'is not about your account or your permissions.';
       const hint=document.createElement('small');
       // A page that is retrying but silent about it reads as a page that gave
       // up, and sends people off to reload something that was about to fix
       // itself.
-      hint.textContent='Still checking every few seconds — this page reconnects on its own '
-        +'if Billy is restarting. If you host Billy, check he is running and reachable.';
+      hint.textContent='Checking every few seconds. Billy keeps working normally in Discord '
+        +'while this page is waiting. If you host Billy yourself, check he is running.';
       card.append(title,copy,hint);
       main.prepend(card);
     }
@@ -1149,8 +1156,8 @@
         // Most visitors are not the person hosting Billy, and an alarming red
         // error made a working product look broken to a whole community.
         // Present a calm, intentional state instead.
-        liveStatus.lastChild.textContent=' Owner sign-in required';
-        modePill.textContent='Preview';login.href='#';
+        liveStatus.lastChild.textContent=' Reconnecting to Billy';
+        modePill.textContent='Reconnecting';login.href='#';
         showOwnerOnlyNotice();
         scheduleReconnect();          // and keep trying quietly
         return
