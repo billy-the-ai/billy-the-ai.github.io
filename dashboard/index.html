@@ -26,6 +26,9 @@
       text-align:center;color:#d9d1c4;font-size:15px;line-height:1.6}
     .billy-caption.you{color:var(--amber-2)}
     .billy-caption em{font-style:normal;color:#7d7568}
+    .billy-caption strong{color:var(--cream);font-weight:800}
+    .billy-caption code{color:var(--amber-2);font-size:13.5px;
+      background:rgba(255,255,255,.05);padding:1px 6px;border-radius:6px}
     .billy-controls{display:flex;flex-wrap:wrap;gap:10px;justify-content:center;
       align-items:center;padding:14px 22px 0}
     .billy-mic{display:inline-flex;align-items:center;gap:10px;border:1px solid var(--line);
@@ -3862,9 +3865,22 @@ setOverviewText('moderationFalsePositivesNote',falsePositives?'Reviews staff dis
         try{synth.speak(utterance)}catch(e){speakNext()}
       }
 
+      function escapeHtml(value){
+        return String(value==null?'':value)
+          .replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;')
+          .replace(/"/g,'&quot;');
+      }
+      /* Discord markdown, rendered for a web page. Escaped first: the text
+         contains names people chose for themselves. */
+      function renderAnswer(value){
+        return escapeHtml(value)
+          .replace(/\*\*([^*]+)\*\*/g,'<strong>$1</strong>')
+          .replace(/`([^`]+)`/g,'<code>$1</code>');
+      }
+
       function say(spoken,written){
         caption.className='billy-caption';
-        caption.textContent=written||spoken;
+        caption.innerHTML=renderAnswer(written||spoken);
         if(!synth||!spoken){setMode('idle','Idle');if(listening)listen();return}
         /* Billy must not hear himself. Left open, the microphone transcribes
            his own answer and he replies to it. */
