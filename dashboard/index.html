@@ -365,7 +365,7 @@
     .panel-preview img.pp-thumb{width:56px;height:56px;object-fit:cover;border-radius:9px;justify-self:end}
     .panel-preview img.pp-image{width:100%;max-height:150px;object-fit:cover;border-radius:10px}
   </style>
-</head>
+<link rel="stylesheet" href="/scrollbars.css"></head>
 <body>
   <div class="noise"></div>
   <header class="topbar">
@@ -1658,6 +1658,9 @@ setOverviewText('moderationFalsePositivesNote',falsePositives?'Reviews staff dis
        blurb:'Let a bot-command or spam channel clear itself on a timer.'},
       {key:'automod',icon:'🛡',name:'AutoMod',configurable:true,
        blurb:'Spam, mention, caps, invite, link and duplicate filters.'},
+      {key:'automod_preview',icon:'🔍',name:'AutoMod dry run',badge:'new',
+       command:'/automod preview',
+       blurb:'Replay real messages against your filters and see what would have happened. Deletes nothing, times out nobody.'},
       {key:'vision',icon:'🖼',name:'Image scanning',badge:'new',configurable:true,
        blurb:'Billy looks at pictures for adult content, gore, scams and hate symbols.'},
       {key:'commands',icon:'🎛',name:'Command control',badge:'new',configurable:true,
@@ -1666,8 +1669,17 @@ setOverviewText('moderationFalsePositivesNote',falsePositives?'Reviews staff dis
        blurb:'Announce who sent the most messages, spent longest in voice and brought the most people.'},
       {key:'receipts',icon:'🔗',name:'Answer sources',badge:'new',configurable:true,
        blurb:'Billy links to the message each answer came from, so it can be checked.'},
+      {key:'stale_facts',icon:'🕰',name:'Knowledge freshness',badge:'new',
+       command:'/answers stale',
+       blurb:'Find the facts Billy has been repeating for months that nobody has checked. Confirm them or retire them.'},
+      {key:'ticket_harvest',icon:'🎓',name:'Tickets teach Billy',badge:'new',
+       command:'/ticketadmin harvest',
+       blurb:'Turn answers your staff already gave in tickets into things Billy can answer himself.'},
       {key:'network',icon:'🌐',name:'Network warnings',badge:'new',configurable:true,
        blurb:'Share raid and scam-link warnings with the other fan-game servers Billy is in.'},
+      {key:'appeals',icon:'🚪',name:'Ban appeals',badge:'new',
+       command:'/set appeals',
+       blurb:'A banned member can ask to be heard. The appeal arrives with the ban reason and warning history attached, and a moderator decides.'},
       {key:'sticky_roles',icon:'📌',name:'Sticky roles',badge:'new',command:'/sticky add',
        blurb:'A role that comes back when a member rejoins, so a mute cannot be escaped.'},
       {key:'afk',icon:'💤',name:'Away messages',badge:'new',command:'/afk',
@@ -1682,6 +1694,15 @@ setOverviewText('moderationFalsePositivesNote',falsePositives?'Reviews staff dis
        blurb:'Replies your staff wrote, triggered by a name or a keyword.'},
       {key:'events',icon:'🎮',name:'Playtests and events',command:'/event create',
        blurb:'Event cards with RSVP, reminders and start pings in each member timezone.'},
+      {key:'attendance',icon:'📋',name:'Event attendance',badge:'new',
+       command:'/event attendance',
+       blurb:'Who actually turned up, not just who said yes. Billy also DMs the people who committed.'},
+      {key:'fair_draws',icon:'🎲',name:'Provable giveaways',badge:'new',
+       command:'/giveaway verify',
+       blurb:'Every draw commits to a seed before entries open, so anyone can recompute the winners and check them.'},
+      {key:'creator_tiers',icon:'🏅',name:'Creator tiers',badge:'new',
+       command:'/creator tier',
+       blurb:'Grant a role automatically when a connected creator passes a view count you set in advance.'},
       {key:'levels',icon:'📈',name:'Level rewards',configurable:true,
        blurb:'Which role a member earns at which level.'},
       {key:'xp_events',icon:'⚡',name:'XP events',command:'/xpevent start',

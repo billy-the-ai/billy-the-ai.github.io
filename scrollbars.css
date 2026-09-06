@@ -1,0 +1,213 @@
+/* Billy's scrollbars.
+ *
+ * Every page shipped with the operating system's default bar: a grey slab
+ * with arrow buttons at both ends sitting in a pale channel. On a near-black
+ * amber page that reads as a piece of somebody else's software bolted to the
+ * side of Billy's -- which is exactly what it is.
+ *
+ * This styles EVERY scrollbar on the site: the page itself, the dashboard
+ * sidebar, the server list, the wide tables, the module panes, and anything
+ * added later, because the rules are written against `*` rather than against
+ * a list of the containers that happen to scroll today.
+ *
+ * ---- WHY THIS FILE IS SHAPED LIKE THIS --------------------------------------
+ *
+ * There are two rival ways to style a scrollbar and using both naively gets
+ * you neither:
+ *
+ *   scrollbar-width / scrollbar-color   the standard. Firefox only, for years.
+ *   ::-webkit-scrollbar and friends     the old WebKit pseudo-elements, which
+ *                                       give hover states and an inset thumb.
+ *
+ * Chrome now supports BOTH -- and when the standard properties are present it
+ * ignores the pseudo-elements entirely. Measured on Chrome 148: with both
+ * declared, a scrollbar asked to be 11px came out 10px, Chrome's own "thin",
+ * because all eleven ::-webkit rules were being dropped on the floor.
+ *
+ * So the standard properties come first, as the floor every engine gets, and
+ * the richer WebKit styling is applied inside @supports selector(...), which
+ * resets the standard properties back to auto so the pseudo-elements are
+ * allowed to take over. That ordering fails safe in both directions: a
+ * browser that fails the @supports test keeps a styled thin bar rather than
+ * falling back to the grey slab.
+ */
+
+:root {
+  /* Named separately from the page palette so this file works on the pages
+     that never defined --amber, and still matches the ones that did. */
+  --sb-size: 11px;
+  --sb-size-panel: 8px;
+  --sb-track: rgba(255, 255, 255, .028);
+  --sb-thumb: rgba(233, 166, 92, .34);
+  --sb-thumb-hover: rgba(255, 212, 159, .62);
+  --sb-thumb-active: rgba(255, 212, 159, .85);
+}
+
+/* ---- The smooth part ------------------------------------------------------
+ * An anchor jump that teleports loses the reader: they arrive somewhere new
+ * with no idea which direction they travelled. */
+html {
+  scroll-behavior: smooth;
+}
+
+/* Sticky headers are 76px tall in the dashboard and 64-72px elsewhere.
+ * Without this an anchor lands underneath the header and reads as a broken
+ * link. */
+:target {
+  scroll-margin-top: 92px;
+}
+
+/* A page that gains a scrollbar when content loads jumps sideways by 11px.
+ * Reserving the gutter costs nothing and stops the flinch. */
+@supports (scrollbar-gutter: stable) {
+  html {
+    scrollbar-gutter: stable;
+  }
+}
+
+/* ---- Floor: the standard properties, for every engine ---------------------- */
+html,
+* {
+  scrollbar-width: thin;
+  scrollbar-color: var(--sb-thumb) transparent;
+}
+
+/* ---- Ceiling: WebKit and Blink, where the pseudo-elements exist ------------ */
+@supports selector(::-webkit-scrollbar) {
+  /* Handing the standard properties back their initial value is what lets the
+     pseudo-elements below apply at all. Without these two lines Chrome
+     silently ignores everything in this block. */
+  html,
+  * {
+    scrollbar-width: auto;
+    scrollbar-color: auto;
+  }
+
+  ::-webkit-scrollbar {
+    width: var(--sb-size);
+    height: var(--sb-size);
+    background: transparent;
+  }
+
+  ::-webkit-scrollbar-track {
+    background: var(--sb-track);
+    border-radius: 999px;
+    /* Keeps the track off the very edge, so it reads as part of the panel
+       rather than a strip glued to the window frame. */
+    margin: 4px 0;
+  }
+
+  ::-webkit-scrollbar-track:horizontal {
+    margin: 0 4px;
+  }
+
+  ::-webkit-scrollbar-thumb {
+    background: var(--sb-thumb);
+    border-radius: 999px;
+    /* A transparent border with background-clip is the only way to inset a
+       WebKit thumb; padding does nothing to it. */
+    border: 3px solid transparent;
+    background-clip: content-box;
+    transition: background-color .18s ease;
+  }
+
+  ::-webkit-scrollbar-thumb:hover {
+    background: var(--sb-thumb-hover);
+    background-clip: content-box;
+  }
+
+  ::-webkit-scrollbar-thumb:active {
+    background: var(--sb-thumb-active);
+    background-clip: content-box;
+  }
+
+  /* The arrow buttons at each end. These are the single most dated thing
+     about the default bar and nothing on this site needs them. */
+  ::-webkit-scrollbar-button {
+    display: none;
+    width: 0;
+    height: 0;
+  }
+
+  /* Where a vertical and a horizontal bar meet. Left alone it is an opaque
+     grey square in the corner of every wide table. */
+  ::-webkit-scrollbar-corner,
+  ::-webkit-resizer {
+    background: transparent;
+  }
+
+  /* Panels that scroll inside the page are narrow, and a full-width bar in
+     them eats space that is already tight. */
+  .sidebar::-webkit-scrollbar,
+  .server-list::-webkit-scrollbar,
+  .mod-body::-webkit-scrollbar,
+  .table-wrap::-webkit-scrollbar,
+  [data-scroll]::-webkit-scrollbar {
+    width: var(--sb-size-panel);
+    height: var(--sb-size-panel);
+  }
+
+  .sidebar::-webkit-scrollbar-thumb,
+  .server-list::-webkit-scrollbar-thumb,
+  .mod-body::-webkit-scrollbar-thumb,
+  .table-wrap::-webkit-scrollbar-thumb,
+  [data-scroll]::-webkit-scrollbar-thumb {
+    border-width: 2px;
+  }
+}
+
+/* ---- Behaviour of the inner panels ---------------------------------------- */
+
+/* Flicking the end of the server list must not start scrolling the page
+   behind it. */
+.sidebar,
+.server-list,
+.mod-body,
+.table-wrap,
+[data-scroll] {
+  overscroll-behavior: contain;
+  /* Momentum scrolling on iOS, which older WebKit still needs telling. */
+  -webkit-overflow-scrolling: touch;
+}
+
+/* ---- Accessibility --------------------------------------------------------
+ * Smooth scrolling is a real problem for people with vestibular disorders,
+ * and no amount of polish is worth making somebody ill. */
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+
+  @supports selector(::-webkit-scrollbar) {
+    ::-webkit-scrollbar-thumb {
+      transition: none;
+    }
+  }
+}
+
+/* Somebody who has asked their OS for high contrast needs a bar they can
+   actually see, not a tasteful amber whisper. */
+@media (prefers-contrast: more) {
+  :root {
+    --sb-thumb: rgba(255, 212, 159, .74);
+    --sb-thumb-hover: rgba(255, 248, 236, .92);
+    --sb-thumb-active: rgba(255, 255, 255, .95);
+    --sb-track: rgba(255, 255, 255, .10);
+  }
+}
+
+/* Touch devices draw their own overlay bars that fade out when idle. Forcing
+   a permanent 11px amber rail on top of that is worse than leaving it be. */
+@media (hover: none) and (pointer: coarse) {
+  html,
+  * {
+    scrollbar-width: none;
+  }
+
+  @supports selector(::-webkit-scrollbar) {
+    ::-webkit-scrollbar {
+      width: 0;
+      height: 0;
+    }
+  }
+}
