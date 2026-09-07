@@ -497,6 +497,18 @@
     .update-actions{display:flex;align-items:center;justify-content:flex-end;
       gap:12px;margin-top:12px}
     @media (max-width:640px){.update-form{grid-template-columns:1fr}}
+
+    /* Deleting is developer-only. A body class rather than a per-render check,
+       so it does not matter whether the feed draws before or after login. */
+    .post-delete{display:none;background:none;border:0;color:var(--muted);
+      font-size:15px;line-height:1;padding:6px 8px;border-radius:8px;cursor:pointer}
+    body.is-developer .post-delete{display:inline-flex}
+    .post-delete:hover{color:#ff8a7a;background:rgba(255,138,122,.10)}
+    .post-delete:disabled{opacity:.45;cursor:default}
+    .post-line strong{color:var(--cream,#f6f1e7);font-weight:650}
+    .post-line code{font-family:ui-monospace,Menlo,Consolas,monospace;font-size:12.5px;
+      background:rgba(233,169,74,.10);border:1px solid rgba(233,169,74,.20);
+      border-radius:6px;padding:1px 5px;color:#e9a94a}
 </style>
 <link rel="stylesheet" href="/scrollbars.css"></head>
 <body>
@@ -827,6 +839,7 @@
          response, and this runs once staff status is confirmed. */
       const composer=document.getElementById('updateComposer');
       if(composer)composer.hidden=(modRoomRank!=='developer');
+      document.body.classList.toggle('is-developer',modRoomRank==='developer');
       renderModeratorRoom(data);
       loadModeratorServers();
     }
@@ -3138,6 +3151,10 @@ setOverviewText('moderationFalsePositivesNote',falsePositives?'Reviews staff dis
         }
         const kindTag=document.createElement('span');kindTag.className='update-kind '+kind;
         kindTag.textContent=UPDATE_KINDS[kind]||kind;right.append(kindTag);
+        const del=document.createElement('button');del.className='post-delete';
+        del.type='button';del.title='Delete this update';del.textContent='✕';
+        del.addEventListener('click',()=>deleteUpdate(entry.id,del));
+        right.append(del);
         head.append(avatar,who,right);
 
         const heading=document.createElement('h3');heading.className='post-title';
@@ -3148,7 +3165,7 @@ setOverviewText('moderationFalsePositivesNote',falsePositives?'Reviews staff dis
           const text=raw.replace(/^\s*[-*•]\s*/,'').trim();
           if(!text)return;
           const line=document.createElement('p');line.className='post-line';
-          line.textContent=text;lines.append(line);
+          line.innerHTML=updateLineHtml(text);lines.append(line);
         });
 
         row.append(head,heading,lines);
@@ -3231,6 +3248,29 @@ setOverviewText('moderationFalsePositivesNote',falsePositives?'Reviews staff dis
       card.hidden=false;
       tickCountdown();
       countdownTimer=setInterval(tickCountdown,1000);
+    }
+    // A body line, with the little markdown people actually type. Escaped
+    // first, then only **bold** and `code` are turned back into elements, so a
+    // published note can never inject markup into the page.
+    function updateLineHtml(text){
+      const escaped=String(text)
+        .replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+      return escaped
+        .replace(/\*\*([^*]+)\*\*/g,'<strong>$1</strong>')
+        .replace(/`([^`]+)`/g,'<code>$1</code>');
+    }
+    async function deleteUpdate(id,button){
+      if(!window.confirm('Delete this update? Everyone loses sight of it straight away.'))return;
+      button.disabled=true;
+      try{
+        await api('/api/updates/delete',{method:'POST',body:{id:String(id)}});
+        await loadUpdates();
+      }catch(error){
+        button.disabled=false;
+        window.alert(error.status===403
+          ?'Only Billy developers can delete an update.'
+          :(error.message||'That did not delete.'));
+      }
     }
     async function publishUpdate(){
       const status=document.getElementById('updateStatus');
