@@ -486,6 +486,17 @@
       .post-right{gap:6px}
       .post-title{font-size:17px}
     }
+
+    /* The publish form, using the dashboard's own .field styling. The first
+       version used bare inputs with inline widths, which meant no theme at all:
+       white boxes and a monospace placeholder in the middle of a dark panel. */
+    .update-form{display:grid;grid-template-columns:minmax(0,170px) minmax(0,1fr);
+      gap:8px;margin-bottom:10px}
+    .update-textarea{width:100%;min-height:170px;resize:vertical;font:inherit;
+      line-height:1.55}
+    .update-actions{display:flex;align-items:center;justify-content:flex-end;
+      gap:12px;margin-top:12px}
+    @media (max-width:640px){.update-form{grid-template-columns:1fr}}
 </style>
 <link rel="stylesheet" href="/scrollbars.css"></head>
 <body>
@@ -558,7 +569,7 @@
 
       <div class="stat-row" id="modRoomStats"></div>
 
-      <div class="mod-room-grid"><article class="panel" id="updateComposer" hidden style="grid-column:1/-1"><header class="panel-head"><div><h2>Publish an update</h2><span>Developers only. It appears on What&#x27;s new for every server straight away.</span></div></header><div class="panel-body"><div style="display:flex;gap:12px;margin-bottom:12px;flex-wrap:wrap"><input id="updateVersion" placeholder="v9.3.0" maxlength="24" style="flex:0 0 150px" /><input id="updateTitle" placeholder="What changed?" maxlength="120" style="flex:1;min-width:220px" /></div><textarea id="updateBody" rows="7" maxlength="4000" placeholder="One change per line."></textarea><div style="display:flex;align-items:center;gap:12px;margin-top:12px;justify-content:flex-end"><span class="field-hint" id="updateStatus"></span><button class="button primary" id="updatePublish">Publish update</button></div></div></article>
+      <div class="mod-room-grid"><article class="panel" id="updateComposer" hidden style="grid-column:1/-1"><header class="panel-head"><div><h2>Publish an update</h2><span>Developers only. It appears on What&#x27;s new for every server straight away.</span></div></header><div class="panel-body"><div class="update-form"><input class="field" id="updateVersion" placeholder="v9.3.0" maxlength="24"><input class="field" id="updateTitle" placeholder="What changed?" maxlength="120"></div><textarea class="field update-textarea" id="updateBody" rows="8" maxlength="4000" placeholder="One change per line."></textarea><div class="update-actions"><span class="field-hint" id="updateStatus"></span><button class="button primary" id="updatePublish">Publish update</button></div></div></article>
         <article class="panel">
           <header class="panel-head">
             <div><h2>Banned from Billy</h2>
