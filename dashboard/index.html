@@ -810,6 +810,12 @@
       document.querySelectorAll('.staff-only').forEach(el=>{el.hidden=false});
       modRoomRank=(data.you&&data.you.rank)||'';
       modRoomLoaded=true;
+      /* The publish form was asking whether it could be shown while the
+         page was still parsing -- before login, so the answer was always
+         no and it never asked again. The rank is already in this
+         response, and this runs once staff status is confirmed. */
+      const composer=document.getElementById('updateComposer');
+      if(composer)composer.hidden=(modRoomRank!=='developer');
       renderModeratorRoom(data);
       loadModeratorServers();
     }
@@ -3275,8 +3281,7 @@ setOverviewText('moderationFalsePositivesNote',falsePositives?'Reviews staff dis
       }
     }
     document.getElementById('updatesRefresh')?.addEventListener('click',loadUpdates);
-    document.getElementById('updatePublish').addEventListener('click',publishUpdate);
-    refreshUpdatePermission();
+    document.getElementById('updatePublish')?.addEventListener('click',publishUpdate);
 
     /* ---- Premium ------------------------------------------------------
        Limits come from the API rather than being duplicated here, so the page
