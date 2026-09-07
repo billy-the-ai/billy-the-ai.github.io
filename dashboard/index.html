@@ -3232,45 +3232,31 @@ setOverviewText('moderationFalsePositivesNote',falsePositives?'Reviews staff dis
       tickCountdown();
       countdownTimer=setInterval(tickCountdown,1000);
     }
-    // Publishing is developer-only. The form is hidden for everyone else as a
-    // courtesy; the real check is on the server, because anything decided in a
-    // browser can be changed in a browser.
-    async function refreshUpdatePermission(){
-      const composer=document.getElementById('updateComposer');
-      if(!composer||!apiBase)return;
-      try{
-        const r=await fetch(apiBase+'/api/updates/permission',{credentials:'include',cache:'no-store'});
-        if(!r.ok){composer.hidden=true;return}
-        const d=await r.json();
-        composer.hidden=!d.may_publish;
-      }catch(e){composer.hidden=true}
-    }
     async function publishUpdate(){
       const status=document.getElementById('updateStatus');
       const button=document.getElementById('updatePublish');
-      const title=document.getElementById('updateTitle').value.trim();
-      const body=document.getElementById('updateBody').value.trim();
-      const version=document.getElementById('updateVersion').value.trim();
+      const titleEl=document.getElementById('updateTitle');
+      const bodyEl=document.getElementById('updateBody');
+      const versionEl=document.getElementById('updateVersion');
+      const title=titleEl.value.trim(),body=bodyEl.value.trim(),version=versionEl.value.trim();
       if(!title||!body){status.textContent='A title and some detail are needed.';return}
       button.disabled=true;status.textContent='Publishing...';
       try{
-        const r=await fetch(apiBase+'/api/updates/publish',{
-          method:'POST',credentials:'include',
-          headers:{'Content-Type':'application/json'},
-          body:JSON.stringify({title:title,body:body,version:version,category:'bot'})});
-        if(!r.ok){
-          status.textContent=r.status===403
-            ?'Only Billy developers can publish an update.'
-            :'That did not publish ('+r.status+').';
-          return;
-        }
-        document.getElementById('updateTitle').value='';
-        document.getElementById('updateBody').value='';
-        document.getElementById('updateVersion').value='';
+        // Through api(), not a bare fetch. The dashboard authenticates with an
+        // Authorization: Bearer header, not cookies -- the first version sent
+        // credentials:'include' and no token, so the server saw no session and
+        // the browser blocked the response for good measure. api() also carries
+        // the base URL and the rolling session renewal.
+        await api('/api/updates/publish',{method:'POST',
+          body:{title:title,body:body,version:version,category:'bot'}});
+        titleEl.value='';bodyEl.value='';versionEl.value='';
         status.textContent='Published.';
         await loadUpdates();
-      }catch(e){status.textContent='Billy could not be reached.'}
-      finally{button.disabled=false}
+      }catch(error){
+        status.textContent=error.status===403
+          ?'Only Billy developers can publish an update.'
+          :(error.message||'That did not publish.');
+      }finally{button.disabled=false}
     }
     async function loadUpdates(){
       const subtitle=document.getElementById('updatesSubtitle'),badge=document.getElementById('updatesCount');
