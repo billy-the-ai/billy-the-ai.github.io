@@ -228,27 +228,47 @@
    address from the browser bar: an /edit link sends everyone who cannot edit
    the form to a Google sign-in page instead of the questions.
 
-   The tester link below was checked and loads without a sign-in. The
-   moderator one is still blank, so its button says so rather than pointing
-   applicants at a wall. */
+   Both links below are share links and load without a sign-in. Leaving one
+   blank is what turns its button back into "Applications opening soon",
+   rather than pointing applicants at a wall. */
+/* Three states, because there are three:
+     a url and open       -> "Apply to join", the button works
+     a url and closed     -> the form exists but Google is refusing responses
+     no url               -> "Applications opening soon"
+
+   The middle one is not the same as the last one, and saying "opening soon"
+   about a form that has already been and closed is just wrong. The page
+   cannot detect this itself -- a browser cannot read a Google Forms page from
+   another origin -- so `closed` is set by hand here. Billy's /form command
+   checks Google directly and does not depend on this flag. */
 const FORMS = {
-  "apply-mod": "",
-  "apply-tester": "https://forms.gle/agY3gDyHWsoWu6GEA",
+  "apply-mod": { url: "https://forms.gle/vYZ4dWtPvJ4b1DPS7" },
+  "apply-tester": { url: "https://forms.gle/agY3gDyHWsoWu6GEA", closed: true },
 };
 
 (function () {
   Object.keys(FORMS).forEach(function (id) {
-    var url = FORMS[id];
-    if (!url) return;
+    var form = FORMS[id] || {};
+    if (!form.url) return;
     var button = document.getElementById(id);
     if (!button) return;
+    var note = document.getElementById("note-" + id.split("-")[1]);
+
+    if (form.closed) {
+      button.textContent = "Applications are closed right now";
+      if (note) {
+        note.textContent = "This one is not taking applications at the moment. "
+          + "The other program below may still be open.";
+      }
+      return;                       // leave it .pending and aria-disabled
+    }
+
     button.textContent = "Apply to join";
-    button.href = url;
+    button.href = form.url;
     button.target = "_blank";
     button.rel = "noopener noreferrer";
     button.classList.remove("pending");
     button.removeAttribute("aria-disabled");
-    var note = document.getElementById("note-" + id.split("-")[1]);
     if (note) {
       note.textContent = "Opens the application form. Reviewed by the Billy team, "
         + "and everyone gets an answer either way.";
