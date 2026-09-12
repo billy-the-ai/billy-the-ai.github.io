@@ -1,0 +1,105 @@
+/* calm.css — quieting the marketing site.
+ *
+ * Loaded after the built stylesheet, so equal-specificity rules here win.
+ * Kept as its own file rather than edited into the build output: everything
+ * below is a decision that can be reversed by deleting one <link>.
+ *
+ * WHAT IS BEING REMOVED, AND WHY
+ *
+ * The page was running nine effects at once — a custom cursor, a glow that
+ * follows it, two orbiting rings, tilt-on-hover across eighteen cards, a
+ * per-letter headline animation, a marquee, a radar, a scan line and an
+ * animated starfield. Individually each is fine. Together they are the reason
+ * the site reads as busy rather than confident: nothing is emphasised when
+ * everything moves.
+ *
+ * WHAT IS KEPT
+ *
+ * The amber-on-near-black palette, the Billy mark, the kinetic headline, the
+ * status marquee and the cosmic Infinity card. The identity is good and it is
+ * theirs; this is not a repaint. One piece of motion in view at a time is the
+ * rule, rather than none.
+ */
+
+/* ---------------------------------------------------------- the cursor --
+ * The site set `cursor: none` on every interactive element and drew its own
+ * pointer with mix-blend-mode. That is the single most costly effect here:
+ * a drawn cursor always lags the real one by a frame or two, and hiding the
+ * system cursor removes the one piece of feedback a visitor never questions.
+ * The native cursor comes back, and the drawn one goes away everywhere —
+ * the build already hid it for touch and reduced-motion, so this only
+ * finishes the job for desktop.
+ */
+@media (hover: hover) and (pointer: fine) {
+  .site-shell,
+  .site-shell a,
+  .site-shell button,
+  .site-shell summary {
+    cursor: auto;
+  }
+  .site-shell a,
+  .site-shell button,
+  .site-shell summary,
+  .site-shell [role="button"] {
+    cursor: pointer;
+  }
+}
+
+.cursor-glow,
+.billy-cursor,
+.billy-cursor-dot {
+  display: none !important;
+}
+
+/* ---------------------------------------------------------- the orbits --
+ * Two dashed rings rotating behind the hero card, at 26s and 18s. They sit
+ * under the one element on the page a visitor is meant to read.
+ */
+.orbit,
+.orbit-one,
+.orbit-two {
+  display: none;
+}
+
+/* ------------------------------------------------------------- the tilt --
+ * Eighteen cards rotating in perspective under the pointer, each with a
+ * radial shine tracking the mouse. Hover should tell you a thing is
+ * interactive, which a border and a background already do.
+ */
+.tilt-card {
+  transform: none;
+  transform-style: flat;
+}
+
+.tilt-card:after {
+  background: none;
+}
+
+/* A card still responds — just quietly, and on a property that does not
+ * force the browser to re-composite the whole card. */
+.tilt-card {
+  transition: border-color 0.18s ease, background-color 0.18s ease;
+}
+
+/* ------------------------------------------------- scan line and radar --
+ * The scan line sweeps a gradient across the knowledge console every four
+ * seconds, forever. The radar rings pulse behind the Billy mark. Both are
+ * decoration on top of panels that are already communicating something, so
+ * the rings stay as a drawn illustration and stop moving; the scan line
+ * goes, because a 1px line that is not sweeping is not anything.
+ */
+.scan-line {
+  display: none;
+}
+
+.radar-ring,
+.radar-ring.ring-a,
+.radar-ring.ring-b {
+  animation: none;
+}
+
+/* ------------------------------------------------------- one more thing --
+ * The signal chart bars grow on a staggered delay. Left alone: it animates
+ * once, tells you what the chart is, and then stops. That is the kind of
+ * motion worth keeping — it explains something rather than decorating it.
+ */
