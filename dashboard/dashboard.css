@@ -1,8 +1,7 @@
 /* Billy Control Room styles
  *
- * Light by default, dark if your computer is set to dark mode. The Neural
- * core and B.I.L.L.Y pages draw light-on-dark graphics, so those two stages
- * stay dark in both themes, like a screen set into the page.
+ * Dark with gold, to match the website. The Neural core and B.I.L.L.Y pages
+ * draw their own light-on-dark graphics inside a darker stage.
  *
  * Most of the dashboard is built by JavaScript, so a lot of the class names
  * below never appear in index.html. Search dashboard/index.html for the class
@@ -16,43 +15,28 @@
 }
 
 :root {
-  --bg: #f6f3ee;
-  --surface: #ffffff;
-  --surface-2: #f1ece4;
-  --line: #e3d9cb;
-  --line-soft: #ece5da;
-  --text: #1f1a14;
-  --muted: #6b6257;
-  --faint: #968c80;
-  --amber: #e08a2e;
-  --amber-2: #a5570f;
-  --on-amber: #241505;
-  --accent-soft: rgba(224, 138, 46, 0.12);
-  --green: #23864f;
-  --red: #c2412f;
-  --blue: #2f6fc4;
-  --purple: #7a55d6;
+  --bg: #0e0d0b;
+  --surface: #151311;
+  --surface-2: #1f1c19;
+  --line: #2c2926;
+  --line-soft: #24211e;
+  --text: #efece7;
+  --muted: #8f867c;
+  --faint: #7a7268;
+  --amber: #ffc61a;
+  --amber-2: #ffd24d;
+  --on-amber: #1a1302;
+  --accent-soft: rgba(255, 198, 26, 0.1);
+  --gold-line: rgba(255, 198, 26, 0.3);
+  --glow: 0 0 20px rgba(255, 198, 26, 0.12), 0 0 40px rgba(255, 198, 26, 0.05);
+  --display: Bungee, "Space Grotesk", system-ui, sans-serif;
+  --green: #5fd48f;
+  --red: #ff7b6b;
+  --blue: #7fb2ff;
+  --purple: #bd9cff;
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --bg: #121110;
-    --surface: #1a1815;
-    --surface-2: #231f1b;
-    --line: #322d27;
-    --line-soft: #28241f;
-    --text: #f2ece3;
-    --muted: #a59d92;
-    --faint: #7a7268;
-    --amber: #eaa55c;
-    --amber-2: #f2b775;
-    --accent-soft: rgba(234, 165, 92, 0.14);
-    --green: #62d394;
-    --red: #ff8b7e;
-    --blue: #8bb8ff;
-    --purple: #bd9cff;
-  }
-}
+html { color-scheme: dark; }
 
 /* ------------------------------------------------------------------ base */
 
@@ -64,7 +48,7 @@ body {
   min-height: 100vh;
   background: var(--bg);
   color: var(--text);
-  font-family: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+  font-family: "Space Grotesk", system-ui, -apple-system, "Segoe UI", sans-serif;
   font-size: 15px;
   line-height: 1.5;
 }
@@ -886,4 +870,92 @@ body.is-developer .post-delete { display: inline-flex; }
 @media (prefers-reduced-motion: reduce) {
   .stat-flash, .core-spin, .billy-mic.live .billy-dot { animation: none; }
   .switch::after, .toast { transition: none; }
+}
+
+/* ------------------------------------------------------------ gold theme
+ * Matches the website: a warm near-black, gold highlights, Bungee on the
+ * labels and buttons, and a soft gold glow on things you can hover.
+ */
+
+body { background: radial-gradient(1000px 500px at 50% -180px, rgba(255, 198, 26, 0.07), transparent 70%) no-repeat, var(--bg); }
+.topbar { background: rgba(14, 13, 11, 0.85); backdrop-filter: blur(10px); }
+.sidebar { background: rgba(14, 13, 11, 0.7); }
+
+.brand strong { font-family: var(--display); font-size: 17px; letter-spacing: 0.02em; }
+.brand img { box-shadow: 0 0 0 1px var(--gold-line), 0 0 14px rgba(255, 198, 26, 0.2); }
+
+.eyebrow {
+  display: inline-block;
+  margin-bottom: 6px;
+  padding: 2px 10px;
+  border: 1px solid var(--gold-line);
+  border-radius: 999px;
+  background: var(--accent-soft);
+  font-family: var(--display);
+  font-size: 11px;
+  font-weight: 400;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: var(--amber);
+}
+
+.page-head h1, .mod-room-head h1, .update-hero h2 {
+  font-family: "Space Grotesk", system-ui, sans-serif;
+  font-weight: 700;
+  letter-spacing: -0.01em;
+}
+
+.nav-btn.active { box-shadow: inset 2px 0 0 var(--amber); }
+.nav-btn.active .icon { color: var(--amber); }
+
+.button { transition: border-color 0.2s, box-shadow 0.2s, color 0.2s; }
+.button:hover { border-color: var(--gold-line); }
+
+.button.amber, .button.primary {
+  background: var(--accent-soft);
+  border-color: var(--gold-line);
+  color: var(--amber);
+  font-family: var(--display);
+  font-weight: 400;
+  font-size: 13px;
+  letter-spacing: 0.02em;
+}
+
+.button.amber:hover, .button.primary:hover { border-color: var(--amber); box-shadow: var(--glow); }
+
+.panel, .stat, .module, .mod-tile, .mod-card, .plan, .team-card, .countdown-card,
+.update-hero, .stat-tile, .lane, .side-card, .owner-notice { background-color: rgba(25, 23, 21, 0.6); }
+
+.stat, .module, .mod-tile, .team-card { transition: border-color 0.25s, box-shadow 0.25s; }
+.stat:hover, .module:hover, .mod-tile:hover, .team-card:hover { border-color: #3a352f; box-shadow: var(--glow); }
+
+.stat strong, .stat-tile b, .plan-price, .ring-content strong, .countdown-unit strong { font-family: var(--display); font-weight: 400; }
+.plan-price { color: var(--amber); }
+
+.module h3, .mod-tile-top b, .team-name, .plan h3 {
+  font-family: var(--display);
+  font-weight: 400;
+  font-size: 14px;
+  letter-spacing: 0.02em;
+  text-transform: uppercase;
+}
+
+.team-name { font-size: 16px; }
+.team-role { color: var(--amber); }
+.team-avatar { border-radius: 12px; }
+
+.switch.on { background: var(--amber); }
+.plan.featured, .plan.selected { box-shadow: var(--glow); }
+.update-filters button.active { background: var(--accent-soft); border-color: var(--gold-line); color: var(--amber); }
+.status-pill i { box-shadow: 0 0 8px var(--green); }
+.field:focus { box-shadow: var(--glow); }
+
+.side-card button {
+  background: var(--accent-soft);
+  border-color: var(--gold-line);
+  color: var(--amber);
+  font-family: var(--display);
+  font-weight: 400;
+  font-size: 12px;
+  letter-spacing: 0.02em;
 }

@@ -4,13 +4,15 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Billy the AI | A Discord bot for Gorilla Tag fan-game servers</title>
-<meta name="description" content="Billy is a free Discord bot for Gorilla Tag fan-game communities. He answers questions from your server&#x27;s own channels and helps staff with tickets, moderation and levels.">
+<meta name="description" content="Billy is a free Discord bot for Gorilla Tag fan-game communities. He answers questions from your server's own channels and helps staff with tickets, moderation and levels.">
 <meta property="og:title" content="Billy the AI | A Discord bot for Gorilla Tag fan-game servers">
-<meta property="og:description" content="Billy is a free Discord bot for Gorilla Tag fan-game communities. He answers questions from your server&#x27;s own channels and helps staff with tickets, moderation and levels.">
+<meta property="og:description" content="Billy is a free Discord bot for Gorilla Tag fan-game communities. He answers questions from your server's own channels and helps staff with tickets, moderation and levels.">
 <meta property="og:image" content="https://billy-the-ai.github.io/og.png">
-<meta name="theme-color" content="#faf7f2" media="(prefers-color-scheme: light)">
-<meta name="theme-color" content="#141210" media="(prefers-color-scheme: dark)">
+<meta name="theme-color" content="#0e0d0b">
 <link rel="icon" href="/billy-icon.webp" type="image/webp">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bungee&family=Space+Grotesk:wght@400;500;600;700&display=swap">
 <link rel="stylesheet" href="/site.css">
 <link rel="stylesheet" href="/scrollbars.css">
 </head>
@@ -31,175 +33,260 @@
   </div>
 </header>
 
-<main class="container">
+<!-- dots down the left edge; the script at the bottom lights up the current one -->
+<nav class="side-dots" aria-hidden="true">
+  <a href="#top" tabindex="-1" title="Top"></a>
+  <a href="#community" tabindex="-1" title="Community"></a>
+  <a href="#in-action" tabindex="-1" title="Billy in action"></a>
+  <a href="#features" tabindex="-1" title="What Billy does"></a>
+  <a href="#programs" tabindex="-1" title="Programs"></a>
+  <a href="#plans" tabindex="-1" title="Plans"></a>
+  <a href="#facts" tabindex="-1" title="Good to know"></a>
+  <a href="#team" tabindex="-1" title="The team"></a>
+</nav>
 
-  <section class="hero">
-    <div>
-      <h1>A Discord bot that <mark>knows your server.</mark></h1>
-      <p class="lede">Billy answers your members' questions using the channels you choose, and helps your staff with tickets, moderation and levels. He was made for Gorilla Tag fan-game communities.</p>
-      <div class="buttons">
-        <a class="btn btn-primary" href="https://discord.com/oauth2/authorize?client_id=1515868648819003402&amp;scope=bot%20applications.commands">Add Billy to Discord</a>
-        <a class="btn" href="https://discord.gg/uXHNJz6fDh">Join the Billy server</a>
+<section class="hero" id="top">
+  <div class="hero-rays" aria-hidden="true"></div>
+  <canvas id="sparkles" aria-hidden="true"></canvas>
+
+  <div class="hero-inner">
+    <div><img class="hero-billy" src="/billy-icon.webp" width="132" height="132" alt=""></div>
+    <h1 class="hero-title">Billy the AI</h1>
+    <p class="hero-sub">The Discord bot for Gorilla Tag fan-game communities</p>
+    <p class="hero-stats">
+      <span>In <b id="serverCount">27</b> servers</span>
+      <span id="memberStat" hidden><span class="dot-sep">&middot;</span> <b id="memberCount"></b> members</span>
+      <span class="dot-sep">&middot;</span>
+      <span><b>Free</b> to use</span>
+    </p>
+    <a class="play-card" href="https://discord.com/oauth2/authorize?client_id=1515868648819003402&amp;scope=bot%20applications.commands">
+      <span class="play-logo">
+        <svg class="icon solid" viewBox="0 0 24 24" aria-hidden="true"><path d="M20.317 4.37a19.791 19.791 0 0 0-4.885-1.515.074.074 0 0 0-.079.037c-.21.375-.444.864-.608 1.25a18.27 18.27 0 0 0-5.487 0 12.64 12.64 0 0 0-.617-1.25.077.077 0 0 0-.079-.037A19.736 19.736 0 0 0 3.677 4.37a.07.07 0 0 0-.032.027C.533 9.046-.32 13.58.099 18.057a.082.082 0 0 0 .031.057 19.9 19.9 0 0 0 5.993 3.03.078.078 0 0 0 .084-.028c.462-.63.874-1.295 1.226-1.994a.076.076 0 0 0-.041-.106 13.107 13.107 0 0 1-1.872-.892.077.077 0 0 1-.008-.128 10.2 10.2 0 0 0 .372-.292.074.074 0 0 1 .077-.01c3.928 1.793 8.18 1.793 12.062 0a.074.074 0 0 1 .078.01c.12.098.246.198.373.292a.077.077 0 0 1-.006.127 12.299 12.299 0 0 1-1.873.892.077.077 0 0 0-.041.107c.36.698.772 1.362 1.225 1.993a.076.076 0 0 0 .084.028 19.839 19.839 0 0 0 6.002-3.03.077.077 0 0 0 .032-.054c.5-5.177-.838-9.674-3.549-13.66a.061.061 0 0 0-.031-.03zM8.02 15.33c-1.183 0-2.157-1.085-2.157-2.419 0-1.333.956-2.419 2.157-2.419 1.21 0 2.176 1.096 2.157 2.42 0 1.333-.956 2.418-2.157 2.418zm7.975 0c-1.183 0-2.157-1.085-2.157-2.419 0-1.333.955-2.419 2.157-2.419 1.21 0 2.176 1.096 2.157 2.42 0 1.333-.946 2.418-2.157 2.418z"/></svg>
+        Discord
+      </span>
+      <span class="play-divider" aria-hidden="true"></span>
+      <span class="play-text"><b>Add Billy</b><small>to your server</small></span>
+    </a>
+    <p class="hero-link">or <a href="https://discord.gg/uXHNJz6fDh">join the Billy server</a></p>
+  </div>
+</section>
+
+<main>
+
+  <section class="home-section" id="community">
+    <div class="container">
+      <div class="section-head">
+        <h2>Join the Community</h2>
       </div>
-      <p class="hero-small">Free to use &middot; In <span id="serverCount">27</span> communities &middot; <a href="/commands/">Browse the commands</a></p>
-    </div>
-
-    <div class="profile-card">
-      <picture>
-        <source srcset="/billy-banner-still.webp" media="(prefers-reduced-motion: reduce)">
-        <img class="banner" src="/billy-banner.webp" width="600" height="212" alt="">
-      </picture>
-    <div class="chat" aria-label="An example of Billy answering a question in Discord">
-      <div class="chat-msg">
-        <span class="chat-avatar" aria-hidden="true">T</span>
+      <div class="community">
         <div>
-          <span class="chat-name">tagger</span>
-          <p>@Billy what are the moderator requirements?</p>
+          <span class="tile"><svg class="icon solid" viewBox="0 0 24 24" aria-hidden="true"><path d="M20.317 4.37a19.791 19.791 0 0 0-4.885-1.515.074.074 0 0 0-.079.037c-.21.375-.444.864-.608 1.25a18.27 18.27 0 0 0-5.487 0 12.64 12.64 0 0 0-.617-1.25.077.077 0 0 0-.079-.037A19.736 19.736 0 0 0 3.677 4.37a.07.07 0 0 0-.032.027C.533 9.046-.32 13.58.099 18.057a.082.082 0 0 0 .031.057 19.9 19.9 0 0 0 5.993 3.03.078.078 0 0 0 .084-.028c.462-.63.874-1.295 1.226-1.994a.076.076 0 0 0-.041-.106 13.107 13.107 0 0 1-1.872-.892.077.077 0 0 1-.008-.128 10.2 10.2 0 0 0 .372-.292.074.074 0 0 1 .077-.01c3.928 1.793 8.18 1.793 12.062 0a.074.074 0 0 1 .078.01c.12.098.246.198.373.292a.077.077 0 0 1-.006.127 12.299 12.299 0 0 1-1.873.892.077.077 0 0 0-.041.107c.36.698.772 1.362 1.225 1.993a.076.076 0 0 0 .084.028 19.839 19.839 0 0 0 6.002-3.03.077.077 0 0 0 .032-.054c.5-5.177-.838-9.674-3.549-13.66a.061.061 0 0 0-.031-.03zM8.02 15.33c-1.183 0-2.157-1.085-2.157-2.419 0-1.333.956-2.419 2.157-2.419 1.21 0 2.176 1.096 2.157 2.42 0 1.333-.956 2.418-2.157 2.418zm7.975 0c-1.183 0-2.157-1.085-2.157-2.419 0-1.333.955-2.419 2.157-2.419 1.21 0 2.176 1.096 2.157 2.42 0 1.333-.946 2.418-2.157 2.418z"/></svg></span>
+          <h3>Discord</h3>
+          <p>Hang out with the Billy community</p>
+          <a class="btn btn-small" href="https://discord.gg/uXHNJz6fDh">Join Server <svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M14 4h6v6M20 4l-9 9M18 14v5a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1V7a1 1 0 0 1 1-1h5"/></svg></a>
+        </div>
+        <div>
+          <span class="tile"><svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 5v14M5 12h14"/></svg></span>
+          <h3>Add Billy</h3>
+          <p>Invite him to your own server</p>
+          <a class="btn btn-small" href="https://discord.com/oauth2/authorize?client_id=1515868648819003402&amp;scope=bot%20applications.commands">Add to Discord <svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M14 4h6v6M20 4l-9 9M18 14v5a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1V7a1 1 0 0 1 1-1h5"/></svg></a>
+        </div>
+        <div>
+          <span class="tile"><svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="3" width="7" height="9" rx="1.5"/><rect x="14" y="3" width="7" height="5" rx="1.5"/><rect x="14" y="12" width="7" height="9" rx="1.5"/><rect x="3" y="16" width="7" height="5" rx="1.5"/></svg></span>
+          <h3>Control Room</h3>
+          <p>Set Billy up from your browser</p>
+          <a class="btn btn-small" href="/dashboard/">Open Dashboard <svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg></a>
         </div>
       </div>
-      <div class="chat-msg">
-        <img src="/billy-icon.webp" alt="">
-        <div>
-          <span class="chat-name">Billy <span class="bot">APP</span></span>
-          <p>You need to be active, respectful, know the rules, and be able to handle reports calmly. The full list is in <span class="chat-channel">#information</span>.</p>
+    </div>
+  </section>
+
+  <section class="home-section" id="in-action">
+    <div class="container">
+      <div class="section-head">
+        <h2><svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M7 4l13 8-13 8V4Z"/></svg>Billy in Action</h2>
+      </div>
+      <div class="demos">
+        <figure class="demo">
+          <picture>
+            <source srcset="/billy-banner-still.webp" media="(prefers-reduced-motion: reduce)">
+            <img class="banner" src="/billy-banner.webp" width="600" height="212" alt="">
+          </picture>
+          <div class="chat" aria-label="Example: Billy answering from the server's own channels">
+            <div class="chat-msg">
+              <span class="chat-avatar" aria-hidden="true">T</span>
+              <div><span class="chat-name">tagger</span><p>@Billy what are the moderator requirements?</p></div>
+            </div>
+            <div class="chat-msg">
+              <img src="/billy-icon.webp" alt="">
+              <div><span class="chat-name">Billy <span class="bot">APP</span></span><p>You need to be active, respectful, know the rules, and be able to handle reports calmly. The full list is in <span class="chat-channel">#information</span>.</p></div>
+            </div>
+          </div>
+          <figcaption class="demo-label">Answers from your server</figcaption>
+        </figure>
+
+        <figure class="demo">
+          <div class="chat" aria-label="Example: Billy answering general questions">
+            <div class="chat-msg">
+              <span class="chat-avatar green" aria-hidden="true">M</span>
+              <div><span class="chat-name">monkefan</span><p>@Billy who made Gorilla Tag?</p></div>
+            </div>
+            <div class="chat-msg">
+              <img src="/billy-icon.webp" alt="">
+              <div><span class="chat-name">Billy <span class="bot">APP</span></span><p>Gorilla Tag was developed by Another Axiom. It is an official social VR title, not a fan-made game.</p></div>
+            </div>
+            <div class="chat-msg">
+              <span class="chat-avatar green" aria-hidden="true">M</span>
+              <div><span class="chat-name">monkefan</span><p>@Billy when is the next playtest?</p></div>
+            </div>
+            <div class="chat-msg">
+              <img src="/billy-icon.webp" alt="">
+              <div><span class="chat-name">Billy <span class="bot">APP</span></span><p>Saturday at 5 PM EST. The details are pinned in <span class="chat-channel">#announcements</span>.</p></div>
+            </div>
+          </div>
+          <figcaption class="demo-label">Knows the game and your news</figcaption>
+        </figure>
+      </div>
+    </div>
+  </section>
+
+  <section class="home-section" id="features">
+    <div class="container">
+      <div class="section-head">
+        <span class="badge"><svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M13 2 4 14h7l-1 8 9-12h-7l1-8Z"/></svg>What Billy does</span>
+        <h2>One Bot, Every Job</h2>
+        <p>The main things. There's a lot more in the <a href="/commands/">command list</a>.</p>
+      </div>
+      <div class="grid grid-3">
+        <div class="card feature">
+          <svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M21 12a8 8 0 0 1-11.8 7L4 20l1.1-4.2A8 8 0 1 1 21 12Z"/></svg>
+          <h3>Answers questions</h3>
+          <p>Billy learns from the channels your admins approve and answers from them. For general questions he can search the web, and he says when he isn't sure.</p>
+        </div>
+        <div class="card feature">
+          <svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3l8 3v6c0 5-3.5 8-8 9-4.5-1-8-4-8-9V6l8-3Z"/></svg>
+          <h3>Moderation</h3>
+          <p>Warnings, timeouts, bans, reports and logs. Billy can gather the evidence, but your staff always make the call.</p>
+        </div>
+        <div class="card feature">
+          <svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M3 8a2 2 0 0 0 2-2h14a2 2 0 0 0 2 2v2a2 2 0 0 0 0 4v2a2 2 0 0 0-2 2H5a2 2 0 0 0-2-2v-2a2 2 0 0 0 0-4V8Z"/><path d="M10 6v12"/></svg>
+          <h3>Tickets and appeals</h3>
+          <p>Private support tickets, punishment appeals and transcripts, so problems reach the right staff.</p>
+        </div>
+        <div class="card feature">
+          <svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 20V10M10 20V4M16 20v-7M21 20H3"/></svg>
+          <h3>Levels and activity</h3>
+          <p>Message and voice levels, daily streaks and leaderboards. He counts time in voice but never records it.</p>
+        </div>
+        <div class="card feature">
+          <svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><rect x="6" y="4" width="12" height="17" rx="2"/><path d="M9 4h6v3H9zM9 12h6M9 16h4"/></svg>
+          <h3>Forms and applications</h3>
+          <p>Connect a Google Form and applications show up in a private staff channel with the member's activity attached.</p>
+        </div>
+        <div class="card feature">
+          <svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><rect x="5" y="11" width="14" height="10" rx="2"/><path d="M8 11V8a4 4 0 0 1 8 0v3"/></svg>
+          <h3>Protection, always free</h3>
+          <p>Anti-raid, lockdown, and honeypot channels that catch bot accounts. Safety is never behind a paywall.</p>
+        </div>
+      </div>
+      <ul class="chips" aria-label="Smaller features">
+        <li class="tag">Starboard</li>
+        <li class="tag">Sticky roles</li>
+        <li class="tag">Self-clearing channels</li>
+        <li class="tag">Away messages</li>
+        <li class="tag">Giveaways</li>
+        <li class="tag">Events and playtests</li>
+        <li class="tag">Reaction roles</li>
+        <li class="tag">Daily recaps</li>
+      </ul>
+    </div>
+  </section>
+
+  <section class="home-section" id="programs">
+    <div class="container">
+      <div class="cta-card">
+        <span class="badge"><svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><circle cx="9" cy="8" r="3.5"/><path d="M2.5 20a6.5 6.5 0 0 1 13 0M16 4.5a3.5 3.5 0 0 1 0 7M21.5 20a6.5 6.5 0 0 0-4-6"/></svg>Billy Programs</span>
+        <h2>Become a Billy Moderator</h2>
+        <p>Help run Billy across the communities that use him. Moderators get new features first, a say in what gets built next, and the Billy Moderator role.</p>
+        <a class="btn btn-primary" href="/programs/#moderator">Apply Now <svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg></a>
+      </div>
+    </div>
+  </section>
+
+  <section class="home-section" id="plans">
+    <div class="container">
+      <div class="section-head">
+        <span class="badge"><svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3l2.7 5.6 6.1.9-4.4 4.3 1 6.1L12 17l-5.4 2.9 1-6.1L3.2 9.5l6.1-.9L12 3Z"/></svg>Billy Premium</span>
+        <h2>Plans</h2>
+        <p>Billy is free. Paid plans raise the limits for bigger servers, and prices are per server, per month.</p>
+      </div>
+      <div class="shop">
+        <a class="shop-card" href="/premium/">
+          <div class="shop-art free">Core<span class="price-tag">Free</span></div>
+          <div class="shop-body"><b>Free</b><p>Everything a server needs to run safely, with 150 answers a day.</p></div>
+        </a>
+        <a class="shop-card" href="/premium/">
+          <div class="shop-art premium">Pro<span class="price-tag">$4.99</span></div>
+          <div class="shop-body"><b>Premium</b><p>1,500 answers a day and tools that save your staff time.</p></div>
+        </a>
+        <a class="shop-card" href="/premium/">
+          <div class="shop-art ultimate">Network<span class="price-tag">$8.99</span></div>
+          <div class="shop-body"><b>Ultimate</b><p>No limits, plus reputation checks across fan-game servers.</p></div>
+        </a>
+        <a class="shop-card" href="/premium/">
+          <div class="shop-art infinity">Infinity<span class="price-tag">$19.99</span></div>
+          <div class="shop-body"><b>Infinity</b><p>Everything uncapped, with no daily answer limit at all.</p></div>
+        </a>
+      </div>
+    </div>
+  </section>
+
+  <section class="home-section" id="facts">
+    <div class="container">
+      <div class="section-head">
+        <h2>Good to Know</h2>
+        <p>Straight answers to what people ask most</p>
+      </div>
+      <ul class="facts-list">
+        <li><svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M9 18h6M10 21h4M12 3a6 6 0 0 0-3.5 10.9c.6.5 1 1.2 1 2V17h5v-1.1c0-.8.4-1.5 1-2A6 6 0 0 0 12 3Z"/></svg>Billy only learns from channels your admins approve. Private channels stay private unless someone picks them.</li>
+        <li><svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M9 18h6M10 21h4M12 3a6 6 0 0 0-3.5 10.9c.6.5 1 1.2 1 2V17h5v-1.1c0-.8.4-1.5 1-2A6 6 0 0 0 12 3Z"/></svg>Billy never records voice chat. He only counts how long people spend in voice, for levels.</li>
+        <li><svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M9 18h6M10 21h4M12 3a6 6 0 0 0-3.5 10.9c.6.5 1 1.2 1 2V17h5v-1.1c0-.8.4-1.5 1-2A6 6 0 0 0 12 3Z"/></svg>Each server's knowledge is kept apart. Billy never answers one server with another server's information.</li>
+        <li><svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M9 18h6M10 21h4M12 3a6 6 0 0 0-3.5 10.9c.6.5 1 1.2 1 2V17h5v-1.1c0-.8.4-1.5 1-2A6 6 0 0 0 12 3Z"/></svg>Anti-raid, honeypot traps and lockdown are free on every plan, forever.</li>
+        <li><svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M9 18h6M10 21h4M12 3a6 6 0 0 0-3.5 10.9c.6.5 1 1.2 1 2V17h5v-1.1c0-.8.4-1.5 1-2A6 6 0 0 0 12 3Z"/></svg>Typing / in Discord shows 28 entries, and together they hold all 278 of Billy's commands.</li>
+      </ul>
+    </div>
+  </section>
+
+  <section class="home-section" id="team">
+    <div class="container">
+      <div class="section-head">
+        <h2>The Team</h2>
+        <p>The people building Billy</p>
+      </div>
+      <div class="team">
+        <div class="member">
+          <img src="/team/adrian.png" width="80" height="80" alt="">
+          <b>Adrian</b>
+          <p class="role">Founder &amp; Developer</p>
+          <div class="tags"><span class="tag">Billy</span><span class="tag">Backend</span><span class="tag">Community</span></div>
+        </div>
+        <div class="member">
+          <img src="/team/josh.png" width="80" height="80" alt="">
+          <b>Josh</b>
+          <p class="role">Community Manager</p>
+          <div class="tags"><span class="tag">Community</span><span class="tag">Support</span></div>
+        </div>
+        <div class="member">
+          <img src="/team/isaiah.png" width="80" height="80" alt="">
+          <b>Isaiah</b>
+          <p class="role">Community Manager</p>
+          <div class="tags"><span class="tag">Community</span><span class="tag">Support</span></div>
         </div>
       </div>
     </div>
-    </div>
-  </section>
-
-  <section class="block" id="features">
-    <h2>What Billy does</h2>
-    <p class="lede">The main things. There's a lot more in the <a href="/commands/">command list</a>.</p>
-    <div class="grid grid-3">
-      <div class="card">
-        <h3>Answers questions</h3>
-        <p>Billy learns from the channels your admins approve and answers from them. For general questions he can search the web, and he tells you when he isn't sure.</p>
-      </div>
-      <div class="card">
-        <h3>Moderation with a person in charge</h3>
-        <p>Warnings, timeouts, bans, reports and logs. Billy can gather the evidence, but your staff always make the call.</p>
-      </div>
-      <div class="card">
-        <h3>Tickets and appeals</h3>
-        <p>Private support tickets, punishment appeals and transcripts, so problems reach the right staff.</p>
-      </div>
-      <div class="card">
-        <h3>Levels and activity</h3>
-        <p>Message and voice levels, daily streaks and leaderboards. He counts time in voice but never records it.</p>
-      </div>
-      <div class="card">
-        <h3>Forms and applications</h3>
-        <p>Connect a Google Form and applications show up in a private staff channel with the member's activity attached.</p>
-      </div>
-      <div class="card">
-        <h3>Protection, always free</h3>
-        <p>Anti-raid, lockdown, and honeypot channels that catch bot accounts. Safety is never behind a paywall.</p>
-      </div>
-    </div>
-    <ul class="feature-list" aria-label="Smaller features">
-      <li class="tag">Starboard</li>
-      <li class="tag">Sticky roles</li>
-      <li class="tag">Self-clearing channels</li>
-      <li class="tag">Away messages</li>
-      <li class="tag">Giveaways</li>
-      <li class="tag">Events and playtests</li>
-      <li class="tag">Reaction roles</li>
-      <li class="tag">Daily recaps</li>
-    </ul>
-  </section>
-
-  <section class="block">
-    <h2>Getting started</h2>
-    <ol class="steps">
-      <li>
-        <h3>Add Billy</h3>
-        <p class="muted">Invite him to your server with the button at the top of the page.</p>
-      </li>
-      <li>
-        <h3>Pick his channels</h3>
-        <p class="muted">Choose which channels Billy may learn from. Private channels stay private unless you pick them.</p>
-      </li>
-      <li>
-        <h3>Ask him something</h3>
-        <p class="muted">Mention Billy or use <code>/ask</code>. Staff tools live in menus like <code>/moderation</code> and <code>/tickets</code>.</p>
-      </li>
-    </ol>
-  </section>
-
-  <section class="block">
-    <h2>Plans</h2>
-    <p class="lede">Billy is free. Paid plans raise the limits for bigger servers, and prices are per server, per month.</p>
-    <div class="plans-mini">
-      <div class="card"><span class="muted small">Free</span><b>$0</b><p>Everything a server needs to run safely, with 150 answers a day.</p></div>
-      <div class="card"><span class="muted small">Premium</span><b>$4.99</b><p>1,500 answers a day and tools that save your staff time.</p></div>
-      <div class="card"><span class="muted small">Ultimate</span><b>$8.99</b><p>No limits, plus reputation checks across fan-game servers.</p></div>
-      <div class="card"><span class="muted small">Infinity</span><b>$19.99</b><p>Everything uncapped, with no daily answer limit at all.</p></div>
-    </div>
-    <p class="after"><a href="/premium/">Compare the plans &rarr;</a></p>
-  </section>
-
-  <section class="block">
-    <h2>What we're working on</h2>
-    <ul class="roadmap">
-      <li>
-        <span class="tag good">Done</span>
-        <div><b>The basics</b><p>Answers, commands, tickets, logs, memory, and running in lots of servers at once.</p></div>
-      </li>
-      <li>
-        <span class="tag good">Done</span>
-        <div><b>Dashboard</b><p>The <a href="/dashboard/">control room</a>: settings, knowledge, tickets, forms and logs in your browser.</p></div>
-      </li>
-      <li>
-        <span class="tag accent">Now</span>
-        <div><b>Smarter answers</b><p>Better context, web search for general questions, and understanding images.</p></div>
-      </li>
-      <li>
-        <span class="tag">Later</span>
-        <div><b>More ways to use Billy</b><p>Integrations, voice features, more languages and tools for developers.</p></div>
-      </li>
-    </ul>
-  </section>
-
-  <section class="block" id="faq">
-    <h2>Questions</h2>
-    <details>
-      <summary>Does Billy read every channel?</summary>
-      <p>No. He only learns from channels a server admin approves. Private channels stay out unless someone picks them on purpose.</p>
-    </details>
-    <details>
-      <summary>Does Billy replace moderators?</summary>
-      <p>No. He can collect evidence, send alerts and explain options, but punishments are always decided by your staff.</p>
-    </details>
-    <details>
-      <summary>Does Billy record voice chat?</summary>
-      <p>No. He counts how long people spend in voice channels for levels. He never records audio.</p>
-    </details>
-    <details>
-      <summary>Is one server's information shared with another?</summary>
-      <p>No. Each server's knowledge is kept separate. The network checks on the Ultimate plan only ever share a count, never another server's name, its moderators or what they wrote.</p>
-    </details>
-    <details>
-      <summary>How does paying work?</summary>
-      <p>Plans are per server, per month. You pay on our payment provider's own checkout page (card, PayPal, Google Pay or Apple Pay), so this site never sees your card. Cancel any time and the server goes back to Free without losing anything.</p>
-    </details>
   </section>
 
 </main>
-
-<script>
-// Show how many servers Billy is really in. If Billy can't be reached,
-// the number already on the page stays.
-fetch("https://billyserverai.duckdns.org/api/status", { cache: "no-store" })
-  .then(function (response) { return response.ok ? response.json() : null; })
-  .then(function (data) {
-    var count = data && data.network && data.network.communities;
-    if (typeof count === "number" && count > 0) {
-      document.getElementById("serverCount").textContent = count;
-    }
-  })
-  .catch(function () {});
-</script>
 
 <footer class="site-footer">
   <div class="container">
@@ -220,6 +307,110 @@ fetch("https://billyserverai.duckdns.org/api/status", { cache: "no-store" })
   </div>
 </footer>
 
+<script>
+// Live numbers from Billy. If he can't be reached, what's already on the page stays.
+fetch("https://billyserverai.duckdns.org/api/status", { cache: "no-store" })
+  .then(function (response) { return response.ok ? response.json() : null; })
+  .then(function (data) {
+    var network = (data && data.network) || {};
+    if (typeof network.communities === "number" && network.communities > 0) {
+      document.getElementById("serverCount").textContent = network.communities;
+    }
+    if (typeof network.members === "number" && network.members > 0) {
+      document.getElementById("memberCount").textContent = network.members.toLocaleString();
+      document.getElementById("memberStat").hidden = false;
+    }
+  })
+  .catch(function () {});
+</script>
+
+<script>
+// Gold sparkles drifting up behind the title. They sit still for people who
+// asked their device for less motion, and the browser pauses them in
+// background tabs on its own.
+(function () {
+  var canvas = document.getElementById("sparkles");
+  if (!canvas || !canvas.getContext) return;
+  var ctx = canvas.getContext("2d");
+  var calm = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+  var dots = [];
+  var width = 0;
+  var height = 0;
+
+  function setup() {
+    var ratio = window.devicePixelRatio || 1;
+    width = canvas.offsetWidth;
+    height = canvas.offsetHeight;
+    canvas.width = width * ratio;
+    canvas.height = height * ratio;
+    ctx.setTransform(ratio, 0, 0, ratio, 0, 0);
+    dots = [];
+    var count = Math.min(120, Math.round(width * height / 14000));
+    for (var i = 0; i < count; i++) {
+      dots.push({
+        x: Math.random() * width,
+        y: Math.random() * height,
+        size: Math.random() * 1.6 + 0.6,
+        speed: Math.random() * 0.25 + 0.05,
+        phase: Math.random() * Math.PI * 2
+      });
+    }
+  }
+
+  function draw(time) {
+    ctx.clearRect(0, 0, width, height);
+    ctx.fillStyle = "#ffc61a";
+    ctx.shadowColor = "#ffc61a";
+    for (var i = 0; i < dots.length; i++) {
+      var dot = dots[i];
+      if (!calm) {
+        dot.y -= dot.speed;
+        if (dot.y < -5) {
+          dot.y = height + 5;
+          dot.x = Math.random() * width;
+        }
+      }
+      ctx.globalAlpha = 0.35 + 0.65 * Math.abs(Math.sin(time / 1500 + dot.phase));
+      ctx.shadowBlur = dot.size * 5;
+      ctx.beginPath();
+      ctx.arc(dot.x, dot.y, dot.size, 0, Math.PI * 2);
+      ctx.fill();
+    }
+    if (!calm) requestAnimationFrame(draw);
+  }
+
+  setup();
+  window.addEventListener("resize", function () {
+    setup();
+    if (calm) draw(0);
+  });
+  requestAnimationFrame(draw);
+})();
+</script>
+
+<script>
+// Light up the side dot for whichever section is in the middle of the screen.
+(function () {
+  var dots = document.querySelectorAll(".side-dots a");
+  if (!dots.length || !("IntersectionObserver" in window)) return;
+  var byId = {};
+  dots.forEach(function (dot) { byId[dot.getAttribute("href").slice(1)] = dot; });
+
+  var observer = new IntersectionObserver(function (entries) {
+    entries.forEach(function (entry) {
+      if (!entry.isIntersecting) return;
+      dots.forEach(function (dot) { dot.classList.remove("on"); });
+      var dot = byId[entry.target.id];
+      if (dot) dot.classList.add("on");
+    });
+  }, { rootMargin: "-45% 0px -50% 0px" });
+
+  Object.keys(byId).forEach(function (id) {
+    var section = document.getElementById(id);
+    if (section) observer.observe(section);
+  });
+})();
+</script>
 <script src="/analytics.js" defer></script>
 <script src="/consent.js" defer></script>
 </body>
