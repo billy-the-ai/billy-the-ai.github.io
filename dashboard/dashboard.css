@@ -687,7 +687,7 @@ body.billy-offline main { display: grid; place-items: center; min-height: calc(1
 .plan-price { margin: 4px 0 8px; font-size: 30px; font-weight: 700; line-height: 1.1; }
 .plan-price span { margin-left: 3px; font-size: 13px; font-weight: 400; color: var(--muted); }
 .plan header p { margin: 0 0 12px; font-size: 14px; color: var(--muted); }
-.plan-list { display: grid; flex: 1; gap: 6px; margin: 0 0 16px; padding: 0; list-style: none; }
+.plan-list { display: grid; flex: 1; align-content: start; gap: 6px; margin: 0 0 16px; padding: 0; list-style: none; }
 .plan-list li { position: relative; padding-left: 22px; font-size: 14px; }
 .plan-list li::before { content: "✓"; position: absolute; left: 0; font-weight: 700; color: var(--green); }
 .plan-list li.off { color: var(--muted); }
