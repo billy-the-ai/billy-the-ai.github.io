@@ -166,6 +166,10 @@ body.billy-offline .status-pill i { background: var(--amber); }
 .nav-btn .count { margin-left: auto; padding: 0 7px; border-radius: 999px; background: var(--surface-2); font-size: 12px; }
 .nav-btn .count:empty { display: none; }
 
+/* Billy's animated banner at the top of the sidebar */
+.sidebar-banner { display: block; margin: 2px 2px 6px; }
+.sidebar-banner img { display: block; width: 100%; height: auto; border-radius: 10px; }
+
 .server-rail { margin-bottom: 4px; }
 
 .server-search {
@@ -568,6 +572,23 @@ body.billy-offline main { display: grid; place-items: center; min-height: calc(1
 .owner-notice b { display: block; margin-bottom: 8px; font-size: 20px; }
 .owner-notice p { margin: 0 0 10px; color: var(--muted); }
 .owner-notice small { color: var(--faint); }
+
+/* The same banner across the top of the sign-in card and the "Billy is not
+   answering" card. JavaScript makes both cards, so it is added here instead
+   of in the HTML. */
+#signInCard::before, .owner-notice::before {
+  content: "";
+  display: block;
+  aspect-ratio: 600 / 212;
+  background: url("/billy-banner.webp") center / cover no-repeat;
+}
+#signInCard::before { margin: -28px -28px 20px; }
+.owner-notice { overflow: hidden; }
+.owner-notice::before { margin: -24px -24px 18px; }
+
+@media (prefers-reduced-motion: reduce) {
+  #signInCard::before, .owner-notice::before { background-image: url("/billy-banner-still.webp"); }
+}
 
 /* ------------------------------------------------------------ neural core */
 

@@ -286,6 +286,12 @@ details p { color: var(--muted); margin: 10px 0 0; }
 .chat-msg p { margin: 2px 0 0; }
 .chat-channel { color: #c9cdfb; background: rgba(88, 101, 242, 0.3); border-radius: 3px; padding: 0 2px; }
 
+/* Billy's animated banner on top of the example chat, like a Discord profile.
+   People who turn animations off get a still frame (see the <picture> in index.html). */
+.profile-card { border-radius: var(--radius); overflow: hidden; background: #313338; box-shadow: 0 1px 0 var(--line); }
+.profile-card .banner { display: block; width: 100%; height: auto; }
+.profile-card .chat { border-radius: 0; box-shadow: none; }
+
 .feature-list { list-style: none; padding: 0; margin: 20px 0 0; display: flex; flex-wrap: wrap; gap: 8px; }
 
 .steps { list-style: none; counter-reset: step; padding: 0; margin: 0; display: grid; gap: 16px; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); }
