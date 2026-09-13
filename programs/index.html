@@ -36,7 +36,7 @@
 <main class="container">
   <section class="page-top">
     <h1>Billy Programs</h1>
-    <p class="lede">Two ways to help build Billy. Moderators help run the communities that use him, and testers try new features before they reach 27 servers.</p>
+    <p class="lede">Four ways to help build Billy: moderate the communities that use him, test new features first, spread the word, or scout the next moderators.</p>
   </section>
 
   <section class="program mod" id="moderator">
@@ -69,6 +69,36 @@
     <img src="/billy-tester-tube.png" width="560" height="589" alt="A test tube labelled TESTER">
   </section>
 
+  <section class="program marketing" id="marketing">
+    <div>
+      <h2>Marketing Team</h2>
+      <p>Help more communities find Billy. The marketing team makes TikToks and clips, writes posts and announcements, and helps partner servers hear about new features.</p>
+      <ul class="perks">
+        <li class="tag">Make videos and posts</li>
+        <li class="tag">See features before they're announced</li>
+        <li class="tag">Marketing Team role</li>
+      </ul>
+      <a class="apply pending" id="apply-marketing" href="#" aria-disabled="true">Applications opening soon</a>
+      <p class="apply-note" id="note-marketing">Reviewed by the Billy team. Everyone gets an answer either way.</p>
+    </div>
+    <div class="program-art" aria-hidden="true">📣</div>
+  </section>
+
+  <section class="program scouting" id="scouting">
+    <div>
+      <h2>Scouting Team</h2>
+      <p>Spot the members who already help everyone. Scouts clip helpful moments in chat, keep an eye on mod points, and recommend future moderators to the admins.</p>
+      <ul class="perks">
+        <li class="tag">Clip helpful moments</li>
+        <li class="tag">Recommend future mods</li>
+        <li class="tag">Scout role</li>
+      </ul>
+      <a class="apply pending" id="apply-scouting" href="#" aria-disabled="true">Applications opening soon</a>
+      <p class="apply-note" id="note-scouting">Reviewed by the Billy team. Everyone gets an answer either way.</p>
+    </div>
+    <div class="program-art" aria-hidden="true">🔭</div>
+  </section>
+
   <section class="block">
     <h2>How applying works</h2>
     <ol class="numbered">
@@ -77,7 +107,7 @@
       <li><b>A person reads it.</b> Not the bot. Someone on the team decides, and the decision is written down with a reason.</li>
       <li><b>You hear back either way.</b> Including if the answer is no, and why.</li>
     </ol>
-    <p class="note"><b>Being honest:</b> places in both programs are limited and most applications are declined, usually because the timing is wrong rather than the person. Applying doesn't change how Billy treats you or your server, and you can apply again later.</p>
+    <p class="note"><b>Being honest:</b> places in every program are limited and most applications are declined, usually because the timing is wrong rather than the person. Applying doesn't change how Billy treats you or your server, and you can apply again later.</p>
   </section>
 </main>
 
@@ -122,6 +152,9 @@
 const FORMS = {
   "apply-mod": { url: "https://forms.gle/vYZ4dWtPvJ4b1DPS7" },
   "apply-tester": { url: "https://forms.gle/agY3gDyHWsoWu6GEA", closed: true },
+  // Paste each form's share link here when it is ready. Empty = "opening soon".
+  "apply-marketing": { url: "" },
+  "apply-scouting": { url: "" },
 };
 
 (function () {

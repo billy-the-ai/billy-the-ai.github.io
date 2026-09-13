@@ -36,17 +36,17 @@
 <main class="container">
   <section class="page-top">
     <h1>Commands</h1>
-    <p class="lede">Every command Billy has (278 in total), what it does, and who is allowed to use it.</p>
+    <p class="lede">Every command Billy has (292 in total), what it does, and who is allowed to use it.</p>
     <p class="note how-to"><b>Can't find a command in Discord?</b> Typing <code>/</code> shows 28 entries instead of all of them.
       Twelve are commands you type directly, like <code>/warn</code>, <code>/ban</code>, <code>/softban</code>, <code>/kick</code>, <code>/timeout</code>, <code>/purge</code>, <code>/ask</code>.
       The other sixteen are menus that hold everything else: <code>/moderation</code> <code>/automod</code> <code>/ai</code> <code>/tickets</code> <code>/events</code> <code>/giveaways</code> <code>/levels</code> <code>/leaderboards</code> <code>/community</code> <code>/form</code> <code>/rolemenu</code> <code>/setup</code> <code>/games</code> <code>/creator</code> <code>/subscriptions</code> <code>/official</code>.
-      Four more are right-click actions: right-click a message or a person, then Apps.</p>
+      Five more are right-click actions: right-click a message or a person, then Apps.</p>
   </section>
 
   <div class="cmd-tools">
     <div class="cmd-search">
       <input id="cmdSearch" type="search" placeholder="Search, e.g. warn, level, ticket" aria-label="Search commands" autocomplete="off">
-      <span class="tag" id="cmdCount">278</span>
+      <span class="tag" id="cmdCount">292</span>
     </div>
     <nav class="cmd-jump" aria-label="Jump to a category">
       <a href="#getting-started">Getting Started</a>
@@ -65,11 +65,12 @@
 
   <div id="cmdResults">
     <section class="cmd-group" id="getting-started" data-name="Getting Started">
-      <h2>Getting Started <small>73</small></h2>
+      <h2>Getting Started <small>74</small></h2>
       <ul class="cmd-list">
         <li><code>(right-click) Ask Billy about this</code><span>Right-click a message or person, then Apps.</span><b class="tag">Everyone</b></li>
         <li><code>(right-click) Report this to staff</code><span>Right-click a message or person, then Apps.</span><b class="tag">Everyone</b></li>
         <li><code>(right-click) Scan this image</code><span>Right-click a message or person, then Apps.</span><b class="tag">Everyone</b></li>
+        <li><code>(right-click) Clip this help</code><span>Right-click a helpful message, then Apps. Sends it to staff as a mod clip.</span><b class="tag">Everyone</b></li>
         <li><code>(right-click) Who is this?</code><span>Right-click a message or person, then Apps.</span><b class="tag">Everyone</b></li>
         <li><code>/access</code><span>Grant or revoke Billy moderator or beta tester access</span><b class="tag">Everyone</b></li>
         <li><code>/backup auto</code><span>Choose the private channel backups are sent to</span><b class="tag">Everyone</b></li>
@@ -225,7 +226,7 @@
     </section>
 
     <section class="cmd-group" id="moderation" data-name="Moderation">
-      <h2>Moderation <small>36</small></h2>
+      <h2>Moderation <small>49</small></h2>
       <ul class="cmd-list">
         <li><code>/alts</code><span>Check if an account looks like a returning banned member</span><b class="tag">Moderate Members</b></li>
         <li><code>/audit</code><span>See who changed Billy&#x27;s settings</span><b class="tag">Manage Server</b></li>
@@ -263,6 +264,19 @@
         <li><code>/unwarn &lt;member&gt; &lt;reason&gt; [warning_id]</code><span>Remove one saved warning from a server member</span><b class="tag">Moderator</b></li>
         <li><code>/warn &lt;member&gt; &lt;reason&gt; [severity]</code><span>Warn a server member and save the warning</span><b class="tag">Moderator</b></li>
         <li><code>/warnings &lt;member&gt;</code><span>Privately view a member&#x27;s saved warning history</span><b class="tag">Moderator</b></li>
+        <li><code>/modpoints setup &lt;clips_channel&gt; [min_level] [reactions]</code><span>Turn mod points on and choose where clips go</span><b class="tag">Manage Server</b></li>
+        <li><code>/modpoints off</code><span>Stop new clips. Points already earned are kept</span><b class="tag">Manage Server</b></li>
+        <li><code>/modpoints check [member]</code><span>See how many mod points someone has</span><b class="tag">Everyone</b></li>
+        <li><code>/modpoints top [period]</code><span>The mod points leaderboard, this week or all time</span><b class="tag">Everyone</b></li>
+        <li><code>/modpoints adjust &lt;member&gt; &lt;amount&gt; &lt;reason&gt;</code><span>Add or take away mod points by hand</span><b class="tag">Manage Server</b></li>
+        <li><code>/modpoints export</code><span>Download every mod point as a spreadsheet</span><b class="tag">Manage Server</b></li>
+        <li><code>/modpoints sheet [apps_script_url] [disconnect]</code><span>Send every new mod point to a Google Sheet</span><b class="tag">Manage Server</b></li>
+        <li><code>/modpoints weekly [turn_on] [channel] [day] [hour_utc] [title]</code><span>Announce the Top Helper of the Week</span><b class="tag">Manage Server</b></li>
+        <li><code>/modpoints weeklyrole &lt;role&gt;</code><span>Give the Top Helper of the Week a role</span><b class="tag">Manage Server</b></li>
+        <li><code>/scout setup &lt;role&gt; &lt;channel&gt;</code><span>Choose the scout role and the private recommendations channel</span><b class="tag">Manage Server</b></li>
+        <li><code>/scout prospects</code><span>Members with the most mod points who aren&#x27;t staff yet</span><b class="tag">Scouts</b></li>
+        <li><code>/scout recommend &lt;member&gt; &lt;reason&gt;</code><span>Recommend a member to the admins for moderator</span><b class="tag">Scouts</b></li>
+        <li><code>/scout list</code><span>The latest scout recommendations</span><b class="tag">Manage Server</b></li>
       </ul>
     </section>
 

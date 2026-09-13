@@ -1417,6 +1417,8 @@ setOverviewText('moderationFalsePositivesNote',falsePositives?'Reviews staff dis
        blurb:'Switch a command off, keep it to one channel, or limit it to a role.'},
       {key:'weekly',icon:'🏆',name:'Weekly winners',badge:'new',configurable:true,
        blurb:'Announce who sent the most messages, spent longest in voice and brought the most people.'},
+      {key:'modpoints',icon:'🏅',name:'Mod points',badge:'new',configurable:true,
+       blurb:'Members clip someone helping them, staff approve, and the helper earns a mod point. Leaderboard, Top Helper of the Week and scouts included.'},
       {key:'receipts',icon:'🔗',name:'Answer sources',badge:'new',configurable:true,
        blurb:'Billy links to the message each answer came from, so it can be checked.'},
       {key:'corrections',icon:'✍',name:'Learning from corrections',badge:'new',
@@ -1495,6 +1497,7 @@ setOverviewText('moderationFalsePositivesNote',falsePositives?'Reviews staff dis
         moduleState.levels.rewards.length);
       if(entry.key==='vision')return !!(moduleState&&moduleState.vision&&moduleState.vision.enabled);
       if(entry.key==='weekly')return !!(moduleState&&moduleState.weekly&&moduleState.weekly.enabled);
+      if(entry.key==='modpoints')return !!(moduleState&&moduleState.modpoints&&moduleState.modpoints.enabled);
       if(entry.key==='receipts')return !!(moduleState&&moduleState.receipts&&moduleState.receipts.enabled);
       if(entry.key==='network')return !!(moduleState&&moduleState.network&&moduleState.network.sharing);
       if(entry.key==='commands')return !!(moduleState&&moduleState.commands&&
@@ -1927,6 +1930,110 @@ setOverviewText('moderationFalsePositivesNote',falsePositives?'Reviews staff dis
                     role_ids:f[4].value?[f[4].value]:[]}
           }).filter(x=>x.command)}));
         body.append(card);
+      }
+
+      /* ---- Mod points ---- */
+      if(moduleView==='modpoints'){
+        const mp=moduleState.modpoints||{};
+        const card=moduleCard('🏅','Mod points',
+          'Someone who got helped right-clicks the helpful message and picks Clip this help. Staff approve the clip and the helper earns 1 mod point.',
+          !!mp.enabled,async(toggle)=>{
+            const turningOn=!toggle.classList.contains('on');
+            if(turningOn&&!mpChannel.value){mpStatus.className='mod-status bad';mpStatus.textContent='Choose a mod clips channel first.';return}
+            try{const result=await saveModule('modpoints',turningOn?mpPayload(true):{enabled:false});
+              moduleState=result.modules;drawModules()}
+            catch(error){mpStatus.className='mod-status bad';mpStatus.textContent=explainApiError(error)}
+          });
+        const field=(type,value,extra)=>{const el=document.createElement('input');el.className='field';
+          el.type=type;el.value=value;Object.assign(el,extra||{});return el};
+        const toggleButton=(on,label)=>{const b=document.createElement('button');b.type='button';
+          b.className='switch'+(on?' on':'');b.setAttribute('aria-label',label);
+          b.setAttribute('aria-pressed',on?'true':'false');
+          b.addEventListener('click',()=>{b.classList.toggle('on');
+            b.setAttribute('aria-pressed',b.classList.contains('on')?'true':'false')});return b};
+        const rolePicker=(selected,empty,forHandout)=>{const s=document.createElement('select');s.className='field';
+          const none=document.createElement('option');none.value='';none.textContent=empty;s.append(none);
+          (moduleRoles||[]).forEach(r=>{const o=document.createElement('option');o.value=r.id;
+            o.textContent='@'+r.name+(forHandout&&!r.usable?' — Billy cannot give this':'');
+            if(forHandout&&!r.usable)o.disabled=true;
+            if(String(r.id)===String(selected))o.selected=true;s.append(o)});return s};
+        const mpChannel=channelOptions(mp.review_channel_id,true);
+        const mpLevel=field('number',typeof mp.min_level==='number'?mp.min_level:15,{min:0,max:500});
+        const mpReact=toggleButton(!!mp.reactions,'Let people clip by reacting');
+        const mpScoutRole=rolePicker(mp.scout_role_id,'No scout role',false);
+        const mpScoutChannel=channelOptions(mp.scout_channel_id,true);
+        const mpWeekly=toggleButton(!!mp.weekly_enabled,'Announce the top helper every week');
+        const mpWeeklyChannel=channelOptions(mp.weekly_channel_id,true);
+        const mpTitle=field('text',mp.weekly_title||'Top Helper of the Week',{maxLength:60});
+        const mpDay=document.createElement('select');mpDay.className='field';
+        ['Monday','Tuesday','Wednesday','Thursday','Friday','Saturday','Sunday'].forEach((name,index)=>{
+          const o=document.createElement('option');o.value=index;o.textContent=name;
+          if(index===Number(mp.weekly_day))o.selected=true;mpDay.append(o)});
+        const mpHour=field('number',typeof mp.weekly_hour==='number'?mp.weekly_hour:17,{min:0,max:23});
+        const mpRole=rolePicker(mp.weekly_role_id,'No winner role',true);
+        const mpWhen=document.createElement('div');mpWhen.className='check-row';mpWhen.append(mpDay,mpHour);
+        function mpPayload(enabled){return {enabled:enabled,review_channel_id:mpChannel.value,
+          min_level:Number(mpLevel.value),reactions:mpReact.classList.contains('on'),
+          scout_role_id:mpScoutRole.value,scout_channel_id:mpScoutChannel.value,
+          weekly_enabled:mpWeekly.classList.contains('on'),weekly_channel_id:mpWeeklyChannel.value,
+          weekly_title:mpTitle.value,weekly_day:Number(mpDay.value),weekly_hour:Number(mpHour.value),
+          weekly_role_id:mpRole.value}}
+        card.bodyEl.append(
+          moduleRow('Mod clips channel','Where clips wait for staff to approve. A staff-only channel is best.',mpChannel),
+          moduleRow('Minimum level','Helping only earns points from this level up.',mpLevel),
+          moduleRow('Clip with ✅','Also let people clip by reacting with a check mark.',mpReact),
+          moduleRow('Scout role','Scouts can clip anyone’s help and recommend future mods.',mpScoutRole),
+          moduleRow('Scout channel','Staff-only. Where scout recommendations arrive.',mpScoutChannel),
+          moduleRow('Top Helper of the Week','Post the member with the most points from the last 7 days.',mpWeekly),
+          moduleRow('Announcement channel','Where the weekly winner is posted.',mpWeeklyChannel),
+          moduleRow('Title','What the weekly winner is called.',mpTitle),
+          moduleRow('Day and hour (UTC)','When to post it.',mpWhen),
+          moduleRow('Winner role','Given to the winner, and taken back when someone else wins.',mpRole));
+        const mpStatus=moduleActions(card,()=>saveModule('modpoints',mpPayload(!!mp.enabled)));
+        body.append(card);
+
+        /* The spreadsheet: the leaderboards and every point, with a download. */
+        const makeTable=(headers,rows)=>{const wrap=document.createElement('div');wrap.className='table-wrap';
+          const table=document.createElement('table');table.className='table';table.style.minWidth='0';
+          const thead=document.createElement('thead'),headRow=document.createElement('tr');
+          headers.forEach(h=>{const th=document.createElement('th');th.textContent=h;headRow.append(th)});
+          thead.append(headRow);const tbody=document.createElement('tbody');
+          rows.forEach(r=>{const tr=document.createElement('tr');
+            r.forEach(v=>{const td=document.createElement('td');td.textContent=v;tr.append(td)});tbody.append(tr)});
+          table.append(thead,tbody);wrap.append(table);return wrap};
+        const sheet=document.createElement('article');sheet.className='panel';sheet.style.marginTop='16px';
+        const head=document.createElement('header');head.className='panel-head';
+        const titles=document.createElement('div');
+        const h2=document.createElement('h2');h2.textContent='Mod points spreadsheet';
+        const sub=document.createElement('span');
+        sub.textContent=(mp.pending||0)+' clip'+(mp.pending===1?'':'s')+' waiting for review'+
+          (mp.sheet_connected?' · Google Sheet connected':' · connect a Google Sheet with /modpoints sheet');
+        titles.append(h2,sub);
+        const download=document.createElement('button');download.className='button';download.type='button';
+        download.textContent='Download CSV';
+        download.addEventListener('click',()=>{
+          const rows=[['When (UTC)','Member','Member ID','Points','Reason','Clip #']].concat(
+            (mp.ledger||[]).map(r=>[String(r.when||'').slice(0,16).replace('T',' '),r.name,'="'+r.user_id+'"',r.points,r.reason,r.clip_id||'']));
+          const csv=rows.map(r=>r.map(v=>'"'+String(v==null?'':v).replace(/"/g,'""')+'"').join(',')).join('\r\n');
+          const link=document.createElement('a');
+          link.href=URL.createObjectURL(new Blob(['\ufeff'+csv],{type:'text/csv'}));
+          link.download='mod-points.csv';document.body.append(link);link.click();link.remove()});
+        head.append(titles,download);
+        const weekRows=(mp.leaderboard_week||[]).map((r,i)=>[i+1,r.name||r.user_id,r.points]);
+        const allRows=(mp.leaderboard_all||[]).map((r,i)=>[i+1,r.name||r.user_id,r.points]);
+        const ledgerRows=(mp.ledger||[]).slice(0,50).map(r=>[String(r.when||'').slice(0,10),
+          r.name||r.user_id,(r.points>0?'+':'')+r.points,r.reason]);
+        const boards=document.createElement('div');boards.className='panel-body mod-body';
+        const cols=document.createElement('div');cols.className='mod-room-grid';
+        cols.append(
+          moduleBlock('This week','Top helpers from the last 7 days.',weekRows.length
+            ?makeTable(['#','Member','Points'],weekRows):makeEmptyNote('No points this week','Approved clips show up here.')),
+          moduleBlock('All time','Everyone with mod points.',allRows.length
+            ?makeTable(['#','Member','Points'],allRows):makeEmptyNote('No points yet','Turn mod points on and clips start coming in.')));
+        boards.append(cols,moduleBlock('Every point','The newest 50 changes. Download the CSV for all of them.',
+          ledgerRows.length?makeTable(['Date','Member','Points','Why'],ledgerRows)
+          :makeEmptyNote('Nothing yet','Each approved clip or hand-made change is listed here.')));
+        sheet.append(head,boards);body.append(sheet);
       }
 
       /* ---- Weekly winners ---- */
@@ -3035,7 +3142,7 @@ setOverviewText('moderationFalsePositivesNote',falsePositives?'Reviews staff dis
       const TIERS=[
         {r:120,keys:['receipts','stale_facts','ticket_harvest','open_gaps','copilot','custom_commands']},
         {r:198,keys:['automod','automod_preview','vision','appeals','network','honeypots','watch_words','scam_reports']},
-        {r:268,keys:['channels','commands','weekly','recap','events','attendance','fair_draws','creator_tiers','scheduled_posts','autopurge']},
+        {r:268,keys:['channels','commands','weekly','modpoints','recap','events','attendance','fair_draws','creator_tiers','scheduled_posts','autopurge']},
         {r:334,keys:['starboard','sticky_roles','afk','levels','xp_events','profiles','birthdays','ideas','known_issues','helpers']}
       ];
       const ringsG=document.getElementById('coreRings');
