@@ -1,163 +1,41 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="utf-8"/>
-<meta name="viewport" content="width=device-width, initial-scale=1"/>
-<title>Billy Premium</title>
-<meta name="description" content="Billy Premium - more answers, staff tools and a link to your game. Every safety feature stays free, in every server, forever."/>
-<link rel="icon" href="/favicon.svg"/>
-<link rel="stylesheet" href="/motion.css"/>
-<meta property="og:title" content="Billy Premium"/>
-<meta property="og:description" content="More answers and less work for your staff. Safety is never sold."/>
-<meta property="og:image" content="/og.png"/>
-<style>
-  @font-face{font-family:CuteDino;src:url('/fonts/Cute-Dino.otf') format('opentype');font-display:swap}
-  :root{
-    --bg:#0c0b09; --surface:#15130f; --surface-2:#1c1812; --line:#312a1f;
-    --line-soft:#242018; --cream:#fff8ec; --muted:#aaa397; --amber:#e9a65c;
-    --amber-2:#ffd49f; --green:#6fe0a5;
-  }
-  *{box-sizing:border-box}
-  body{margin:0;background:var(--bg);color:var(--cream);
-    font-family:'Segoe UI',system-ui,-apple-system,sans-serif;-webkit-font-smoothing:antialiased}
-  a{color:var(--amber-2)}
-  .wrap{max-width:1000px;margin:0 auto;padding:56px 20px 90px}
-
-  .brand{display:flex;align-items:center;gap:12px;margin-bottom:42px}
-  .brand img{width:40px;height:40px;border-radius:11px}
-  .brand b{font-family:CuteDino,'Segoe UI',sans-serif;font-weight:400;font-size:21px;
-    letter-spacing:.02em}
-  .brand span{color:var(--muted);font-size:11px;letter-spacing:.18em;text-transform:uppercase;
-    display:block;margin-top:2px}
-
-  h1{font-family:CuteDino,'Segoe UI',sans-serif;font-weight:400;
-    font-size:clamp(30px,6vw,46px);margin:0 0 12px;letter-spacing:.01em}
-  .lede{color:var(--muted);font-size:16px;max-width:640px;line-height:1.65;margin:0 0 38px}
-
-  .plans{display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:18px;
-    margin-bottom:44px;align-items:stretch}
-  .plan{border:1px solid var(--line);border-radius:20px;background:var(--surface);
-    padding:28px 25px;display:flex;flex-direction:column}
-  .plan.paid{border-color:rgba(233,166,92,.45);
-    background:radial-gradient(130% 130% at 50% -25%,rgba(233,166,92,.13),var(--surface))}
-  .kicker{font-size:11px;letter-spacing:.16em;text-transform:uppercase;color:var(--muted);
-    font-weight:700}
-  .plan.paid .kicker{color:var(--amber)}
-  .plan h2{font-family:CuteDino,'Segoe UI',sans-serif;font-weight:400;font-size:28px;
-    margin:9px 0 2px}
-  .price{font-family:CuteDino,'Segoe UI',sans-serif;font-size:42px;margin:8px 0 0;
-    line-height:1.1}
-  .price small{font-family:'Segoe UI',sans-serif;font-size:13px;color:var(--muted);
-    margin-left:7px;letter-spacing:.01em}
-  .plan p.sub{color:var(--muted);font-size:14px;line-height:1.6;margin:12px 0 20px}
-  ul{list-style:none;padding:0;margin:0 0 24px}
-  li{padding:7px 0 7px 25px;position:relative;font-size:14.5px;line-height:1.55}
-  li::before{content:'';position:absolute;left:5px;top:15px;width:7px;height:7px;
-    border-radius:50%;background:var(--green)}
-  .plan.paid li::before{background:var(--amber)}
-
-  /* Billy Ultimate. The card actually cycles rather than being labelled as
-     cycling: a paying tier called "rainbow" that sits still is a broken
-     promise on the page that sells it. */
-  .plan.ultimate{border-color:transparent;position:relative;
-    background:radial-gradient(130% 130% at 50% -25%,rgba(150,120,255,.14),var(--surface))}
-  .plan.ultimate::before{content:'';position:absolute;inset:-1px;border-radius:21px;
-    padding:1px;pointer-events:none;
-    background:linear-gradient(120deg,#ff5f6d,#ffc371,#7ee8a2,#4facfe,#c471ed,#ff5f6d);
-    background-size:300% 300%;animation:billyRainbow 9s linear infinite;
-    -webkit-mask:linear-gradient(#000 0 0) content-box,linear-gradient(#000 0 0);
-    -webkit-mask-composite:xor;mask:linear-gradient(#000 0 0) content-box,
-    linear-gradient(#000 0 0);mask-composite:exclude}
-  @keyframes billyRainbow{0%{background-position:0% 50%}100%{background-position:300% 50%}}
-  .plan.ultimate .kicker,.plan.ultimate .price{
-    background:linear-gradient(120deg,#ff8a9b,#ffd79a,#9ff0bd,#8ecbff,#d79bff,#ff8a9b);
-    background-size:300% 300%;animation:billyRainbow 9s linear infinite;
-    -webkit-background-clip:text;background-clip:text;color:transparent}
-  .plan.ultimate .price small{-webkit-text-fill-color:var(--muted);color:var(--muted)}
-  .plan.ultimate li::before{
-    background:linear-gradient(120deg,#ff5f6d,#4facfe,#c471ed);}
-  .plan.ultimate .cta.pending{border-color:rgba(196,113,237,.4)}
-  .tier-note{color:var(--muted);font-size:13px;line-height:1.6;margin:-28px 0 40px;
-    max-width:640px}
-  .billing-switch{display:flex;justify-content:center;gap:8px;margin:0 0 26px;flex-wrap:wrap}
-  .billing-switch[hidden]{display:none}
-  .switch-group{display:inline-flex;border:1px solid var(--line);border-radius:999px;padding:4px;
-    background:rgba(20,18,14,.7)}
-  .switch-group button{border:0;background:transparent;color:var(--muted);font-weight:800;
-    font-size:12.5px;padding:8px 16px;border-radius:999px;cursor:pointer;transition:.16s ease}
-  .switch-group button[aria-pressed="true"]{background:var(--amber);color:#2a1c0c}
-  .save-flag{display:inline-flex;align-items:center;font-size:11px;font-weight:900;
-    letter-spacing:.06em;text-transform:uppercase;color:#6fe0a5;
-    background:rgba(111,224,165,.14);border-radius:999px;padding:5px 10px}
-  .period-note{color:var(--muted);font-size:12px;margin:8px 0 0;text-align:center;width:100%}
-  .sheet-plan{color:var(--amber);font-size:13px;font-weight:700;letter-spacing:.02em;
-    margin:4px 0 0}
-
-  /* Billy Moderator. Red, and deliberately still: Ultimate is the tier named
-     for a moving colour, and two animated cards on one page cancel each other
-     out. */
-  .plan.infinity{border-color:rgba(139,92,246,.55)}
-  .plan.infinity .kicker{color:#c9a6ff}
-  .plan.infinity .price{font-size:30px;color:#d8c8ff}
-  .plan.infinity h2,.plan.infinity li,.plan.infinity .sub{color:#efeaff}
-  .plan.infinity li::before{background:#a78bfa}
-  .plan.infinity .cta{border:1px solid rgba(167,139,250,.5);color:#e6dcff;
-    background:rgba(139,92,246,.16);cursor:default}
-  .cosmic{position:relative;overflow:hidden;isolation:isolate;background:linear-gradient(160deg,#140d2b 0%,#1d1140 45%,#0d0a1f 100%)}.cosmic::before{content:'';position:absolute;inset:-40%;z-index:0;pointer-events:none;background:radial-gradient(38% 30% at 22% 28%,rgba(139,92,246,.42),transparent 70%),radial-gradient(32% 26% at 78% 70%,rgba(56,189,248,.30),transparent 70%),radial-gradient(30% 24% at 62% 20%,rgba(236,72,153,.26),transparent 70%);animation:cosmicDrift 42s linear infinite}.cosmic::after{content:'';position:absolute;inset:0;z-index:1;pointer-events:none;opacity:.9;background-image:radial-gradient(1.6px 1.6px at 18% 22%,rgba(255,255,255,.95),transparent 55%),radial-gradient(1.3px 1.3px at 72% 12%,rgba(255,255,255,.85),transparent 55%),radial-gradient(1.8px 1.8px at 42% 68%,rgba(255,255,255,.90),transparent 55%),radial-gradient(1.2px 1.2px at 88% 48%,rgba(214,222,255,.80),transparent 55%),radial-gradient(1.5px 1.5px at 8% 76%,rgba(255,255,255,.80),transparent 55%),radial-gradient(1.1px 1.1px at 58% 88%,rgba(214,222,255,.75),transparent 55%),radial-gradient(1.4px 1.4px at 32% 40%,rgba(255,255,255,.70),transparent 55%),radial-gradient(1.0px 1.0px at 92% 84%,rgba(255,255,255,.65),transparent 55%);background-size:220px 220px,300px 300px,260px 260px,340px 340px,200px 200px,280px 280px,320px 320px,240px 240px;animation:cosmicStars 90s linear infinite}.cosmic>*{position:relative;z-index:2}@keyframes cosmicDrift{0%{transform:rotate(0deg) scale(1)}50%{transform:rotate(180deg) scale(1.12)}100%{transform:rotate(360deg) scale(1)}}@keyframes cosmicStars{0%{background-position:0 0,0 0,0 0,0 0,0 0,0 0,0 0,0 0}100%{background-position:220px 440px,-300px 300px,260px 520px,-340px 340px,200px 400px,-280px 280px,320px 640px,-240px 240px}}@media (prefers-reduced-motion:reduce){.cosmic::before,.cosmic::after{animation:none}}
-
-  /* Motion is decoration here, never information: everything above still reads
-     correctly when the colours stop. */
-  @media (prefers-reduced-motion: reduce){
-    .plan.ultimate::before,.plan.ultimate .kicker,.plan.ultimate .price{animation:none}
-    .plan.ultimate .kicker,.plan.ultimate .price{
-      -webkit-text-fill-color:#c9a6ff;color:#c9a6ff}
-  }
-  li b{font-weight:700}
-
-  .cta{display:block;text-align:center;padding:15px 18px;border-radius:13px;font-weight:800;
-    font-size:15px;text-decoration:none;margin-top:auto;transition:background .15s ease}
-  .cta.primary{background:var(--amber);color:#2a1c0c}
-  .cta.primary:hover{background:var(--amber-2)}
-  .cta.ghost{border:1px solid var(--line);color:var(--cream)}
-  .cta.ghost:hover{background:var(--surface-2)}
-  .cta.pending{background:var(--surface-2);border:1px solid var(--line);color:var(--muted);
-    cursor:default}
-  .under{text-align:center;color:var(--muted);font-size:12.5px;margin:10px 0 0;line-height:1.55}
-
-  .free-note{border:1px solid rgba(111,224,165,.3);background:rgba(111,224,165,.06);
-    border-radius:19px;padding:24px 26px;margin-bottom:44px}
-  .free-note h3{margin:0 0 9px;font-size:17.5px}
-  .free-note p{margin:0;color:var(--muted);font-size:14.5px;line-height:1.65}
-  .free-note b{color:var(--cream)}
-
-  h3.section{font-family:CuteDino,'Segoe UI',sans-serif;font-weight:400;font-size:25px;
-    margin:0 0 18px}
-  .faq{display:grid;gap:12px;margin-bottom:40px}
-  .faq div{border:1px solid var(--line-soft);border-radius:15px;padding:17px 19px;
-    background:rgba(255,255,255,.02)}
-  .faq b{display:block;margin-bottom:6px;font-size:15px}
-  .faq span{color:var(--muted);font-size:14px;line-height:1.65}
-
-  footer{border-top:1px solid var(--line-soft);padding-top:22px;color:var(--muted);
-    font-size:13px;line-height:1.8}
-  footer a{color:var(--muted);text-decoration:none}
-  footer a:hover{color:var(--cream)}
-  @media (max-width:640px){.wrap{padding:36px 16px 70px}}
-</style>
-<link rel="stylesheet" href="/scrollbars.css"><link rel="stylesheet" href="/calm.css"></head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Billy Premium | Billy the AI</title>
+<meta name="description" content="Billy Premium: more answers, staff tools and a link to your game. Every safety feature stays free, in every server, forever.">
+<meta property="og:title" content="Billy Premium | Billy the AI">
+<meta property="og:description" content="Billy Premium: more answers, staff tools and a link to your game. Every safety feature stays free, in every server, forever.">
+<meta property="og:image" content="https://billy-the-ai.github.io/og.png">
+<meta name="theme-color" content="#faf7f2" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#141210" media="(prefers-color-scheme: dark)">
+<link rel="icon" href="/billy-icon.webp" type="image/webp">
+<link rel="stylesheet" href="/site.css">
+<link rel="stylesheet" href="/scrollbars.css">
+</head>
 <body>
-<div class="wrap">
-  <div class="brand">
-    <img src="/billy-icon.webp" alt="" data-billy-float/>
-    <div><b>Billy The AI</b><span>Premium</span></div>
-  </div>
 
-  <h1>Billy Premium</h1>
-  <p class="lede">
-    More answers, tools that save your staff hours, and a direct link between Billy and your
-    game. Two plans you can buy, one you can only win. Everything that keeps your server and
-    its members safe stays free &mdash; on every plan, in every server, permanently.
-  </p>
+<header class="site-header">
+  <div class="container">
+    <a class="logo" href="/"><img src="/billy-icon.webp" alt="">Billy</a>
+    <nav class="site-nav" aria-label="Main">
+      <a href="/commands/">Commands</a>
+      <a href="/premium/" aria-current="page">Premium</a>
+      <a href="/programs/">Programs</a>
+      <a href="/network/">Network</a>
+      <a href="/status/">Status</a>
+      <a href="/dashboard/">Dashboard</a>
+    </nav>
+    <a class="btn btn-primary btn-small" href="https://discord.com/oauth2/authorize?client_id=1515868648819003402&amp;scope=bot%20applications.commands">Add to Discord</a>
+  </div>
+</header>
+
+<main class="container">
+  <section class="page-top">
+    <h1>Billy Premium</h1>
+    <p class="lede">More answers, tools that save your staff time, and a link between Billy and your game. Everything that keeps your server safe stays free, on every plan, forever.</p>
+  </section>
 
   <div class="billing-switch" id="billingSwitch" hidden>
     <div class="switch-group" role="group" aria-label="Billing period">
@@ -171,14 +49,15 @@
     </div>
     <p class="period-note" id="periodNote"></p>
   </div>
-  <div class="plans" data-billy-reveal>
+
+  <div class="plans">
     <section class="plan">
       <span class="kicker">Free</span>
       <h2>Core</h2>
       <div class="price">$0<small>/ forever</small></div>
       <p class="sub">Everything a community needs to run safely. No trial, no card, no expiry.</p>
       <ul>
-        <li><b><span data-billy-count="150">150</span> Billy answers a day</b></li>
+        <li><b>150 Billy answers a day</b></li>
         <li>Anti-raid, honeypot traps and lockdown</li>
         <li>Scam reports and the staff watchlist</li>
         <li>Warnings, timeouts, kicks and bans</li>
@@ -187,139 +66,100 @@
         <li>Billy learns your server and answers questions</li>
         <li>Nightly backups of everything he knows</li>
       </ul>
-      <a class="cta ghost" href="/" data-billy-press>Add Billy free</a>
-      <p class="under">Already what most servers ever need.</p>
+      <a class="cta ghost" href="https://discord.com/oauth2/authorize?client_id=1515868648819003402&amp;scope=bot%20applications.commands">Add Billy free</a>
+      <p class="under">Most servers never need more than this.</p>
     </section>
 
     <section class="plan paid">
       <span class="kicker">Billy Premium</span>
       <h2>Community Pro</h2>
       <div class="price">$4.99<small>/ server / month</small></div>
-      <p class="sub">For servers where staff time, not features, is the thing in short supply.</p>
+      <p class="sub">For servers where staff time, not features, is what runs out.</p>
       <ul>
-        <li><b><span data-billy-count="1500">1,500</span> Billy answers a day</b> &mdash; ten times the free share</li>
-        <li>Billy writes ticket replies for staff to send with one press</li>
+        <li><b>1,500 Billy answers a day</b>, ten times the free amount</li>
+        <li>Billy drafts ticket replies for staff to send with one press</li>
         <li>Alerts when a ticket has been waiting too long</li>
         <li>Connect your game: look up players, check bans, verify accounts</li>
-        <li>Staff reports &mdash; time saved, what gets used, shift handover</li>
+        <li>Staff reports: time saved, what gets used, shift handover</li>
         <li>Your own colours on Billy's embeds</li>
         <li>Priority answers when Billy is busy</li>
       </ul>
-      <a class="cta pending" id="buy" href="#" aria-disabled="true" data-billy-press>Checkout opening soon</a>
-      <p class="under" id="buy-note">
-        Google Pay, PayPal, Apple Pay or card. Cancel any time.
-      </p>
+      <a class="cta pending" id="buy" href="#" aria-disabled="true">Checkout opening soon</a>
+      <p class="under" id="buy-note">Google Pay, PayPal, Apple Pay or card. Cancel any time.</p>
     </section>
 
     <section class="plan ultimate">
       <span class="kicker">Billy Ultimate</span>
       <h2>Network</h2>
       <div class="price">$8.99<small>/ server / month</small></div>
-      <p class="sub">
-        Everything in Premium, with no limits on any of it &mdash; plus the one thing
-        no single server can build for itself.
-      </p>
+      <p class="sub">Everything in Premium with no limits, plus the one thing no single server can build for itself.</p>
       <ul>
         <li><b>Unlimited</b> knowledge, custom commands, giveaways, events and blocked words</li>
-        <li><b>Network reputation checks</b> &mdash; see whether someone was removed from
-          other fan-game communities before they cause trouble in yours</li>
-        <li><b>Network sweeps</b> &mdash; scan every member you already have against the
-          whole network in one command</li>
-        <li><b>Cross-server broadcasts</b> &mdash; one announcement to every server you own</li>
-        <li><b>Deep insights</b> &mdash; the numbers behind your community, not just a count</li>
-        <li>Rainbow embeds that shift colour, and a 🌈 on Billy's name here</li>
-        <li>Everything in Billy Premium</li>
+        <li><b>Network reputation checks:</b> see if someone was removed from other fan-game communities</li>
+        <li><b>Network sweeps:</b> check every member you already have in one command</li>
+        <li><b>Cross-server broadcasts:</b> one announcement to every server you own</li>
+        <li><b>Deep insights</b> into your community</li>
+        <li>Rainbow embeds, and a 🌈 on Billy's name in your server</li>
       </ul>
-      <a class="cta pending" id="buy-ultimate" href="#" aria-disabled="true" data-billy-press>Checkout opening soon</a>
-      <p class="under" id="buy-ultimate-note">
-        Google Pay, PayPal, Apple Pay or card. Cancel any time.
-      </p>
+      <a class="cta pending" id="buy-ultimate" href="#" aria-disabled="true">Checkout opening soon</a>
+      <p class="under" id="buy-ultimate-note">Google Pay, PayPal, Apple Pay or card. Cancel any time.</p>
     </section>
 
-    <section class="plan infinity cosmic">
+    <section class="plan infinity">
       <span class="kicker">Billy Infinity</span>
       <h2>Infinity</h2>
       <div class="price">$19.99<small>/ server / month</small></div>
-      <p class="sub">
-        The most Billy can be. Every limit gone, every command, and no daily
-        answer cap at all.
-      </p>
+      <p class="sub">The most Billy can be. Every limit gone, every command, and no daily answer cap.</p>
       <ul>
-        <li><b>Everything unlimited</b> &mdash; every limit in Billy lifted, with no ceiling
-          on anything</li>
+        <li><b>Everything unlimited</b>, with no ceiling on anything</li>
         <li><b>Every command</b>, including all of Ultimate's network tools</li>
         <li><b>No daily answer cap</b> at all</li>
-        <li>Cosmic embeds and a 🌌 on Billy's name in your server</li>
-        <li>Everything in Ultimate, with no ceiling anywhere</li>
+        <li>Cosmic embeds, and a 🌌 on Billy's name in your server</li>
       </ul>
-      <a class="cta pending" id="buy-infinity" href="#" aria-disabled="true" data-billy-press>Checkout opening soon</a>
-      <p class="under" id="buy-infinity-note">
-        Google Pay, PayPal, Apple Pay or card. Cancel any time.
-        Also given out by Billy&rsquo;s owner and won in the official server.
-      </p>
+      <a class="cta pending" id="buy-infinity" href="#" aria-disabled="true">Checkout opening soon</a>
+      <p class="under" id="buy-infinity-note">Google Pay, PayPal, Apple Pay or card. Cancel any time. Also given out by Billy's owner and won in the official server.</p>
     </section>
   </div>
 
-  <p class="tier-note" data-billy-reveal>
-    <b>About the network.</b> Billy is in <span data-billy-count="27">27</span> Gorilla Tag
-    fan-game communities. Ultimate lets yours ask what the others already learned &mdash;
-    but only ever as a <b>count</b>. Billy never passes on another server's name, its
-    moderators, or the reasons they wrote, and a community that changed its mind and
-    lifted a ban does not keep it on someone's record. It is a reason to look more
-    closely, never a reason to punish on its own. Any server can opt out of contributing
-    with <code>/ultimate sharing</code>, free or paid.
-  </p>
-
-
-  <div class="billy-band" data-billy-band="Safety is never sold · 27 servers · Anti-raid always free · Tickets answered faster · Backups every night · Billy learns your server" data-billy-speed="34s"></div>
-  <div class="free-note" data-billy-reveal>
-    <h3>Safety is never sold</h3>
-    <p>
-      Anti-raid, honeypot traps, lockdown, raid cleanup, scam reports, the watchlist,
-      warnings, bans, member history, the evidence vault and backups are
-      <b>free in every server, permanently</b>. A community should never be less protected
-      because it cannot pay, and a bot that holds safety hostage does not deserve to be
-      installed. Premium is scale and staff time &mdash; never protection.
-    </p>
+  <div class="grid grid-2">
+    <div class="note">
+      <b>Safety is never sold.</b> Anti-raid, honeypot traps, lockdown, raid cleanup, scam reports, the watchlist, warnings, bans, member history, the evidence vault and backups are free in every server, permanently. A community should never be less protected because it can't pay.
+    </div>
+    <div class="note">
+      <b>About the network.</b> Billy is in 27 Gorilla Tag fan-game communities. Ultimate lets yours ask what the others already learned, but only ever as a count. Billy never passes on another server's name, its moderators, or the reasons they wrote. It's a reason to look closer, never a reason to punish on its own. Any server can opt out with <code>/ultimate sharing</code>.
+    </div>
   </div>
 
-  <h3 class="section">Questions</h3>
-  <div class="faq" data-billy-reveal>
-    <div><b>What happens when the free answers run out?</b><span>
-      Billy says so once, then goes quiet until midnight UTC rather than repeating himself.
-      Moderation, tickets, protection and every other feature keep working exactly as normal
-      &mdash; only the AI answers pause.</span></div>
-    <div><b>Is it per server or per account?</b><span>
-      Per server. Premium applies to the one server you buy it for, and the allowance is
-      counted per server so one busy community can never spend another's share.</span></div>
-    <div><b>Can I cancel?</b><span>
-      Any time. The server drops back to the free plan at the end of the period, and nothing
-      you have set up, taught Billy, or logged is deleted.</span></div>
-    <div><b>Does Billy stop working without premium?</b><span>
-      No. Free is a real plan, not a trial. Most servers never need more than it.</span></div>
-    <div><b>How can I pay?</b><span>
-      Google Pay, PayPal, Apple Pay or any major card. Run <code>/premium buy</code> in your
-      server and Billy hands you a secure checkout page hosted by our payment provider &mdash;
-      this site never sees, handles or stores card details.</span></div>
-    <div><b>How do I turn it on after paying?</b><span>
-      You don't. Billy is told the moment the payment goes through and switches premium on
-      by himself &mdash; and he checks again every hour, so a purchase made while he was
-      restarting still lands. Run <code>/premium compare</code> to see the plan and today's
-      answer count.</span></div>
-  </div>
+  <section class="block">
+    <h2>Questions</h2>
+    <details>
+      <summary>What happens when the free answers run out?</summary>
+      <p>Billy says so once, then stays quiet until midnight UTC. Moderation, tickets, protection and every other feature keep working as normal. Only the AI answers pause.</p>
+    </details>
+    <details>
+      <summary>Is it per server or per account?</summary>
+      <p>Per server. A plan applies to the server you buy it for, and answers are counted per server, so one busy community can never use up another's.</p>
+    </details>
+    <details>
+      <summary>Can I cancel?</summary>
+      <p>Any time. The server goes back to Free at the end of the period, and nothing you set up, taught Billy, or logged is deleted.</p>
+    </details>
+    <details>
+      <summary>Does Billy stop working without a plan?</summary>
+      <p>No. Free is a real plan, not a trial. Most servers never need more.</p>
+    </details>
+    <details>
+      <summary>How can I pay?</summary>
+      <p>Google Pay, PayPal, Apple Pay or any major card. Run <code>/subscriptions buy</code> in your server and Billy gives you a secure checkout page hosted by our payment provider. This site never sees, handles or stores card details.</p>
+    </details>
+    <details>
+      <summary>How do I turn it on after paying?</summary>
+      <p>You don't have to. Billy is told the moment the payment goes through and switches the plan on by himself, and he checks again every hour in case he was restarting. Run <code>/subscriptions view</code> to see what your server's plan includes.</p>
+    </details>
+  </section>
+</main>
 
-  <footer>
-    <a href="/">Home</a> &middot; <a href="/commands/">Commands</a> &middot;
-    <a href="/dashboard/">Control room</a> &middot; <a href="/status/">Status</a> &middot; <a href="/programs/">Programs</a> &middot;
-    <a href="/terms/">Terms</a> &middot; <a href="/privacy/">Privacy</a> &middot; <a href="#" onclick="window.billyConsentReopen();return false;">Cookie choices</a>
-    <br/>Prices in USD. Billing and card handling are done entirely by our payment provider.
-  </footer>
-</div>
 
-<!-- Choosing how to pay, not entering how to pay. No card, wallet or account
-     field exists anywhere in here: picking a method carries the choice to the
-     provider's own secure checkout, which is the only place details are ever
-     typed. -->
 <div class="sheet" id="pay-sheet" role="dialog" aria-modal="true"
      aria-labelledby="pay-title" hidden>
   <div class="sheet-card" role="document">
@@ -394,63 +234,24 @@
   </div>
 </div>
 
-<style>
-  .sheet{position:fixed;inset:0;background:rgba(4,3,2,.72);backdrop-filter:blur(3px);
-    display:flex;align-items:center;justify-content:center;padding:20px;z-index:50}
-  .sheet[hidden]{display:none}
-  .sheet-card{width:100%;max-width:600px;background:var(--surface);border:1px solid var(--line);
-    border-radius:20px;padding:24px;max-height:92vh;overflow-y:auto}
-  .sheet-head{display:flex;align-items:center;justify-content:space-between;gap:12px}
-  .sheet-head h2{font-family:CuteDino,'Segoe UI',sans-serif;font-weight:400;font-size:23px;
-    margin:0}
-  .sheet-head h2 span{color:var(--muted);font-size:15px}
-  .sheet-x{background:none;border:0;color:var(--muted);font-size:26px;line-height:1;
-    cursor:pointer;padding:0 4px}
-  .sheet-x:hover{color:var(--cream)}
-  .sheet-sub{color:var(--muted);font-size:14px;margin:6px 0 20px}
-  .sheet-sub b{color:var(--cream)}
-  .sheet-body{display:grid;grid-template-columns:1fr 1fr;gap:20px;align-items:start}
-  .sheet-label{font-size:13px;color:var(--muted);margin:0 0 10px;font-weight:600}
-
-  .methods{display:grid;gap:8px}
-  .method{display:flex;align-items:center;gap:11px;width:100%;text-align:left;cursor:pointer;
-    padding:12px 13px;border-radius:12px;border:1px solid var(--line);
-    background:var(--surface-2);color:var(--cream);font-size:14.5px;font-weight:600;
-    font-family:inherit}
-  .method:hover{border-color:rgba(233,166,92,.5)}
-  .method[aria-checked="true"]{border-color:var(--amber);background:rgba(233,166,92,.12)}
-  .method svg{width:24px;height:20px;flex:none;fill:none;stroke:var(--muted);stroke-width:1.2}
-  .method svg .fill{fill:var(--muted);stroke:none}
-  .method svg .soft{opacity:.55}
-  .method[aria-checked="true"] svg{stroke:var(--amber)}
-  .method[aria-checked="true"] svg .fill{fill:var(--amber)}
-  .methods-note{color:var(--muted);font-size:12px;margin:10px 0 0;line-height:1.5}
-
-  .summary{border:1px solid var(--line-soft);border-radius:14px;padding:16px;
-    background:rgba(255,255,255,.02)}
-  .summary .row{display:flex;justify-content:space-between;align-items:baseline;
-    font-size:14px;padding:5px 0;color:var(--muted)}
-  .summary .row b{color:var(--cream);font-weight:700}
-  .summary .total{border-top:1px solid var(--line-soft);margin-top:7px;padding-top:11px;
-    font-size:15px}
-  .summary .total b{font-size:19px}
-  .summary .total small{color:var(--muted);font-size:12px;font-weight:400;margin-left:2px}
-  .coupon-label{display:block;color:var(--muted);font-size:12.5px;margin:16px 0 7px}
-  .coupon input{width:100%;padding:10px 12px;border-radius:10px;border:1px solid var(--line);
-    background:var(--bg);color:var(--cream);font-size:14px;font-family:inherit}
-  .coupon input:focus{outline:none;border-color:var(--amber)}
-  .coupon-note{color:var(--muted);font-size:11.5px;margin:8px 0 0;line-height:1.5}
-
-  .sheet-buy{margin-top:20px}
-  .sheet-buy.pending{background:var(--surface-2);border:1px solid var(--line);
-    color:var(--muted);cursor:default}
-  .sheet-foot{color:var(--muted);font-size:12px;text-align:center;margin:11px 0 0;
-    line-height:1.55}
-  @media (max-width:560px){
-    .sheet-body{grid-template-columns:1fr}
-    .sheet-card{padding:20px}
-  }
-</style>
+<footer class="site-footer">
+  <div class="container">
+    <nav aria-label="More links">
+      <a href="/">Home</a>
+      <a href="/commands/">Commands</a>
+      <a href="/premium/">Premium</a>
+      <a href="/programs/">Programs</a>
+      <a href="/network/">Network</a>
+      <a href="/status/">Status</a>
+      <a href="/dashboard/">Dashboard</a>
+      <a href="https://discord.gg/uXHNJz6fDh">Discord server</a>
+      <a href="/terms/">Terms</a>
+      <a href="/privacy/">Privacy</a>
+      <a href="#" onclick="window.billyConsentReopen();return false;">Cookie choices</a>
+    </nav>
+    <p>&copy; 2026 Billy the AI. Not affiliated with Discord or Another Axiom.</p>
+  </div>
+</footer>
 
 <script>
 /* Checkout is hosted by the payment provider, which is what makes Google Pay,
@@ -710,6 +511,7 @@ var BILLY_PLANS = {
   updateLink();
 })();
 </script>
-<script src="/motion.js" defer></script>
-<script src="/analytics.js" defer></script><script src="/consent.js" defer></script></body>
+<script src="/analytics.js" defer></script>
+<script src="/consent.js" defer></script>
+</body>
 </html>

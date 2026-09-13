@@ -33,7 +33,7 @@
       ".billy-bumped{animation:billyBump .5s ease}" +
       "@keyframes billyBump{0%{transform:translateY(0)}" +
       "35%{transform:translateY(-3px)}100%{transform:translateY(0)}}" +
-      ".billy-down{color:#ff9f8a}.billy-up{color:#8ce0a8}" +
+      ".billy-down{color:var(--red,#ff9f8a)}.billy-up{color:var(--green,#8ce0a8)}" +
       "@media (prefers-reduced-motion: reduce){.billy-bumped{animation:none}}";
     document.head.appendChild(style);
   }

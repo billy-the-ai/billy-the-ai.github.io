@@ -1,91 +1,73 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="utf-8"/>
-<meta name="viewport" content="width=device-width, initial-scale=1"/>
-<title>Is Billy working?</title>
-<meta name="description" content="Live status for Billy The AI — whether Billy is answering, remembering, and connected to Discord."/>
-<link rel="icon" href="/favicon.svg"/>
-<style>
-  @font-face{font-family:CuteDino;src:url('/fonts/Cute-Dino.otf') format('opentype');font-display:swap}
-  :root{
-    --bg:#0c0b09; --surface:#15130f; --surface-2:#1c1812; --line:#312a1f;
-    --line-soft:#242018; --cream:#fff8ec; --muted:#aaa397; --amber:#e9a65c;
-    --amber-2:#ffd49f; --green:#6fe0a5; --red:#ff7f79; --blue:#87bfff;
-  }
-  *{box-sizing:border-box}
-  body{margin:0;background:var(--bg);color:var(--cream);
-    font-family:'Segoe UI',system-ui,-apple-system,sans-serif;
-    -webkit-font-smoothing:antialiased}
-  .wrap{max-width:760px;margin:0 auto;padding:56px 20px 80px}
-  .brand{display:flex;align-items:center;gap:12px;margin-bottom:44px}
-  .brand img{width:40px;height:40px;border-radius:11px}
-  .brand b{font-family:CuteDino,'Segoe UI',sans-serif;font-weight:400;font-size:21px;
-    letter-spacing:.02em}
-  .brand span{color:var(--muted);font-size:11px;letter-spacing:.18em;text-transform:uppercase;
-    display:block;margin-top:2px}
-
-  /* The headline answers the question people came to ask, before any detail. */
-  .headline{display:flex;align-items:center;gap:16px;padding:26px 24px;border-radius:20px;
-    border:1px solid var(--line);background:var(--surface);margin-bottom:14px}
-  .beacon{width:15px;height:15px;border-radius:50%;background:var(--muted);flex:none}
-  .beacon.up{background:var(--green);box-shadow:0 0 0 6px rgba(111,224,165,.14)}
-  .beacon.down{background:var(--red);box-shadow:0 0 0 6px rgba(255,127,121,.14)}
-  .headline h1{margin:0;font-family:CuteDino,'Segoe UI',sans-serif;font-weight:400;
-    font-size:clamp(23px,4.4vw,31px);letter-spacing:.01em}
-  .headline p{margin:5px 0 0;color:var(--muted);font-size:13px}
-
-  .parts{display:grid;gap:10px;margin-bottom:22px}
-  .part{display:flex;align-items:center;gap:14px;padding:16px 18px;border-radius:15px;
-    border:1px solid var(--line-soft);background:rgba(255,255,255,.02)}
-  .dot{width:10px;height:10px;border-radius:50%;background:var(--muted);flex:none}
-  .dot.up{background:var(--green)} .dot.down{background:var(--red)}
-  .part b{font-size:15px;font-weight:600} .part small{color:var(--muted);font-size:12.5px}
-  .part div{min-width:0}
-
-  .facts{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:10px}
-  .fact{padding:15px 17px;border-radius:15px;border:1px solid var(--line-soft);
-    background:rgba(255,255,255,.02)}
-  .fact b{display:block;font-size:20px;margin-bottom:3px}
-  .fact small{color:var(--muted);font-size:11px;letter-spacing:.1em;text-transform:uppercase}
-
-  footer{margin-top:30px;color:var(--muted);font-size:12.5px;line-height:1.7}
-  footer a{color:var(--amber-2)}
-  .skeleton{color:var(--muted)}
-  @media (prefers-reduced-motion:no-preference){
-    .beacon.up{animation:pulse 2.6s ease-in-out infinite}
-    @keyframes pulse{0%,100%{opacity:1}50%{opacity:.55}}
-  }
-</style>
-<link rel="stylesheet" href="/scrollbars.css"><link rel="stylesheet" href="/calm.css"></head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Is Billy working? | Billy the AI</title>
+<meta name="description" content="Live status for Billy The AI: whether Billy is answering, remembering, and connected to Discord.">
+<meta property="og:title" content="Is Billy working? | Billy the AI">
+<meta property="og:description" content="Live status for Billy The AI: whether Billy is answering, remembering, and connected to Discord.">
+<meta property="og:image" content="https://billy-the-ai.github.io/og.png">
+<meta name="theme-color" content="#faf7f2" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#141210" media="(prefers-color-scheme: dark)">
+<link rel="icon" href="/billy-icon.webp" type="image/webp">
+<link rel="stylesheet" href="/site.css">
+<link rel="stylesheet" href="/scrollbars.css">
+</head>
 <body>
-<div class="wrap">
-  <div class="brand">
-    <img src="/billy-icon.webp" alt=""/>
-    <div><b>Billy The AI</b><span>Status</span></div>
-  </div>
 
+<header class="site-header">
+  <div class="container">
+    <a class="logo" href="/"><img src="/billy-icon.webp" alt="">Billy</a>
+    <nav class="site-nav" aria-label="Main">
+      <a href="/commands/">Commands</a>
+      <a href="/premium/">Premium</a>
+      <a href="/programs/">Programs</a>
+      <a href="/network/">Network</a>
+      <a href="/status/" aria-current="page">Status</a>
+      <a href="/dashboard/">Dashboard</a>
+    </nav>
+    <a class="btn btn-primary btn-small" href="https://discord.com/oauth2/authorize?client_id=1515868648819003402&amp;scope=bot%20applications.commands">Add to Discord</a>
+  </div>
+</header>
+
+<main class="container narrow">
   <section class="headline">
     <div class="beacon" id="beacon"></div>
     <div>
-      <h1 id="headline">Checking…</h1>
+      <h1 id="headline">Checking&hellip;</h1>
       <p id="subline">Asking Billy how he is doing.</p>
     </div>
   </section>
 
   <div class="parts" id="parts">
-    <div class="part"><span class="dot"></span><div><b class="skeleton">Loading…</b></div></div>
+    <div class="part"><span class="dot wait"></span><div><b>Loading&hellip;</b></div></div>
   </div>
 
   <div class="facts" id="facts"></div>
 
-  <footer>
-    <p id="checked">—</p>
-    <p>This page asks Billy directly every 30 seconds and is never cached, so it
-       cannot show "working" while he is down.
-       <a href="/dashboard/">Control room</a> · <a href="/">Home</a></p>
-  </footer>
-</div>
+  <p class="muted small" id="checked" style="margin-top:24px">&mdash;</p>
+  <p class="muted small">This page asks Billy directly every 30 seconds and is never cached, so it can't say "working" while he is down. Server staff can see more detail in the <a href="/dashboard/">control room</a>.</p>
+</main>
+
+<footer class="site-footer">
+  <div class="container">
+    <nav aria-label="More links">
+      <a href="/">Home</a>
+      <a href="/commands/">Commands</a>
+      <a href="/premium/">Premium</a>
+      <a href="/programs/">Programs</a>
+      <a href="/network/">Network</a>
+      <a href="/status/">Status</a>
+      <a href="/dashboard/">Dashboard</a>
+      <a href="https://discord.gg/uXHNJz6fDh">Discord server</a>
+      <a href="/terms/">Terms</a>
+      <a href="/privacy/">Privacy</a>
+      <a href="#" onclick="window.billyConsentReopen();return false;">Cookie choices</a>
+    </nav>
+    <p>&copy; 2026 Billy the AI. Not affiliated with Discord or Another Axiom.</p>
+  </div>
+</footer>
 
 <script>
 const API = "https://billyserverai.duckdns.org/api/status";
@@ -164,5 +146,7 @@ async function check(){
 check();
 setInterval(check, 30000);
 </script>
-<script src="/analytics.js" defer></script><script src="/consent.js" defer></script></body>
+<script src="/analytics.js" defer></script>
+<script src="/consent.js" defer></script>
+</body>
 </html>
