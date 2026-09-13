@@ -10,6 +10,7 @@
 <meta property="og:image" content="https://billy-the-ai.github.io/og.png">
 <meta name="theme-color" content="#0e0d0b">
 <link rel="icon" href="/billy-icon.webp" type="image/webp">
+<script>document.documentElement.classList.add("js");</script>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bungee&amp;family=Space+Grotesk:wght@400;500;600;700&amp;display=swap">
@@ -39,7 +40,7 @@
     <p class="lede">Four ways to help build Billy: moderate the communities that use him, test new features first, spread the word, or scout the next moderators.</p>
   </section>
 
-  <section class="program mod" id="moderator">
+  <section class="program mod reveal" id="moderator">
     <div>
       <h2>Moderator Program</h2>
       <p>Help run Billy across the communities that use him. Moderators get features before anyone else, a say in what gets built next, and the Billy Moderator role.</p>
@@ -54,7 +55,7 @@
     <img src="/billy-mod-mallet.png" width="780" height="689" alt="A wooden mallet with a MOD badge">
   </section>
 
-  <section class="program tester" id="tester">
+  <section class="program tester reveal" id="tester">
     <div>
       <h2>Beta Tester Program</h2>
       <p>Try Billy's new features before release and tell us when something isn't ready. A tester saying "this is confusing" is what stops it reaching everybody.</p>
@@ -69,7 +70,9 @@
     <img src="/billy-tester-tube.png" width="560" height="589" alt="A test tube labelled TESTER">
   </section>
 
-  <section class="program marketing" id="marketing">
+  <div class="band programs-band" data-words="Moderator program · Beta tester program · Marketing team · Scouting team · Early features · Shape the roadmap"></div>
+
+  <section class="program marketing reveal" id="marketing">
     <div>
       <h2>Marketing Team</h2>
       <p>Help more communities find Billy. The marketing team makes TikToks and clips, writes posts and announcements, and helps partner servers hear about new features.</p>
@@ -84,7 +87,7 @@
     <div class="program-art" aria-hidden="true">📣</div>
   </section>
 
-  <section class="program scouting" id="scouting">
+  <section class="program scouting reveal" id="scouting">
     <div>
       <h2>Scouting Team</h2>
       <p>Spot the members who already help everyone. Scouts clip helpful moments in chat, keep an eye on mod points, and recommend future moderators to the admins.</p>
@@ -187,6 +190,7 @@ const FORMS = {
   });
 })();
 </script>
+<script src="/site.js" defer></script>
 <script src="/analytics.js" defer></script>
 <script src="/consent.js" defer></script>
 </body>

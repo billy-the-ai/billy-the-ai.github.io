@@ -238,9 +238,8 @@ main { width: 100%; max-width: 1400px; min-width: 0; margin: 0 auto; padding: 28
 .page-head p { margin: 0; max-width: 70ch; color: var(--muted); }
 .head-actions { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
 
-/* The code still adds .intro-hero / .intro-in when you switch page, but they
-   do nothing on purpose. A fade that starts at opacity 0 gets stuck there if
-   the tab is in the background, which hid whole panels. */
+/* .intro-hero and .intro-in (added when you switch page) are styled near the
+   end of this file, with the rest of the first control room's touches. */
 
 .button {
   display: inline-flex;
@@ -958,4 +957,72 @@ body { background: radial-gradient(1000px 500px at 50% -180px, rgba(255, 198, 26
   font-weight: 400;
   font-size: 12px;
   letter-spacing: 0.02em;
+}
+
+
+/* ------------------------------------------- the first control room's touches
+ * Brought back in gold: BILLY flickers on like a sign when the page opens,
+ * each page's heading rises in, a faint grain sits over everything, stat
+ * cards glow in the corner, and the open page is a gold pill in the sidebar.
+ */
+
+body::before {
+  content: "";
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  opacity: 0.035;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 160 160' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.8' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='.8'/%3E%3C/svg%3E");
+}
+
+@keyframes billyFlicker {
+  0% { opacity: 1; } 5% { opacity: 0.1; } 10% { opacity: 0.9; } 15% { opacity: 0.05; }
+  20% { opacity: 1; } 25% { opacity: 0.3; } 30% { opacity: 1; } 40% { opacity: 0.8; }
+  45% { opacity: 0.05; } 50% { opacity: 1; } 55% { opacity: 0.6; } 60% { opacity: 0.05; }
+  65%, 100% { opacity: 1; }
+}
+
+/* Starts at a readable opacity rather than 0, so a tab that never finishes
+   the animation still shows the page. */
+@keyframes billyIntroIn {
+  0% { opacity: 0.3; transform: translateY(12px); filter: blur(5px); }
+  55% { opacity: 1; filter: blur(0); }
+  100% { opacity: 1; transform: none; filter: none; }
+}
+
+.brand strong { animation: billyFlicker 0.9s ease 0s 1; text-shadow: 0 0 18px rgba(255, 198, 26, 0.35); }
+.brand small { animation: billyFlicker 0.9s ease 0.12s 1; }
+
+.intro-in { animation: billyIntroIn 0.6s cubic-bezier(0.2, 0.7, 0.3, 1) backwards; }
+.intro-in.step-2 { animation-delay: 0.2s; }
+.intro-in.step-3 { animation-delay: 0.38s; }
+.intro-hero { animation: billyIntroIn 0.6s cubic-bezier(0.2, 0.7, 0.3, 1) backwards, billyFlicker 0.9s ease 0.6s 1; text-shadow: 0 0 36px rgba(255, 198, 26, 0.25); }
+
+.stat { overflow: hidden; }
+
+.stat::after {
+  content: "";
+  position: absolute;
+  top: -50px;
+  right: -40px;
+  width: 120px;
+  height: 120px;
+  border-radius: 50%;
+  pointer-events: none;
+  background: radial-gradient(circle, rgba(255, 198, 26, 0.22), transparent 70%);
+}
+
+.nav-btn.active { background: linear-gradient(135deg, #ffe07a, #ffc61a); color: #1a1302; box-shadow: 0 8px 24px rgba(255, 198, 26, 0.18); }
+.nav-btn.active .icon { color: #1a1302; }
+.nav-btn.active .count { background: rgba(0, 0, 0, 0.15); color: #1a1302; }
+
+.button { transition: transform 0.18s, border-color 0.2s, box-shadow 0.2s, color 0.2s; }
+.button:hover { transform: translateY(-1px); }
+.quick { transition: transform 0.2s, border-color 0.2s; }
+.quick:hover { transform: translateY(-2px); }
+.module:hover, .team-card:hover { transform: translateY(-3px); }
+
+@media (prefers-reduced-motion: reduce) {
+  .brand strong, .brand small, .intro-in, .intro-hero { animation: none; }
+  .button:hover, .quick:hover, .module:hover, .team-card:hover { transform: none; }
 }

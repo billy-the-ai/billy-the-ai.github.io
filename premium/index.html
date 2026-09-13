@@ -10,6 +10,7 @@
 <meta property="og:image" content="https://billy-the-ai.github.io/og.png">
 <meta name="theme-color" content="#0e0d0b">
 <link rel="icon" href="/billy-icon.webp" type="image/webp">
+<script>document.documentElement.classList.add("js");</script>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bungee&amp;family=Space+Grotesk:wght@400;500;600;700&amp;display=swap">
@@ -53,13 +54,13 @@
   </div>
 
   <div class="plans">
-    <section class="plan">
+    <section class="plan reveal tilt">
       <span class="kicker">Free</span>
       <h2>Core</h2>
       <div class="price">$0<small>/ forever</small></div>
       <p class="sub">Everything a community needs to run safely. No trial, no card, no expiry.</p>
       <ul>
-        <li><b>150 Billy answers a day</b></li>
+        <li><b><span data-count="150">150</span> Billy answers a day</b></li>
         <li>Anti-raid, honeypot traps and lockdown</li>
         <li>Scam reports and the staff watchlist</li>
         <li>Warnings, timeouts, kicks and bans</li>
@@ -72,13 +73,13 @@
       <p class="under">Most servers never need more than this.</p>
     </section>
 
-    <section class="plan paid">
+    <section class="plan paid reveal tilt">
       <span class="kicker">Billy Premium</span>
       <h2>Community Pro</h2>
       <div class="price">$4.99<small>/ server / month</small></div>
       <p class="sub">For servers where staff time, not features, is what runs out.</p>
       <ul>
-        <li><b>1,500 Billy answers a day</b>, ten times the free amount</li>
+        <li><b><span data-count="1500">1,500</span> Billy answers a day</b>, ten times the free amount</li>
         <li>Billy drafts ticket replies for staff to send with one press</li>
         <li>Alerts when a ticket has been waiting too long</li>
         <li>Connect your game: look up players, check bans, verify accounts</li>
@@ -90,7 +91,7 @@
       <p class="under" id="buy-note">Google Pay, PayPal, Apple Pay or card. Cancel any time.</p>
     </section>
 
-    <section class="plan ultimate">
+    <section class="plan ultimate reveal tilt">
       <span class="kicker">Billy Ultimate</span>
       <h2>Network</h2>
       <div class="price">$8.99<small>/ server / month</small></div>
@@ -107,7 +108,7 @@
       <p class="under" id="buy-ultimate-note">Google Pay, PayPal, Apple Pay or card. Cancel any time.</p>
     </section>
 
-    <section class="plan infinity">
+    <section class="plan infinity reveal tilt">
       <span class="kicker">Billy Infinity</span>
       <h2>Infinity</h2>
       <div class="price">$19.99<small>/ server / month</small></div>
@@ -123,12 +124,14 @@
     </section>
   </div>
 
+  <div class="band plans-band" data-words="Safety is never sold · 27 servers · Anti-raid always free · Tickets answered faster · Backups every night · Billy learns your server"></div>
+
   <div class="grid grid-2">
     <div class="note">
       <b>Safety is never sold.</b> Anti-raid, honeypot traps, lockdown, raid cleanup, scam reports, the watchlist, warnings, bans, member history, the evidence vault and backups are free in every server, permanently. A community should never be less protected because it can't pay.
     </div>
     <div class="note">
-      <b>About the network.</b> Billy is in 27 Gorilla Tag fan-game communities. Ultimate lets yours ask what the others already learned, but only ever as a count. Billy never passes on another server's name, its moderators, or the reasons they wrote. It's a reason to look closer, never a reason to punish on its own. Any server can opt out with <code>/ultimate sharing</code>.
+      <b>About the network.</b> Billy is in <span data-count="27">27</span> Gorilla Tag fan-game communities. Ultimate lets yours ask what the others already learned, but only ever as a count. Billy never passes on another server's name, its moderators, or the reasons they wrote. It's a reason to look closer, never a reason to punish on its own. Any server can opt out with <code>/ultimate sharing</code>.
     </div>
   </div>
 
@@ -513,6 +516,7 @@ var BILLY_PLANS = {
   updateLink();
 })();
 </script>
+<script src="/site.js" defer></script>
 <script src="/analytics.js" defer></script>
 <script src="/consent.js" defer></script>
 </body>
