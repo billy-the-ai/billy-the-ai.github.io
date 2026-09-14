@@ -11,7 +11,7 @@
     <link rel="apple-touch-icon" href="/billy-icon.webp?v=20260806" />
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bungee&amp;family=Space+Grotesk:wght@400;500;600;700&amp;display=swap" />
+  <link rel="preload" href="/fonts/Cute-Dino.otf" as="font" type="font/otf" crossorigin />
   <link rel="stylesheet" href="/dashboard/dashboard.css" />
 <link rel="stylesheet" href="/scrollbars.css"></head>
 <body>
@@ -1417,8 +1417,12 @@ setOverviewText('moderationFalsePositivesNote',falsePositives?'Reviews staff dis
        blurb:'Switch a command off, keep it to one channel, or limit it to a role.'},
       {key:'weekly',icon:'🏆',name:'Weekly winners',badge:'new',configurable:true,
        blurb:'Announce who sent the most messages, spent longest in voice and brought the most people.'},
-      {key:'modpoints',icon:'🏅',name:'Mod points',badge:'new',configurable:true,
-       blurb:'Members clip someone helping them, staff approve, and the helper earns a mod point. Leaderboard, Top Helper of the Week and scouts included.'},
+      {key:'helperpoints',icon:'🤝',name:'Helper Points',badge:'new',configurable:true,
+       blurb:'Billy notices when a member at your chosen level answers someone and gets thanked. Staff approve it, or points are given automatically. Leaderboard and Top Helper of the Week included.'},
+      {key:'marketing',icon:'🎬',name:'Marketing Team',badge:'new',configurable:true,
+       blurb:'A roster with its own role, an Apply button, content submissions staff approve, a showcase channel, Marketing Points and Top Marketer of the Week.'},
+      {key:'scouting',icon:'🔭',name:'Scouting Team',badge:'new',configurable:true,
+       blurb:'Scouts see the members with the most Helper Points who aren’t staff yet and recommend future moderators. Admins decide.'},
       {key:'receipts',icon:'🔗',name:'Answer sources',badge:'new',configurable:true,
        blurb:'Billy links to the message each answer came from, so it can be checked.'},
       {key:'corrections',icon:'✍',name:'Learning from corrections',badge:'new',
@@ -1480,9 +1484,7 @@ setOverviewText('moderationFalsePositivesNote',falsePositives?'Reviews staff dis
       {key:'ideas',icon:'💡',name:'Suggestions',command:'/idea new',
        blurb:'Collect community ideas and mark what you are actually doing.'},
       {key:'known_issues',icon:'🔧',name:'Known issues',command:'/issue add',
-       blurb:'Billy tells members about a known bug before they open a ticket.'},
-      {key:'helpers',icon:'🤝',name:'Helper reputation',command:'/rep give',
-       blurb:'Credit the members who answer other members.'}
+       blurb:'Billy tells members about a known bug before they open a ticket.'}
     ];
 
     let moduleView='grid',moduleFilter='';
@@ -1497,7 +1499,8 @@ setOverviewText('moderationFalsePositivesNote',falsePositives?'Reviews staff dis
         moduleState.levels.rewards.length);
       if(entry.key==='vision')return !!(moduleState&&moduleState.vision&&moduleState.vision.enabled);
       if(entry.key==='weekly')return !!(moduleState&&moduleState.weekly&&moduleState.weekly.enabled);
-      if(entry.key==='modpoints')return !!(moduleState&&moduleState.modpoints&&moduleState.modpoints.enabled);
+      if(['helperpoints','marketing','scouting'].includes(entry.key))
+        return !!(moduleState&&moduleState[entry.key]&&moduleState[entry.key].enabled);
       if(entry.key==='receipts')return !!(moduleState&&moduleState.receipts&&moduleState.receipts.enabled);
       if(entry.key==='network')return !!(moduleState&&moduleState.network&&moduleState.network.sharing);
       if(entry.key==='commands')return !!(moduleState&&moduleState.commands&&
@@ -1932,108 +1935,211 @@ setOverviewText('moderationFalsePositivesNote',falsePositives?'Reviews staff dis
         body.append(card);
       }
 
-      /* ---- Mod points ---- */
-      if(moduleView==='modpoints'){
-        const mp=moduleState.modpoints||{};
-        const card=moduleCard('🏅','Mod points',
-          'Someone who got helped right-clicks the helpful message and picks Clip this help. Staff approve the clip and the helper earns 1 mod point.',
-          !!mp.enabled,async(toggle)=>{
-            const turningOn=!toggle.classList.contains('on');
-            if(turningOn&&!mpChannel.value){mpStatus.className='mod-status bad';mpStatus.textContent='Choose a mod clips channel first.';return}
-            try{const result=await saveModule('modpoints',turningOn?mpPayload(true):{enabled:false});
-              moduleState=result.modules;drawModules()}
-            catch(error){mpStatus.className='mod-status bad';mpStatus.textContent=explainApiError(error)}
-          });
-        const field=(type,value,extra)=>{const el=document.createElement('input');el.className='field';
-          el.type=type;el.value=value;Object.assign(el,extra||{});return el};
-        const toggleButton=(on,label)=>{const b=document.createElement('button');b.type='button';
-          b.className='switch'+(on?' on':'');b.setAttribute('aria-label',label);
-          b.setAttribute('aria-pressed',on?'true':'false');
-          b.addEventListener('click',()=>{b.classList.toggle('on');
-            b.setAttribute('aria-pressed',b.classList.contains('on')?'true':'false')});return b};
-        const rolePicker=(selected,empty,forHandout)=>{const s=document.createElement('select');s.className='field';
-          const none=document.createElement('option');none.value='';none.textContent=empty;s.append(none);
-          (moduleRoles||[]).forEach(r=>{const o=document.createElement('option');o.value=r.id;
-            o.textContent='@'+r.name+(forHandout&&!r.usable?' — Billy cannot give this':'');
-            if(forHandout&&!r.usable)o.disabled=true;
-            if(String(r.id)===String(selected))o.selected=true;s.append(o)});return s};
-        const mpChannel=channelOptions(mp.review_channel_id,true);
-        const mpLevel=field('number',typeof mp.min_level==='number'?mp.min_level:15,{min:0,max:500});
-        const mpReact=toggleButton(!!mp.reactions,'Let people clip by reacting');
-        const mpScoutRole=rolePicker(mp.scout_role_id,'No scout role',false);
-        const mpScoutChannel=channelOptions(mp.scout_channel_id,true);
-        const mpWeekly=toggleButton(!!mp.weekly_enabled,'Announce the top helper every week');
-        const mpWeeklyChannel=channelOptions(mp.weekly_channel_id,true);
-        const mpTitle=field('text',mp.weekly_title||'Top Helper of the Week',{maxLength:60});
-        const mpDay=document.createElement('select');mpDay.className='field';
-        ['Monday','Tuesday','Wednesday','Thursday','Friday','Saturday','Sunday'].forEach((name,index)=>{
-          const o=document.createElement('option');o.value=index;o.textContent=name;
-          if(index===Number(mp.weekly_day))o.selected=true;mpDay.append(o)});
-        const mpHour=field('number',typeof mp.weekly_hour==='number'?mp.weekly_hour:17,{min:0,max:23});
-        const mpRole=rolePicker(mp.weekly_role_id,'No winner role',true);
-        const mpWhen=document.createElement('div');mpWhen.className='check-row';mpWhen.append(mpDay,mpHour);
-        function mpPayload(enabled){return {enabled:enabled,review_channel_id:mpChannel.value,
-          min_level:Number(mpLevel.value),reactions:mpReact.classList.contains('on'),
-          scout_role_id:mpScoutRole.value,scout_channel_id:mpScoutChannel.value,
-          weekly_enabled:mpWeekly.classList.contains('on'),weekly_channel_id:mpWeeklyChannel.value,
-          weekly_title:mpTitle.value,weekly_day:Number(mpDay.value),weekly_hour:Number(mpHour.value),
-          weekly_role_id:mpRole.value}}
-        card.bodyEl.append(
-          moduleRow('Mod clips channel','Where clips wait for staff to approve. A staff-only channel is best.',mpChannel),
-          moduleRow('Minimum level','Helping only earns points from this level up.',mpLevel),
-          moduleRow('Clip with ✅','Also let people clip by reacting with a check mark.',mpReact),
-          moduleRow('Scout role','Scouts can clip anyone’s help and recommend future mods.',mpScoutRole),
-          moduleRow('Scout channel','Staff-only. Where scout recommendations arrive.',mpScoutChannel),
-          moduleRow('Top Helper of the Week','Post the member with the most points from the last 7 days.',mpWeekly),
-          moduleRow('Announcement channel','Where the weekly winner is posted.',mpWeeklyChannel),
-          moduleRow('Title','What the weekly winner is called.',mpTitle),
-          moduleRow('Day and hour (UTC)','When to post it.',mpWhen),
-          moduleRow('Winner role','Given to the winner, and taken back when someone else wins.',mpRole));
-        const mpStatus=moduleActions(card,()=>saveModule('modpoints',mpPayload(!!mp.enabled)));
-        body.append(card);
-
-        /* The spreadsheet: the leaderboards and every point, with a download. */
-        const makeTable=(headers,rows)=>{const wrap=document.createElement('div');wrap.className='table-wrap';
-          const table=document.createElement('table');table.className='table';table.style.minWidth='0';
-          const thead=document.createElement('thead'),headRow=document.createElement('tr');
-          headers.forEach(h=>{const th=document.createElement('th');th.textContent=h;headRow.append(th)});
-          thead.append(headRow);const tbody=document.createElement('tbody');
-          rows.forEach(r=>{const tr=document.createElement('tr');
-            r.forEach(v=>{const td=document.createElement('td');td.textContent=v;tr.append(td)});tbody.append(tr)});
-          table.append(thead,tbody);wrap.append(table);return wrap};
-        const sheet=document.createElement('article');sheet.className='panel';sheet.style.marginTop='16px';
+      /* ---- Helper Points, Marketing Team and Scouting Team ----
+         The three share their pieces: switches, role pickers, leaderboards,
+         the ledger table with its CSV download, and the weekly winner rows. */
+      const pkField=(type,value,extra)=>{const el=document.createElement('input');el.className='field';
+        el.type=type;el.value=value;Object.assign(el,extra||{});return el};
+      const pkToggle=(on,label)=>{const b=document.createElement('button');b.type='button';
+        b.className='switch'+(on?' on':'');b.setAttribute('aria-label',label);
+        b.setAttribute('aria-pressed',on?'true':'false');
+        b.addEventListener('click',()=>{b.classList.toggle('on');
+          b.setAttribute('aria-pressed',b.classList.contains('on')?'true':'false')});return b};
+      const pkIsOn=b=>b.classList.contains('on');
+      const pkRole=(selected,empty,forHandout)=>{const s=document.createElement('select');s.className='field';
+        const none=document.createElement('option');none.value='';none.textContent=empty;s.append(none);
+        (moduleRoles||[]).forEach(r=>{const o=document.createElement('option');o.value=r.id;
+          o.textContent='@'+r.name+(forHandout&&!r.usable?' — Billy cannot give this':'');
+          if(forHandout&&!r.usable)o.disabled=true;
+          if(String(r.id)===String(selected))o.selected=true;s.append(o)});return s};
+      const pkSelect=(options,selected)=>{const s=document.createElement('select');s.className='field';
+        options.forEach(([value,label])=>{const o=document.createElement('option');o.value=value;o.textContent=label;
+          if(String(value)===String(selected))o.selected=true;s.append(o)});return s};
+      const pkDate=iso=>String(iso||'').slice(0,10);
+      const pkTable=(headers,rows)=>{const wrap=document.createElement('div');wrap.className='table-wrap';
+        const table=document.createElement('table');table.className='table';table.style.minWidth='0';
+        const thead=document.createElement('thead'),headRow=document.createElement('tr');
+        headers.forEach(h=>{const th=document.createElement('th');th.textContent=h;headRow.append(th)});
+        thead.append(headRow);const tbody=document.createElement('tbody');
+        rows.forEach(r=>{const tr=document.createElement('tr');
+          r.forEach(v=>{const td=document.createElement('td');td.textContent=v==null?'':v;tr.append(td)});tbody.append(tr)});
+        table.append(thead,tbody);wrap.append(table);return wrap};
+      const pkCsv=(filename,rows)=>{
+        const csv=rows.map(r=>r.map(v=>'"'+String(v==null?'':v).replace(/"/g,'""')+'"').join(',')).join('\r\n');
+        const link=document.createElement('a');
+        link.href=URL.createObjectURL(new Blob(['﻿'+csv],{type:'text/csv'}));
+        link.download=filename;document.body.append(link);link.click();link.remove()};
+      /* A panel under a card: a title, a line of context, an optional download. */
+      const pkPanel=(title,subtitle,download)=>{
+        const panel=document.createElement('article');panel.className='panel';panel.style.marginTop='16px';
         const head=document.createElement('header');head.className='panel-head';
         const titles=document.createElement('div');
-        const h2=document.createElement('h2');h2.textContent='Mod points spreadsheet';
-        const sub=document.createElement('span');
-        sub.textContent=(mp.pending||0)+' clip'+(mp.pending===1?'':'s')+' waiting for review'+
-          (mp.sheet_connected?' · Google Sheet connected':' · connect a Google Sheet with /modpoints sheet');
-        titles.append(h2,sub);
-        const download=document.createElement('button');download.className='button';download.type='button';
-        download.textContent='Download CSV';
-        download.addEventListener('click',()=>{
-          const rows=[['When (UTC)','Member','Member ID','Points','Reason','Clip #']].concat(
-            (mp.ledger||[]).map(r=>[String(r.when||'').slice(0,16).replace('T',' '),r.name,'="'+r.user_id+'"',r.points,r.reason,r.clip_id||'']));
-          const csv=rows.map(r=>r.map(v=>'"'+String(v==null?'':v).replace(/"/g,'""')+'"').join(',')).join('\r\n');
-          const link=document.createElement('a');
-          link.href=URL.createObjectURL(new Blob(['\ufeff'+csv],{type:'text/csv'}));
-          link.download='mod-points.csv';document.body.append(link);link.click();link.remove()});
-        head.append(titles,download);
-        const weekRows=(mp.leaderboard_week||[]).map((r,i)=>[i+1,r.name||r.user_id,r.points]);
-        const allRows=(mp.leaderboard_all||[]).map((r,i)=>[i+1,r.name||r.user_id,r.points]);
-        const ledgerRows=(mp.ledger||[]).slice(0,50).map(r=>[String(r.when||'').slice(0,10),
-          r.name||r.user_id,(r.points>0?'+':'')+r.points,r.reason]);
-        const boards=document.createElement('div');boards.className='panel-body mod-body';
+        const h2=document.createElement('h2');h2.textContent=title;
+        const sub=document.createElement('span');sub.textContent=subtitle;titles.append(h2,sub);head.append(titles);
+        if(download){const b=document.createElement('button');b.className='button';b.type='button';
+          b.textContent='Download CSV';b.addEventListener('click',download);head.append(b)}
+        const inner=document.createElement('div');inner.className='panel-body mod-body';
+        panel.append(head,inner);body.append(panel);return inner};
+      const pkBoards=(state,noun,emptyHint)=>{
+        const rows=list=>(list||[]).map((r,i)=>[i+1,r.name||r.user_id,r.points]);
+        const week=rows(state.leaderboard_week),all=rows(state.leaderboard_all);
         const cols=document.createElement('div');cols.className='mod-room-grid';
         cols.append(
-          moduleBlock('This week','Top helpers from the last 7 days.',weekRows.length
-            ?makeTable(['#','Member','Points'],weekRows):makeEmptyNote('No points this week','Approved clips show up here.')),
-          moduleBlock('All time','Everyone with mod points.',allRows.length
-            ?makeTable(['#','Member','Points'],allRows):makeEmptyNote('No points yet','Turn mod points on and clips start coming in.')));
-        boards.append(cols,moduleBlock('Every point','The newest 50 changes. Download the CSV for all of them.',
-          ledgerRows.length?makeTable(['Date','Member','Points','Why'],ledgerRows)
-          :makeEmptyNote('Nothing yet','Each approved clip or hand-made change is listed here.')));
-        sheet.append(head,boards);body.append(sheet);
+          moduleBlock('This week','The last 7 days.',week.length?pkTable(['#','Member',noun],week)
+            :makeEmptyNote('Nobody this week',emptyHint)),
+          moduleBlock('All time','Everyone with points.',all.length?pkTable(['#','Member',noun],all)
+            :makeEmptyNote('No points yet',emptyHint)));
+        return cols};
+      const pkLedger=(ledger,emptyHint)=>{
+        const rows=(ledger||[]).slice(0,50).map(r=>[pkDate(r.when),r.name||r.user_id,(r.points>0?'+':'')+r.points,r.reason]);
+        return moduleBlock('Every change','The newest 50. Download the CSV for all of them.',
+          rows.length?pkTable(['Date','Member','Points','Why'],rows):makeEmptyNote('Nothing yet',emptyHint))};
+      const pkLedgerCsv=(filename,ledger)=>()=>pkCsv(filename,
+        [['When (UTC)','Member','Member ID','Points','Reason','Source','Ref #']].concat(
+          (ledger||[]).map(r=>[String(r.when||'').slice(0,16).replace('T',' '),r.name,'="'+r.user_id+'"',r.points,r.reason,r.source,r.ref_id||''])));
+      const pkWeekly=(state,defaultTitle,what)=>{
+        const on=pkToggle(!!state.weekly_enabled,'Announce '+what+' every week');
+        const channel=channelOptions(state.weekly_channel_id,true);
+        const title=pkField('text',state.weekly_title||defaultTitle,{maxLength:60});
+        const day=pkSelect(['Monday','Tuesday','Wednesday','Thursday','Friday','Saturday','Sunday'].map((d,i)=>[i,d]),
+          typeof state.weekly_day==='number'?state.weekly_day:6);
+        const hour=pkField('number',typeof state.weekly_hour==='number'?state.weekly_hour:17,{min:0,max:23});
+        const role=pkRole(state.weekly_role_id,'No winner role',true);
+        const when=document.createElement('div');when.className='check-row';when.append(day,hour);
+        return {
+          rows:[moduleRow(defaultTitle,'Post '+what+' from the last 7 days.',on),
+                moduleRow('Announcement channel','Where the winner is posted.',channel),
+                moduleRow('Title','What the winner is called.',title),
+                moduleRow('Day and hour (UTC)','When to post it.',when),
+                moduleRow('Winner role','Given to the winner, and taken back when someone else wins.',role)],
+          payload:()=>({weekly_enabled:pkIsOn(on),weekly_channel_id:channel.value,weekly_title:title.value,
+            weekly_day:Number(day.value),weekly_hour:Number(hour.value),weekly_role_id:role.value})}};
+      const pkSwitchCard=(key,icon,title,blurb,state,missing,payload)=>{
+        let status=null;
+        const card=moduleCard(icon,title,blurb,!!state.enabled,async(toggle)=>{
+          const turningOn=!toggle.classList.contains('on');
+          const problem=turningOn?missing():'';
+          if(problem){status.className='mod-status bad';status.textContent=problem;return}
+          try{const result=await saveModule(key,turningOn?payload(true):{enabled:false});
+            moduleState=result.modules;drawModules()}
+          catch(error){status.className='mod-status bad';status.textContent=explainApiError(error)}
+        });
+        return {card,finish:()=>{status=moduleActions(card,()=>saveModule(key,payload(!!state.enabled)));body.append(card)}}};
+      const pkRoster=(state,team)=>{
+        const rows=(state.roster||[]).map(r=>[r.name||r.user_id,r.joined_at?pkDate(r.joined_at):'Has the role']);
+        return moduleBlock('Roster',(state.roster||[]).length+' on the team · '+(state.pending_applications||0)+
+          ' application'+(state.pending_applications===1?'':'s')+' waiting in the staff channel.',
+          rows.length?pkTable(['Member','Joined'],rows)
+          :makeEmptyNote('Nobody yet','Open applications with /'+team+' recruit, or add people with /'+team+' roster.'))};
+      const pkRecruit=(state,team)=>{
+        const toggle=pkToggle(!!state.recruiting,'Take applications');
+        if(!state.panel_channel_id){toggle.disabled=true;toggle.title='Post the Apply button first with /'+team+' recruit'}
+        return {toggle,row:moduleRow('Applications open',state.panel_channel_id
+          ?'The Apply button is live. Switch this off to close applications.'
+          :'Post the Apply button first with /'+team+' recruit channel:#channel.',toggle)}};
+
+      /* ---- Helper Points ---- */
+      if(moduleView==='helperpoints'){
+        const hp=moduleState.helperpoints||{};
+        const hpChannel=channelOptions(hp.review_channel_id,true);
+        const hpLevel=pkField('number',typeof hp.min_level==='number'?hp.min_level:15,{min:0,max:500});
+        const hpApproval=pkSelect([['review','Staff approve each one (recommended)'],['auto','Automatic, with an Undo button']],hp.approval||'review');
+        const hpAi=pkToggle(hp.ai_check!==false,'Let Billy’s AI double-check automatic points');
+        const hpWatch=document.createElement('select');hpWatch.className='field';hpWatch.multiple=true;hpWatch.size=6;
+        const watched=(hp.watch_channel_ids||[]).map(String);
+        moduleChannels.forEach(c=>{const o=document.createElement('option');o.value=c.id;
+          o.textContent=(c.category?c.category+' / ':'')+'#'+c.name;o.selected=watched.includes(String(c.id));hpWatch.append(o)});
+        const hpWeekly=pkWeekly(hp,'Top Helper of the Week','the top helper');
+        const hpPayload=enabled=>Object.assign({enabled,review_channel_id:hpChannel.value,min_level:Number(hpLevel.value),
+          approval:hpApproval.value,ai_check:pkIsOn(hpAi),
+          watch_channel_ids:[...hpWatch.selectedOptions].map(o=>o.value)},hpWeekly.payload());
+        const hp_=pkSwitchCard('helperpoints','🤝','Helper Points',
+          'Billy watches for a question, an answer from a member at your level, and a thank-you from the person who asked. Nobody has to press anything.',
+          hp,()=>hpChannel.value?'':'Choose where Billy posts the help he spots first.',hpPayload);
+        hp_.card.bodyEl.append(
+          moduleRow('Post channel','Where each help Billy spots is posted. Staff-only is best.',hpChannel),
+          moduleRow('Minimum level','Answers only count from this level up.',hpLevel),
+          moduleRow('Approval','Staff decide each one, or Billy gives the point and posts an Undo button.',hpApproval),
+          moduleRow('AI double-check','Automatic mode only. If the AI is busy, that one waits for staff instead.',hpAi),
+          moduleRow('Watched channels','Hold Ctrl (⌘ on a Mac) to pick several. Pick none to watch every channel.',hpWatch),
+          ...hpWeekly.rows);
+        hp_.finish();
+
+        const week=hp.week_detections||{};
+        const given=(week.approved||0)+(week.awarded||0);
+        const inner=pkPanel('Helper Points spreadsheet',
+          (hp.pending||0)+' waiting for staff · this week '+given+' given, '+(week.rejected||0)+' not help'+
+          (hp.sheet_connected?' · Google Sheet connected':' · connect a Google Sheet with /helperpoints sheet'),
+          pkLedgerCsv('helper-points.csv',hp.ledger));
+        inner.append(pkBoards(hp,'Points','Points appear once staff approve a help, or Billy gives one automatically.'),
+          pkLedger(hp.ledger,'Every approved help, undo and hand-made change is listed here.'));
+      }
+
+      /* ---- Marketing Team ---- */
+      if(moduleView==='marketing'){
+        const mk=moduleState.marketing||{};
+        const mkRole=pkRole(mk.role_id,'Choose the team role',true);
+        const mkStaff=channelOptions(mk.staff_channel_id,true);
+        const mkShowcase=channelOptions(mk.showcase_channel_id,true);
+        const mkPoints=pkField('number',mk.points_per_post||1,{min:1,max:10});
+        const mkRecruit=pkRecruit(mk,'marketing');
+        const mkWeekly=pkWeekly(mk,'Top Marketer of the Week','the top marketer');
+        const mkPayload=enabled=>{const p=Object.assign({enabled,role_id:mkRole.value,staff_channel_id:mkStaff.value,
+          showcase_channel_id:mkShowcase.value,points_per_post:Number(mkPoints.value)},mkWeekly.payload());
+          if(mk.panel_channel_id)p.recruiting=enabled&&pkIsOn(mkRecruit.toggle);return p};
+        const mk_=pkSwitchCard('marketing','🎬','Marketing Team',
+          'Members make videos and posts about your community and send them with /marketing submit. Staff approve, the post is shared, and it earns Marketing Points.',
+          mk,()=>mkRole.value&&mkStaff.value?'':'Choose the team role and the staff channel first.',mkPayload);
+        mk_.card.bodyEl.append(
+          moduleRow('Team role','Given when someone joins the team.',mkRole),
+          moduleRow('Staff channel','Where posts and applications wait for staff.',mkStaff),
+          moduleRow('Showcase channel','Optional. Where approved posts are shared.',mkShowcase),
+          moduleRow('Points per post','Marketing Points for each approved post (1–10).',mkPoints),
+          mkRecruit.row,...mkWeekly.rows);
+        mk_.finish();
+
+        const team=pkPanel('Team and posts',(mk.pending_submissions||0)+' post'+(mk.pending_submissions===1?'':'s')+' waiting for staff',null);
+        const posts=(mk.submissions||[]).slice(0,30).map(s=>[pkDate(s.created_at),s.name||s.user_id,s.platform,s.status,s.points||'',s.url]);
+        const cols=document.createElement('div');cols.className='mod-room-grid';
+        cols.append(pkRoster(mk,'marketing'),moduleBlock('Latest posts','The newest 30 submissions.',
+          posts.length?pkTable(['Date','Member','Where','Status','Points','Link'],posts)
+          :makeEmptyNote('No posts yet','Team members send links with /marketing submit.')));
+        team.append(cols);
+        const points=pkPanel('Marketing Points spreadsheet',
+          mk.sheet_connected?'Google Sheet connected':'Connect a Google Sheet with /marketing sheet',
+          pkLedgerCsv('marketing-points.csv',mk.ledger));
+        points.append(pkBoards(mk,'Points','Approved posts earn points.'),
+          pkLedger(mk.ledger,'Every approved post and hand-made change is listed here.'));
+      }
+
+      /* ---- Scouting Team ---- */
+      if(moduleView==='scouting'){
+        const sc=moduleState.scouting||{};
+        const scRole=pkRole(sc.role_id,'Choose the scout role',true);
+        const scStaff=channelOptions(sc.staff_channel_id,true);
+        const scRecruit=pkRecruit(sc,'scout');
+        const scPayload=enabled=>{const p={enabled,role_id:scRole.value,staff_channel_id:scStaff.value};
+          if(sc.panel_channel_id)p.recruiting=enabled&&pkIsOn(scRecruit.toggle);return p};
+        const sc_=pkSwitchCard('scouting','🔭','Scouting Team',
+          'Scouts see the members with the most Helper Points who aren’t staff yet, and recommend future moderators to your admins.',
+          sc,()=>scRole.value&&scStaff.value?'':'Choose the scout role and a staff-only channel first.',scPayload);
+        sc_.card.bodyEl.append(
+          moduleRow('Scout role','Given when someone joins the Scouting Team.',scRole),
+          moduleRow('Staff channel','Staff-only. Recommendations include members’ warnings.',scStaff),
+          scRecruit.row);
+        sc_.finish();
+
+        const inner=pkPanel('Scouting',(sc.recommendations||[]).length+' recent recommendation'+
+          ((sc.recommendations||[]).length===1?'':'s'),null);
+        const recs=(sc.recommendations||[]).map(r=>[pkDate(r.created_at),r.member_name||r.member_id,r.scout_name||r.scout_id,r.reason]);
+        const prospects=(sc.prospects||[]).map((r,i)=>[i+1,r.name||r.user_id,r.points]);
+        const cols=document.createElement('div');cols.className='mod-room-grid';
+        cols.append(pkRoster(sc,'scout'),moduleBlock('Top prospects','Most Helper Points, staff left out.',
+          prospects.length?pkTable(['#','Member','Helper Points'],prospects)
+          :makeEmptyNote('No prospects yet','Turn Helper Points on and members start showing up here.')));
+        inner.append(cols,moduleBlock('Recommendations','The newest 20.',
+          recs.length?pkTable(['Date','Member','Scout','Why'],recs)
+          :makeEmptyNote('None yet','Scouts recommend people with /scout recommend.')));
       }
 
       /* ---- Weekly winners ---- */
@@ -3142,8 +3248,8 @@ setOverviewText('moderationFalsePositivesNote',falsePositives?'Reviews staff dis
       const TIERS=[
         {r:120,keys:['receipts','stale_facts','ticket_harvest','open_gaps','copilot','custom_commands']},
         {r:198,keys:['automod','automod_preview','vision','appeals','network','honeypots','watch_words','scam_reports']},
-        {r:268,keys:['channels','commands','weekly','modpoints','recap','events','attendance','fair_draws','creator_tiers','scheduled_posts','autopurge']},
-        {r:334,keys:['starboard','sticky_roles','afk','levels','xp_events','profiles','birthdays','ideas','known_issues','helpers']}
+        {r:268,keys:['channels','commands','weekly','helperpoints','recap','events','attendance','fair_draws','creator_tiers','scheduled_posts','autopurge']},
+        {r:334,keys:['starboard','sticky_roles','afk','levels','xp_events','profiles','birthdays','ideas','known_issues','marketing','scouting']}
       ];
       const ringsG=document.getElementById('coreRings');
       const linksG=document.getElementById('coreLinks');

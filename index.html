@@ -4,16 +4,14 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Billy the AI | A Discord bot for Gorilla Tag fan-game servers</title>
-<meta name="description" content="Billy is a free Discord bot for Gorilla Tag fan-game communities. He answers questions from your server's own channels and helps staff with tickets, moderation and levels.">
+<meta name="description" content="Billy is a free Discord bot for Gorilla Tag fan-game communities. He answers questions from your server's own channels, helps staff with tickets and moderation, and notices the members who help others.">
 <meta property="og:title" content="Billy the AI | A Discord bot for Gorilla Tag fan-game servers">
-<meta property="og:description" content="Billy is a free Discord bot for Gorilla Tag fan-game communities. He answers questions from your server's own channels and helps staff with tickets, moderation and levels.">
+<meta property="og:description" content="Billy is a free Discord bot for Gorilla Tag fan-game communities. He answers questions from your server's own channels, helps staff with tickets and moderation, and notices the members who help others.">
 <meta property="og:image" content="https://billy-the-ai.github.io/og.png">
-<meta name="theme-color" content="#0e0d0b">
+<meta name="theme-color" content="#070604">
 <link rel="icon" href="/billy-icon.webp" type="image/webp">
 <script>document.documentElement.classList.add("js");</script>
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bungee&amp;family=Space+Grotesk:wght@400;500;600;700&amp;display=swap">
+<link rel="preload" href="/fonts/Cute-Dino.otf" as="font" type="font/otf" crossorigin>
 <link rel="stylesheet" href="/site.css">
 <link rel="stylesheet" href="/scrollbars.css">
 </head>
@@ -21,7 +19,7 @@
 
 <div class="status-ribbon">
   <span id="ribbonStatus"><i></i> Checking Billy</span>
-  <div class="ribbon-words" data-words="Knowledge synced · Tickets ready · Moderation watch active · Server data isolated · Mod points live · Scouts on duty"></div>
+  <div class="ribbon-words" data-words="Knowledge synced · Tickets ready · Moderation watch active · Server data isolated · Helper Points counting · Teams recruiting"></div>
   <a href="https://discord.gg/uXHNJz6fDh">Community updates ↗</a>
 </div>
 
@@ -45,11 +43,11 @@
   <a href="#top" tabindex="-1" title="Top"></a>
   <a href="#community" tabindex="-1" title="Community"></a>
   <a href="#in-action" tabindex="-1" title="Billy in action"></a>
-  <a href="#watch" tabindex="-1" title="Watch Billy"></a>
   <a href="#motion" tabindex="-1" title="Billy in motion"></a>
   <a href="#features" tabindex="-1" title="What Billy does"></a>
+  <a href="#teams" tabindex="-1" title="Teams"></a>
   <a href="#knowledge" tabindex="-1" title="Knowledge engine"></a>
-  <a href="#programs" tabindex="-1" title="Programs"></a>
+  <a href="#watch" tabindex="-1" title="Watch Billy"></a>
   <a href="#plans" tabindex="-1" title="Plans"></a>
   <a href="#roadmap" tabindex="-1" title="Roadmap"></a>
   <a href="#faq" tabindex="-1" title="Questions"></a>
@@ -57,41 +55,54 @@
 </nav>
 
 <section class="hero" id="top">
-  <div class="hero-rays" aria-hidden="true"></div>
   <canvas id="sparkles" aria-hidden="true"></canvas>
+  <div class="container hero-grid">
+    <div class="hero-copy">
+      <p class="eyebrow"><span></span>Built for Gorilla Tag fan-game communities</p>
+      <h1 class="hero-title"><span data-letters>Billy</span> <em>the AI.</em></h1>
+      <p class="hero-sub">Answers from your server's own channels, moderation your staff stay in charge of, and a bot that notices the members who help everyone else. Free on every server.</p>
+      <div class="hero-actions">
+        <a class="btn btn-primary btn-big" href="https://discord.com/oauth2/authorize?client_id=1515868648819003402&amp;scope=bot%20applications.commands">Add Billy to Discord</a>
+        <a class="btn btn-big" href="/dashboard/">Open the Control Room</a>
+      </div>
+      <p class="trust-row">
+        <span><b id="serverCount" data-count="27">27</b> servers</span>
+        <span id="memberStat" hidden><b id="memberCount"></b> members</span>
+        <span><b>24/7</b> online</span>
+        <span><b>0</b> cross-server leaks</span>
+      </p>
+    </div>
 
-  <div class="hero-inner">
-    <div><img class="hero-billy" src="/billy-icon.webp" width="132" height="132" alt=""></div>
-    <h1 class="hero-title" data-letters>Billy the AI</h1>
-    <p class="hero-sub">The Discord bot for Gorilla Tag fan-game communities</p>
-    <p class="hero-stats">
-      <span>In <b id="serverCount" data-count="27">27</b> servers</span>
-      <span id="memberStat" hidden><span class="dot-sep">&middot;</span> <b id="memberCount"></b> members</span>
-      <span class="dot-sep">&middot;</span>
-      <span><b>24/7</b> ready</span>
-      <span class="dot-sep">&middot;</span>
-      <span><b>0</b> cross-server leaks</span>
-    </p>
-    <a class="play-card" href="https://discord.com/oauth2/authorize?client_id=1515868648819003402&amp;scope=bot%20applications.commands">
-      <span class="play-logo">
-        <svg class="icon solid" viewBox="0 0 24 24" aria-hidden="true"><path d="M20.317 4.37a19.791 19.791 0 0 0-4.885-1.515.074.074 0 0 0-.079.037c-.21.375-.444.864-.608 1.25a18.27 18.27 0 0 0-5.487 0 12.64 12.64 0 0 0-.617-1.25.077.077 0 0 0-.079-.037A19.736 19.736 0 0 0 3.677 4.37a.07.07 0 0 0-.032.027C.533 9.046-.32 13.58.099 18.057a.082.082 0 0 0 .031.057 19.9 19.9 0 0 0 5.993 3.03.078.078 0 0 0 .084-.028c.462-.63.874-1.295 1.226-1.994a.076.076 0 0 0-.041-.106 13.107 13.107 0 0 1-1.872-.892.077.077 0 0 1-.008-.128 10.2 10.2 0 0 0 .372-.292.074.074 0 0 1 .077-.01c3.928 1.793 8.18 1.793 12.062 0a.074.074 0 0 1 .078.01c.12.098.246.198.373.292a.077.077 0 0 1-.006.127 12.299 12.299 0 0 1-1.873.892.077.077 0 0 0-.041.107c.36.698.772 1.362 1.225 1.993a.076.076 0 0 0 .084.028 19.839 19.839 0 0 0 6.002-3.03.077.077 0 0 0 .032-.054c.5-5.177-.838-9.674-3.549-13.66a.061.061 0 0 0-.031-.03zM8.02 15.33c-1.183 0-2.157-1.085-2.157-2.419 0-1.333.956-2.419 2.157-2.419 1.21 0 2.176 1.096 2.157 2.42 0 1.333-.956 2.418-2.157 2.418zm7.975 0c-1.183 0-2.157-1.085-2.157-2.419 0-1.333.955-2.419 2.157-2.419 1.21 0 2.176 1.096 2.157 2.42 0 1.333-.946 2.418-2.157 2.418z"/></svg>
-        Discord
-      </span>
-      <span class="play-divider" aria-hidden="true"></span>
-      <span class="play-text"><b>Add Billy</b><small>to your server</small></span>
-    </a>
-    <p class="hero-link">or <a href="https://discord.gg/uXHNJz6fDh">join the Billy server</a></p>
+    <div class="hero-visual" aria-label="An example of Billy answering in Discord">
+      <span class="orbit orbit-one" aria-hidden="true"></span>
+      <span class="orbit orbit-two" aria-hidden="true"></span>
+      <div class="assistant-card tilt">
+        <div class="assistant-head">
+          <img src="/billy-icon.webp" alt="">
+          <div><strong>Billy the AI</strong><span>Online in #help</span></div>
+          <i aria-hidden="true"></i>
+        </div>
+        <div class="message user-message typing-in"><span class="mini-avatar" aria-hidden="true">T</span><p>how do I get the playtester role?</p></div>
+        <div class="message bot-message typing-in"><img class="mini-billy" src="/billy-icon.webp" alt=""><p>Head to <b>#roles</b> and press <b>Playtester</b>. The next playtest is Saturday at 5 PM EST, pinned in <b>#announcements</b>.</p></div>
+        <div class="message user-message typing-in"><span class="mini-avatar" aria-hidden="true">T</span><p>got it, thank you!</p></div>
+        <div class="knowledge-bar"><span><i></i>From #information</span><b>Example</b></div>
+      </div>
+      <span class="floating-chip chip-one">🤝 Helper Point spotted</span>
+      <span class="floating-chip chip-two">🛡️ Raid slowed down</span>
+    </div>
   </div>
 </section>
 
-<div class="band" data-words="Knowledge · Moderation · Tickets · Levels · Mod points · Protection · Forms · Memory"></div>
+<div class="band" data-words="Knowledge · Moderation · Tickets · Levels · Helper Points · Protection · Teams · Memory"></div>
 
 <main>
 
   <section class="home-section" id="community">
     <div class="container">
       <div class="section-head reveal">
+        <span class="badge">Say hi</span>
         <h2>Join the Community</h2>
+        <p>Everywhere you can find Billy, in one place.</p>
       </div>
       <div class="community reveal">
         <div>
@@ -137,7 +148,9 @@
   <section class="home-section" id="in-action">
     <div class="container">
       <div class="section-head reveal">
-        <h2><svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M21 12a8 8 0 0 1-11.8 7L4 20l1.1-4.2A8 8 0 1 1 21 12Z"/></svg>Billy in Action</h2>
+        <span class="badge">Real conversations</span>
+        <h2>Billy in Action</h2>
+        <p>He answers from what your server already wrote down.</p>
       </div>
       <div class="demos">
         <figure class="demo tilt reveal">
@@ -183,29 +196,6 @@
     </div>
   </section>
 
-  <section class="home-section" id="watch">
-    <div class="container">
-      <div class="section-head reveal">
-        <h2><svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M7 4l13 8-13 8V4Z"/></svg>Watch Billy</h2>
-        <p>Short videos of what Billy does in a real server</p>
-      </div>
-      <div class="videos">
-        <figure class="video-card tilt reveal">
-          <video controls preload="none" playsinline poster="/media/billy-ad-poster.jpg">
-            <source src="/media/billy-ad.mp4" type="video/mp4">
-          </video>
-          <figcaption>Stop answering the same question</figcaption>
-        </figure>
-        <figure class="video-card tilt reveal">
-          <video controls preload="none" playsinline poster="/media/billy-promo-poster.jpg">
-            <source src="/media/billy-promo.mp4" type="video/mp4">
-          </video>
-          <figcaption>Meet Billy the AI</figcaption>
-        </figure>
-      </div>
-    </div>
-  </section>
-
   <section class="home-section" id="motion">
     <div class="container">
       <div class="section-head reveal">
@@ -227,7 +217,7 @@
         <article class="lab tilt reveal">
           <div class="lab-label"><span>02</span><b>LIVE ACTIVITY</b><i></i></div>
           <div class="feed" aria-hidden="true">
-            <div class="feed-row"><span class="feed-icon safe">✓</span><p><b>Report organized</b><small>Evidence kept for staff review</small></p><em>NOW</em></div>
+            <div class="feed-row"><span class="feed-icon safe">✓</span><p><b>Helper Point approved</b><small>Answered a question in #help</small></p><em>NOW</em></div>
             <div class="feed-row"><span class="feed-icon info">↗</span><p><b>Knowledge refreshed</b><small>#information updated</small></p><em>2S</em></div>
             <div class="feed-row"><span class="feed-icon warn">!</span><p><b>Spam slowed down</b><small>Member asked to wait</small></p><em>5S</em></div>
           </div>
@@ -249,9 +239,9 @@
           <div class="bars" aria-hidden="true">
             <span style="--h:42%;--d:0s"></span><span style="--h:68%;--d:.12s"></span><span style="--h:51%;--d:.24s"></span><span style="--h:84%;--d:.36s"></span><span style="--h:62%;--d:.48s"></span><span style="--h:91%;--d:.6s"></span><span style="--h:74%;--d:.72s"></span><span style="--h:100%;--d:.84s"></span>
           </div>
-          <div class="bar-stats"><span><b>Levels</b> and streaks</span><span><b>24/7</b> activity tracking</span></div>
+          <div class="bar-stats"><span><b>Levels</b> and streaks</span><span><b>Helper Points</b> every week</span></div>
           <h3>Activity becomes a useful signal</h3>
-          <p>Levels, voice time, streaks, mod points and staff actions, understandable at a glance.</p>
+          <p>Levels, voice time, streaks, Helper Points and staff actions, understandable at a glance.</p>
         </article>
       </div>
     </div>
@@ -265,39 +255,47 @@
         <p>The main things. There's a lot more in the <a href="/commands/">command list</a>.</p>
       </div>
       <div class="grid grid-3">
-        <div class="card feature tilt reveal">
-          <svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M21 12a8 8 0 0 1-11.8 7L4 20l1.1-4.2A8 8 0 1 1 21 12Z"/></svg>
+        <article class="card feature tilt reveal">
+          <div class="feature-top"><span>01</span><b>Knowledge</b></div>
           <h3>Answers questions</h3>
           <p>Billy learns from the channels your admins approve and answers from them. For general questions he can search the web, and he says when he isn't sure.</p>
-        </div>
-        <div class="card feature tilt reveal">
-          <svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3l8 3v6c0 5-3.5 8-8 9-4.5-1-8-4-8-9V6l8-3Z"/></svg>
+          <i class="card-line" aria-hidden="true"></i>
+        </article>
+        <article class="card feature tilt reveal">
+          <div class="feature-top"><span>02</span><b>Safety</b></div>
           <h3>Moderation</h3>
           <p>Warnings, timeouts, bans, reports and logs. Billy can gather the evidence, but your staff always make the call.</p>
-        </div>
-        <div class="card feature tilt reveal">
-          <svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M3 8a2 2 0 0 0 2-2h14a2 2 0 0 0 2 2v2a2 2 0 0 0 0 4v2a2 2 0 0 0-2 2H5a2 2 0 0 0-2-2v-2a2 2 0 0 0 0-4V8Z"/><path d="M10 6v12"/></svg>
+          <i class="card-line" aria-hidden="true"></i>
+        </article>
+        <article class="card feature tilt reveal">
+          <div class="feature-top"><span>03</span><b>Support</b></div>
           <h3>Tickets and appeals</h3>
           <p>Private support tickets, punishment appeals and transcripts, so problems reach the right staff.</p>
-        </div>
-        <div class="card feature tilt reveal">
-          <svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 20V10M10 20V4M16 20v-7M21 20H3"/></svg>
-          <h3>Levels and activity</h3>
-          <p>Message and voice levels, daily streaks and leaderboards. He counts time in voice but never records it.</p>
-        </div>
-        <div class="card feature tilt reveal">
-          <svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="9" r="6"/><path d="M8.5 14 7 22l5-3 5 3-1.5-8"/></svg>
-          <h3>Mod points</h3>
-          <p>Members clip someone helping them, staff approve, and the helper earns a point. Top Helper of the Week, leaderboards and scouts included.</p>
-        </div>
-        <div class="card feature tilt reveal">
-          <svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><rect x="5" y="11" width="14" height="10" rx="2"/><path d="M8 11V8a4 4 0 0 1 8 0v3"/></svg>
-          <h3>Protection, always free</h3>
+          <i class="card-line" aria-hidden="true"></i>
+        </article>
+        <article class="card feature tilt reveal">
+          <div class="feature-top"><span>04</span><b>Activity</b></div>
+          <h3>Levels and leaderboards</h3>
+          <p>Message and voice levels, daily streaks and weekly winners. He counts time in voice but never records it.</p>
+          <i class="card-line" aria-hidden="true"></i>
+        </article>
+        <article class="card feature tilt reveal">
+          <div class="feature-top"><span>05</span><b>Community</b></div>
+          <h3>Helper Points</h3>
+          <p>When someone at your chosen level answers a question and gets thanked, Billy notices. Staff approve it, and the helper earns a point.</p>
+          <i class="card-line" aria-hidden="true"></i>
+        </article>
+        <article class="card feature tilt reveal">
+          <div class="feature-top"><span>06</span><b>Always free</b></div>
+          <h3>Protection</h3>
           <p>Anti-raid, lockdown, and honeypot channels that catch bot accounts. Safety is never behind a paywall.</p>
-        </div>
+          <i class="card-line" aria-hidden="true"></i>
+        </article>
       </div>
       <ul class="chips" aria-label="Smaller features">
         <li class="tag">Forms and applications</li>
+        <li class="tag">Marketing Team</li>
+        <li class="tag">Scouting Team</li>
         <li class="tag">Starboard</li>
         <li class="tag">Sticky roles</li>
         <li class="tag">Self-clearing channels</li>
@@ -306,8 +304,52 @@
         <li class="tag">Events and playtests</li>
         <li class="tag">Reaction roles</li>
         <li class="tag">Daily recaps</li>
-        <li class="tag">Scouting team</li>
       </ul>
+    </div>
+  </section>
+
+  <section class="home-section" id="teams">
+    <div class="container">
+      <div class="section-head reveal">
+        <span class="badge">For every server</span>
+        <h2>Run Your Own Teams</h2>
+        <p>Not just for Billy. Any server can turn these on, with its own roles, channels and points.</p>
+      </div>
+      <div class="teams">
+        <article class="card team-card tilt reveal">
+          <span class="team-emoji" aria-hidden="true">🤝</span>
+          <h3>Helper Points</h3>
+          <p>Billy spots real help on his own: a question, an answer from a member at your level, and a thank-you.</p>
+          <ul>
+            <li>You set the level that counts</li>
+            <li>Staff approve, or points are automatic</li>
+            <li>Top Helper of the Week</li>
+          </ul>
+          <code>/helperpoints setup</code>
+        </article>
+        <article class="card team-card tilt reveal">
+          <span class="team-emoji" aria-hidden="true">🎬</span>
+          <h3>Marketing Team</h3>
+          <p>Members make videos and posts about your community. Staff approve them and they're shared for everyone.</p>
+          <ul>
+            <li>Apply button and a team role</li>
+            <li>Content submissions and a showcase</li>
+            <li>Marketing Points and a leaderboard</li>
+          </ul>
+          <code>/marketing setup</code>
+        </article>
+        <article class="card team-card tilt reveal">
+          <span class="team-emoji" aria-hidden="true">🔭</span>
+          <h3>Scouting Team</h3>
+          <p>Scouts find the members who already help everyone and recommend them to your admins as future moderators.</p>
+          <ul>
+            <li>Prospects ranked by Helper Points</li>
+            <li>Recommendations with the facts attached</li>
+            <li>Admins always decide</li>
+          </ul>
+          <code>/scout setup</code>
+        </article>
+      </div>
     </div>
   </section>
 
@@ -342,7 +384,7 @@
       </div>
       <div class="console tilt reveal" aria-label="An example knowledge status panel">
         <div class="console-top"><span>KNOWLEDGE STATUS · EXAMPLE</span><b>LIVE</b></div>
-        <div class="console-score"><strong>98</strong><span>/ 100<br>ready</span></div>
+        <div class="console-score"><strong data-count="98">98</strong><span>/ 100<br>ready</span></div>
         <div class="metric"><span>Approved sources</span><b>12</b></div>
         <div class="metric"><span>Knowledge conflicts</span><b>0</b></div>
         <div class="metric"><span>Last update</span><b>Live</b></div>
@@ -351,23 +393,46 @@
     </div>
   </section>
 
+  <section class="home-section" id="watch">
+    <div class="container">
+      <div class="section-head reveal">
+        <span class="badge">Videos</span>
+        <h2>Watch Billy</h2>
+        <p>Short videos of what Billy does in a real server</p>
+      </div>
+      <div class="videos">
+        <figure class="video-card tilt reveal">
+          <video controls preload="none" playsinline poster="/media/billy-ad-poster.jpg">
+            <source src="/media/billy-ad.mp4" type="video/mp4">
+          </video>
+          <figcaption>Stop answering the same question</figcaption>
+        </figure>
+        <figure class="video-card tilt reveal">
+          <video controls preload="none" playsinline poster="/media/billy-promo-poster.jpg">
+            <source src="/media/billy-promo.mp4" type="video/mp4">
+          </video>
+          <figcaption>Meet Billy the AI</figcaption>
+        </figure>
+      </div>
+    </div>
+  </section>
+
   <section class="home-section" id="programs">
     <div class="container">
       <div class="cta-card reveal">
         <span class="badge"><svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><circle cx="9" cy="8" r="3.5"/><path d="M2.5 20a6.5 6.5 0 0 1 13 0M16 4.5a3.5 3.5 0 0 1 0 7M21.5 20a6.5 6.5 0 0 0-4-6"/></svg>Billy Programs</span>
-        <h2>Join the Billy Team</h2>
-        <p>Help moderate the communities that use Billy, test new features first, make videos with the marketing team, or scout the next moderators.</p>
+        <h2>Help Build Billy</h2>
+        <p>Moderate the communities that use Billy, or test new features before anyone else.</p>
         <div class="buttons center-buttons">
-          <a class="btn btn-primary" href="/programs/#moderator">Moderator</a>
-          <a class="btn" href="/programs/#marketing">Marketing Team</a>
-          <a class="btn" href="/programs/#scouting">Scouting Team</a>
+          <a class="btn btn-primary" href="/programs/#moderator">Moderator Program</a>
           <a class="btn" href="/programs/#tester">Beta Tester</a>
+          <a class="btn" href="/programs/#teams">Teams for your server</a>
         </div>
       </div>
     </div>
   </section>
 
-  <div class="band" data-words="Mod points · Top Helper of the Week · Scouting Team · Marketing Team · Safety is never sold"></div>
+  <div class="band" data-words="Helper Points · Top Helper of the Week · Marketing Team · Scouting Team · Safety is never sold"></div>
 
   <section class="home-section" id="plans">
     <div class="container">
@@ -406,7 +471,7 @@
       <div class="roadmap-list">
         <div class="road done reveal"><span>01</span><div><b>Foundation</b><p>Conversations, commands, knowledge, tickets, logs, memory and multi-server support.</p></div><em>Shipped</em></div>
         <div class="road done reveal"><span>02</span><div><b>Control Room</b><p>The dashboard: settings, knowledge, tickets, forms and logs in your browser.</p></div><em>Shipped</em></div>
-        <div class="road done reveal"><span>03</span><div><b>Mod points and scouting</b><p>Clips of members helping members, Top Helper of the Week and the Scouting Team.</p></div><em>New</em></div>
+        <div class="road done reveal"><span>03</span><div><b>Helper Points and teams</b><p>Billy notices members helping members, plus Marketing and Scouting Teams any server can run.</p></div><em>New</em></div>
         <div class="road active reveal"><span>04</span><div><b>Smarter Billy</b><p>Web search for general questions, stronger context and understanding images.</p></div><em>In development</em></div>
         <div class="road reveal"><span>05</span><div><b>Billy Platform</b><p>Plugins, integrations, voice features, more languages and developer tools.</p></div><em>Future</em></div>
       </div>
@@ -443,7 +508,7 @@
         <li class="reveal"><svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M9 18h6M10 21h4M12 3a6 6 0 0 0-3.5 10.9c.6.5 1 1.2 1 2V17h5v-1.1c0-.8.4-1.5 1-2A6 6 0 0 0 12 3Z"/></svg>Billy never records voice chat. He only counts how long people spend in voice, for levels.</li>
         <li class="reveal"><svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M9 18h6M10 21h4M12 3a6 6 0 0 0-3.5 10.9c.6.5 1 1.2 1 2V17h5v-1.1c0-.8.4-1.5 1-2A6 6 0 0 0 12 3Z"/></svg>Each server's knowledge is kept apart. Billy never answers one server with another server's information.</li>
         <li class="reveal"><svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M9 18h6M10 21h4M12 3a6 6 0 0 0-3.5 10.9c.6.5 1 1.2 1 2V17h5v-1.1c0-.8.4-1.5 1-2A6 6 0 0 0 12 3Z"/></svg>Anti-raid, honeypot traps and lockdown are free on every plan, forever.</li>
-        <li class="reveal"><svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M9 18h6M10 21h4M12 3a6 6 0 0 0-3.5 10.9c.6.5 1 1.2 1 2V17h5v-1.1c0-.8.4-1.5 1-2A6 6 0 0 0 12 3Z"/></svg>Typing / in Discord shows 28 entries, and together they hold all 292 of Billy's commands.</li>
+        <li class="reveal"><svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M9 18h6M10 21h4M12 3a6 6 0 0 0-3.5 10.9c.6.5 1 1.2 1 2V17h5v-1.1c0-.8.4-1.5 1-2A6 6 0 0 0 12 3Z"/></svg>Typing / in Discord shows 28 entries, and together they hold all 304 of Billy's commands.</li>
       </ul>
     </div>
   </section>
@@ -467,8 +532,12 @@
         <p>No. He counts how long people spend in voice channels for levels. He never records audio.</p>
       </details>
       <details class="reveal">
-        <summary>How do mod points work?</summary>
-        <p>Once someone reaches level 15, the member they help can right-click their message and choose Apps → Clip this help. Staff approve the clip and the helper gets 1 mod point. The top helper each week can be announced and given a role.</p>
+        <summary>How do Helper Points work?</summary>
+        <p>Nobody has to press anything. When a member asks a question, someone at or above the level your admins chose answers it, and the person who asked says thanks or that it worked, Billy notices. He posts a picture of that conversation for staff to approve (or gives the point automatically, if your server prefers). The same two people only count once every few hours, so points can't be farmed.</p>
+      </details>
+      <details class="reveal">
+        <summary>Are the Marketing and Scouting Teams only for Billy?</summary>
+        <p>No. Any server with Billy can run its own, with its own team role, staff channel, Apply button and points. Start with <code>/marketing setup</code> or <code>/scout setup</code>.</p>
       </details>
       <details class="reveal">
         <summary>How does paying work?</summary>
@@ -513,9 +582,7 @@
           <span class="badge">Ready when your server is</span>
           <h2>Give Your Community a Smarter Place to Ask, Learn and Grow</h2>
         </div>
-        <a class="play-card" href="https://discord.com/oauth2/authorize?client_id=1515868648819003402&amp;scope=bot%20applications.commands">
-          <span class="play-text"><b>Add Billy</b><small>it's free</small></span>
-        </a>
+        <a class="btn btn-primary btn-big" href="https://discord.com/oauth2/authorize?client_id=1515868648819003402&amp;scope=bot%20applications.commands">Add Billy, it's free</a>
       </div>
     </div>
   </section>
@@ -593,9 +660,8 @@ fetch("https://billyserverai.duckdns.org/api/status", { cache: "no-store" })
 </script>
 
 <script>
-// Gold sparkles drifting up behind the title. They sit still for people who
-// asked their device for less motion, and the browser pauses them in
-// background tabs on its own.
+// Warm dust drifting up behind the hero. It sits still for people who asked
+// their device for less motion, and the browser pauses it in background tabs.
 (function () {
   var canvas = document.getElementById("sparkles");
   if (!canvas || !canvas.getContext) return;
@@ -613,22 +679,21 @@ fetch("https://billyserverai.duckdns.org/api/status", { cache: "no-store" })
     canvas.height = height * ratio;
     ctx.setTransform(ratio, 0, 0, ratio, 0, 0);
     dots = [];
-    var count = Math.min(120, Math.round(width * height / 14000));
+    var count = Math.min(70, Math.round(width * height / 22000));
     for (var i = 0; i < count; i++) {
       dots.push({
         x: Math.random() * width,
         y: Math.random() * height,
-        size: Math.random() * 1.6 + 0.6,
-        speed: Math.random() * 0.25 + 0.05,
-        phase: Math.random() * Math.PI * 2
+        size: Math.random() * 1.4 + 0.5,
+        speed: Math.random() * 0.2 + 0.04,
+        phase: Math.random() * Math.PI * 2,
+        warm: Math.random() < 0.6
       });
     }
   }
 
   function draw(time) {
     ctx.clearRect(0, 0, width, height);
-    ctx.fillStyle = "#ffc61a";
-    ctx.shadowColor = "#ffc61a";
     for (var i = 0; i < dots.length; i++) {
       var dot = dots[i];
       if (!calm) {
@@ -638,8 +703,10 @@ fetch("https://billyserverai.duckdns.org/api/status", { cache: "no-store" })
           dot.x = Math.random() * width;
         }
       }
-      ctx.globalAlpha = 0.35 + 0.65 * Math.abs(Math.sin(time / 1500 + dot.phase));
-      ctx.shadowBlur = dot.size * 5;
+      ctx.fillStyle = dot.warm ? "#efb773" : "#fff0d2";
+      ctx.shadowColor = ctx.fillStyle;
+      ctx.globalAlpha = 0.2 + 0.5 * Math.abs(Math.sin(time / 1700 + dot.phase));
+      ctx.shadowBlur = dot.size * 6;
       ctx.beginPath();
       ctx.arc(dot.x, dot.y, dot.size, 0, Math.PI * 2);
       ctx.fill();

@@ -8,12 +8,10 @@
 <meta property="og:title" content="Commands | Billy the AI">
 <meta property="og:description" content="Every Billy command, what it does, and the permission it needs.">
 <meta property="og:image" content="https://billy-the-ai.github.io/og.png">
-<meta name="theme-color" content="#0e0d0b">
+<meta name="theme-color" content="#070604">
 <link rel="icon" href="/billy-icon.webp" type="image/webp">
 <script>document.documentElement.classList.add("js");</script>
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bungee&amp;family=Space+Grotesk:wght@400;500;600;700&amp;display=swap">
+<link rel="preload" href="/fonts/Cute-Dino.otf" as="font" type="font/otf" crossorigin>
 <link rel="stylesheet" href="/site.css">
 <link rel="stylesheet" href="/scrollbars.css">
 </head>
@@ -37,7 +35,7 @@
 <main class="container">
   <section class="page-top">
     <h1>Commands</h1>
-    <p class="lede">Every command Billy has (292 in total), what it does, and who is allowed to use it.</p>
+    <p class="lede">Every command Billy has (304 in total), what it does, and who is allowed to use it.</p>
     <p class="note how-to"><b>Can't find a command in Discord?</b> Typing <code>/</code> shows 28 entries instead of all of them.
       Twelve are commands you type directly, like <code>/warn</code>, <code>/ban</code>, <code>/softban</code>, <code>/kick</code>, <code>/timeout</code>, <code>/purge</code>, <code>/ask</code>.
       The other sixteen are menus that hold everything else: <code>/moderation</code> <code>/automod</code> <code>/ai</code> <code>/tickets</code> <code>/events</code> <code>/giveaways</code> <code>/levels</code> <code>/leaderboards</code> <code>/community</code> <code>/form</code> <code>/rolemenu</code> <code>/setup</code> <code>/games</code> <code>/creator</code> <code>/subscriptions</code> <code>/official</code>.
@@ -47,7 +45,7 @@
   <div class="cmd-tools">
     <div class="cmd-search">
       <input id="cmdSearch" type="search" placeholder="Search, e.g. warn, level, ticket" aria-label="Search commands" autocomplete="off">
-      <span class="tag" id="cmdCount">292</span>
+      <span class="tag" id="cmdCount">304</span>
     </div>
     <nav class="cmd-jump" aria-label="Jump to a category">
       <a href="#getting-started">Getting Started</a>
@@ -146,8 +144,19 @@
     </section>
 
     <section class="cmd-group" id="community" data-name="Community">
-      <h2>Community <small>55</small></h2>
+      <h2>Community <small>66</small></h2>
       <ul class="cmd-list">
+        <li><code>/marketing setup &lt;team_role&gt; &lt;staff_channel&gt; [showcase_channel] [points_per_post]</code><span>Set up your server&#x27;s Marketing Team</span><b class="tag">Manage Server</b></li>
+        <li><code>/marketing off</code><span>Close the Marketing Team. The roster and points are kept</span><b class="tag">Manage Server</b></li>
+        <li><code>/marketing roster &lt;action&gt; [member]</code><span>List, add or remove Marketing Team members</span><b class="tag">Manage Server</b></li>
+        <li><code>/marketing recruit [channel] [close]</code><span>Post an Apply button for the Marketing Team, or close applications</span><b class="tag">Manage Server</b></li>
+        <li><code>/marketing submit &lt;link&gt; [note]</code><span>Send a post you made about the server to staff</span><b class="tag">Team members</b></li>
+        <li><code>/marketing top [period]</code><span>The Marketing Points leaderboard</span><b class="tag">Everyone</b></li>
+        <li><code>/marketing check [member]</code><span>See someone&#x27;s Marketing Points</span><b class="tag">Everyone</b></li>
+        <li><code>/marketing adjust &lt;member&gt; &lt;amount&gt; &lt;reason&gt;</code><span>Add or take away Marketing Points by hand</span><b class="tag">Manage Server</b></li>
+        <li><code>/marketing export</code><span>Download every Marketing Point as a spreadsheet</span><b class="tag">Manage Server</b></li>
+        <li><code>/marketing sheet [apps_script_url] [disconnect]</code><span>Send every new Marketing Point to a Google Sheet</span><b class="tag">Manage Server</b></li>
+        <li><code>/marketing weekly [turn_on] [channel] [day] [hour_utc] [title] [role]</code><span>Announce the Top Marketer of the Week</span><b class="tag">Manage Server</b></li>
         <li><code>/afk [message]</code><span>Tell Billy you are away, and he will say so if you are pinged</span><b class="tag">Everyone</b></li>
         <li><code>/announce add</code><span>Schedule a message</span><b class="tag">Everyone</b></li>
         <li><code>/announce list</code><span>See what is scheduled</span><b class="tag">Everyone</b></li>
@@ -227,7 +236,7 @@
     </section>
 
     <section class="cmd-group" id="moderation" data-name="Moderation">
-      <h2>Moderation <small>49</small></h2>
+      <h2>Moderation <small>52</small></h2>
       <ul class="cmd-list">
         <li><code>/alts</code><span>Check if an account looks like a returning banned member</span><b class="tag">Moderate Members</b></li>
         <li><code>/audit</code><span>See who changed Billy&#x27;s settings</span><b class="tag">Manage Server</b></li>
@@ -265,17 +274,20 @@
         <li><code>/unwarn &lt;member&gt; &lt;reason&gt; [warning_id]</code><span>Remove one saved warning from a server member</span><b class="tag">Moderator</b></li>
         <li><code>/warn &lt;member&gt; &lt;reason&gt; [severity]</code><span>Warn a server member and save the warning</span><b class="tag">Moderator</b></li>
         <li><code>/warnings &lt;member&gt;</code><span>Privately view a member&#x27;s saved warning history</span><b class="tag">Moderator</b></li>
-        <li><code>/modpoints setup &lt;clips_channel&gt; [min_level] [reactions]</code><span>Turn mod points on and choose where clips go</span><b class="tag">Manage Server</b></li>
-        <li><code>/modpoints off</code><span>Stop new clips. Points already earned are kept</span><b class="tag">Manage Server</b></li>
-        <li><code>/modpoints check [member]</code><span>See how many mod points someone has</span><b class="tag">Everyone</b></li>
-        <li><code>/modpoints top [period]</code><span>The mod points leaderboard, this week or all time</span><b class="tag">Everyone</b></li>
-        <li><code>/modpoints adjust &lt;member&gt; &lt;amount&gt; &lt;reason&gt;</code><span>Add or take away mod points by hand</span><b class="tag">Manage Server</b></li>
-        <li><code>/modpoints export</code><span>Download every mod point as a spreadsheet</span><b class="tag">Manage Server</b></li>
-        <li><code>/modpoints sheet [apps_script_url] [disconnect]</code><span>Send every new mod point to a Google Sheet</span><b class="tag">Manage Server</b></li>
-        <li><code>/modpoints weekly [turn_on] [channel] [day] [hour_utc] [title]</code><span>Announce the Top Helper of the Week</span><b class="tag">Manage Server</b></li>
-        <li><code>/modpoints weeklyrole &lt;role&gt;</code><span>Give the Top Helper of the Week a role</span><b class="tag">Manage Server</b></li>
-        <li><code>/scout setup &lt;role&gt; &lt;channel&gt;</code><span>Choose the scout role and the private recommendations channel</span><b class="tag">Manage Server</b></li>
-        <li><code>/scout prospects</code><span>Members with the most mod points who aren&#x27;t staff yet</span><b class="tag">Scouts</b></li>
+        <li><code>/helperpoints setup &lt;post_channel&gt; [min_level] [approval] [ai_check]</code><span>Turn Helper Points on: Billy spots members helping members at your chosen level</span><b class="tag">Manage Server</b></li>
+        <li><code>/helperpoints off</code><span>Stop watching for help. Points already earned are kept</span><b class="tag">Manage Server</b></li>
+        <li><code>/helperpoints channels &lt;action&gt; [channel]</code><span>Choose which channels Billy watches for help</span><b class="tag">Manage Server</b></li>
+        <li><code>/helperpoints check [member]</code><span>See someone&#x27;s Helper Points, rank and level</span><b class="tag">Everyone</b></li>
+        <li><code>/helperpoints top [period]</code><span>The Helper Points leaderboard, this week or all time</span><b class="tag">Everyone</b></li>
+        <li><code>/helperpoints adjust &lt;member&gt; &lt;amount&gt; &lt;reason&gt;</code><span>Add or take away Helper Points by hand</span><b class="tag">Manage Server</b></li>
+        <li><code>/helperpoints export</code><span>Download every Helper Point as a spreadsheet</span><b class="tag">Manage Server</b></li>
+        <li><code>/helperpoints sheet [apps_script_url] [disconnect]</code><span>Send every new Helper Point to a Google Sheet</span><b class="tag">Manage Server</b></li>
+        <li><code>/helperpoints weekly [turn_on] [channel] [day] [hour_utc] [title] [role]</code><span>Announce the Top Helper of the Week, with an optional winner role</span><b class="tag">Manage Server</b></li>
+        <li><code>/scout setup &lt;team_role&gt; &lt;staff_channel&gt;</code><span>Set up your server&#x27;s Scouting Team</span><b class="tag">Manage Server</b></li>
+        <li><code>/scout off</code><span>Close the Scouting Team. The roster is kept</span><b class="tag">Manage Server</b></li>
+        <li><code>/scout roster &lt;action&gt; [member]</code><span>List, add or remove scouts</span><b class="tag">Manage Server</b></li>
+        <li><code>/scout recruit [channel] [close]</code><span>Post an Apply button for the Scouting Team, or close applications</span><b class="tag">Manage Server</b></li>
+        <li><code>/scout prospects</code><span>Members with the most Helper Points who aren&#x27;t staff yet</span><b class="tag">Scouts</b></li>
         <li><code>/scout recommend &lt;member&gt; &lt;reason&gt;</code><span>Recommend a member to the admins for moderator</span><b class="tag">Scouts</b></li>
         <li><code>/scout list</code><span>The latest scout recommendations</span><b class="tag">Manage Server</b></li>
       </ul>
@@ -384,7 +396,7 @@
     </section>
 
     <section class="cmd-group" id="levels-activity" data-name="Levels &amp; Activity">
-      <h2>Levels &amp; Activity <small>19</small></h2>
+      <h2>Levels &amp; Activity <small>17</small></h2>
       <ul class="cmd-list">
         <li><code>/leaderboard</code><span>Open all server activity leaderboards from one menu</span><b class="tag">Everyone</b></li>
         <li><code>/level [member]</code><span>Show a member&#x27;s message level, progress, and server rank</span><b class="tag">Everyone</b></li>
@@ -398,8 +410,6 @@
         <li><code>/profile verify &lt;member&gt; [game] [verified]</code><span>Staff: mark a linked name as checked</span><b class="tag">Everyone</b></li>
         <li><code>/profile view [member]</code><span>See someone&#x27;s linked in-game names</span><b class="tag">Everyone</b></li>
         <li><code>/profile whois &lt;ign&gt;</code><span>Find which member an in-game name belongs to</span><b class="tag">Everyone</b></li>
-        <li><code>/rep give</code><span>Give someone a helper point</span><b class="tag">Everyone</b></li>
-        <li><code>/rep top</code><span>See who helps the most</span><b class="tag">Everyone</b></li>
         <li><code>/ultimate insights [days]</code><span>A deep activity report for this server</span><b class="tag">Manage Server</b></li>
         <li><code>/xp &lt;action&gt; &lt;amount&gt; [member] [reason]</code><span>Administrator: give or remove a member&#x27;s server-local level XP</span><b class="tag">Administrator</b></li>
         <li><code>/xpevent list</code><span>Show scheduled XP events</span><b class="tag">Manage Server</b></li>

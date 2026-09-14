@@ -16,6 +16,24 @@
   var calm = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
   var finePointer = window.matchMedia("(hover: hover) and (pointer: fine)").matches;
 
+  /* ---- the amber line along the top that fills as you scroll ---- */
+  var progress = document.createElement("div");
+  progress.className = "page-progress";
+  progress.setAttribute("aria-hidden", "true");
+  document.body.appendChild(progress);
+  var progressQueued = false;
+  function drawProgress() {
+    progressQueued = false;
+    var room = document.documentElement.scrollHeight - window.innerHeight;
+    progress.style.setProperty("--progress", room > 0 ? Math.min(1, window.scrollY / room).toFixed(4) : 0);
+  }
+  window.addEventListener("scroll", function () {
+    if (progressQueued) return;
+    progressQueued = true;
+    requestAnimationFrame(drawProgress);
+  }, { passive: true });
+  drawProgress();
+
   /* ---- letters that drop in ---- */
   document.querySelectorAll("[data-letters]").forEach(function (title) {
     var text = title.textContent.trim();

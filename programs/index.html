@@ -3,17 +3,15 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Programs | Billy the AI</title>
-<meta name="description" content="Join a Billy program: help moderate across the communities that use Billy, or test features before anyone else.">
-<meta property="og:title" content="Programs | Billy the AI">
-<meta property="og:description" content="Join a Billy program: help moderate across the communities that use Billy, or test features before anyone else.">
+<title>Programs and Teams | Billy the AI</title>
+<meta name="description" content="Join a Billy program, or run your own Marketing Team, Scouting Team and Helper Points in your server with Billy.">
+<meta property="og:title" content="Programs and Teams | Billy the AI">
+<meta property="og:description" content="Join a Billy program, or run your own Marketing Team, Scouting Team and Helper Points in your server with Billy.">
 <meta property="og:image" content="https://billy-the-ai.github.io/og.png">
-<meta name="theme-color" content="#0e0d0b">
+<meta name="theme-color" content="#070604">
 <link rel="icon" href="/billy-icon.webp" type="image/webp">
 <script>document.documentElement.classList.add("js");</script>
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bungee&amp;family=Space+Grotesk:wght@400;500;600;700&amp;display=swap">
+<link rel="preload" href="/fonts/Cute-Dino.otf" as="font" type="font/otf" crossorigin>
 <link rel="stylesheet" href="/site.css">
 <link rel="stylesheet" href="/scrollbars.css">
 </head>
@@ -36,9 +34,19 @@
 
 <main class="container">
   <section class="page-top">
-    <h1>Billy Programs</h1>
-    <p class="lede">Four ways to help build Billy: moderate the communities that use him, test new features first, spread the word, or scout the next moderators.</p>
+    <span class="badge">Get involved</span>
+    <h1 style="margin-top:18px">Programs and Teams</h1>
+    <p class="lede">Two ways in. Join one of Billy's own programs, or run your own teams in your server with Billy's help.</p>
+    <div class="buttons">
+      <a class="btn" href="#billy-programs">Billy's programs</a>
+      <a class="btn" href="#teams">Teams for your server</a>
+    </div>
   </section>
+
+  <div class="programs-head reveal" id="billy-programs">
+    <h2>Billy's Programs</h2>
+    <p>These are for helping build Billy himself. A person on the Billy team reads every application.</p>
+  </div>
 
   <section class="program mod reveal" id="moderator">
     <div>
@@ -50,7 +58,7 @@
         <li class="tag">Moderator role</li>
       </ul>
       <a class="apply pending" id="apply-mod" href="#" aria-disabled="true">Applications opening soon</a>
-      <p class="apply-note" id="note-mod">Reviewed by the Billy team. Everyone gets an answer either way.</p>
+      <p class="apply-note muted" id="note-mod">Reviewed by the Billy team. Everyone gets an answer either way.</p>
     </div>
     <img src="/billy-mod-mallet.png" width="780" height="689" alt="A wooden mallet with a MOD badge">
   </section>
@@ -65,41 +73,9 @@
         <li class="tag">Tester role</li>
       </ul>
       <a class="apply pending" id="apply-tester" href="#" aria-disabled="true">Applications opening soon</a>
-      <p class="apply-note" id="note-tester">Reviewed by the Billy team. Everyone gets an answer either way.</p>
+      <p class="apply-note muted" id="note-tester">Reviewed by the Billy team. Everyone gets an answer either way.</p>
     </div>
     <img src="/billy-tester-tube.png" width="560" height="589" alt="A test tube labelled TESTER">
-  </section>
-
-  <div class="band programs-band" data-words="Moderator program · Beta tester program · Marketing team · Scouting team · Early features · Shape the roadmap"></div>
-
-  <section class="program marketing reveal" id="marketing">
-    <div>
-      <h2>Marketing Team</h2>
-      <p>Help more communities find Billy. The marketing team makes TikToks and clips, writes posts and announcements, and helps partner servers hear about new features.</p>
-      <ul class="perks">
-        <li class="tag">Make videos and posts</li>
-        <li class="tag">See features before they're announced</li>
-        <li class="tag">Marketing Team role</li>
-      </ul>
-      <a class="apply pending" id="apply-marketing" href="#" aria-disabled="true">Applications opening soon</a>
-      <p class="apply-note" id="note-marketing">Reviewed by the Billy team. Everyone gets an answer either way.</p>
-    </div>
-    <div class="program-art" aria-hidden="true">📣</div>
-  </section>
-
-  <section class="program scouting reveal" id="scouting">
-    <div>
-      <h2>Scouting Team</h2>
-      <p>Spot the members who already help everyone. Scouts clip helpful moments in chat, keep an eye on mod points, and recommend future moderators to the admins.</p>
-      <ul class="perks">
-        <li class="tag">Clip helpful moments</li>
-        <li class="tag">Recommend future mods</li>
-        <li class="tag">Scout role</li>
-      </ul>
-      <a class="apply pending" id="apply-scouting" href="#" aria-disabled="true">Applications opening soon</a>
-      <p class="apply-note" id="note-scouting">Reviewed by the Billy team. Everyone gets an answer either way.</p>
-    </div>
-    <div class="program-art" aria-hidden="true">🔭</div>
   </section>
 
   <section class="block">
@@ -110,8 +86,87 @@
       <li><b>A person reads it.</b> Not the bot. Someone on the team decides, and the decision is written down with a reason.</li>
       <li><b>You hear back either way.</b> Including if the answer is no, and why.</li>
     </ol>
-    <p class="note"><b>Being honest:</b> places in every program are limited and most applications are declined, usually because the timing is wrong rather than the person. Applying doesn't change how Billy treats you or your server, and you can apply again later.</p>
+    <p class="note"><b>Being honest:</b> places are limited and most applications are declined, usually because the timing is wrong rather than the person. Applying doesn't change how Billy treats you or your server, and you can apply again later.</p>
   </section>
+
+  <div class="band programs-band" data-words="Helper Points · Marketing Team · Scouting Team · Your roles · Your channels · Your points"></div>
+
+  <div class="programs-head reveal" id="teams">
+    <h2>Teams for Your Server</h2>
+    <p>Not just for Billy. Every server with Billy can run these, with its own team roles, staff channels, Apply buttons and points. Set them up with a command or from the Control Room.</p>
+  </div>
+
+  <section class="program helpers reveal" id="helper-points">
+    <div>
+      <h2>Helper Points</h2>
+      <p>The members who end up as great moderators are usually already answering questions. Billy notices it on his own. Nobody has to clip, react or type a command.</p>
+      <ol class="steps">
+        <li>A member asks a question</li>
+        <li>Someone at or above the level your admins chose answers it</li>
+        <li>The person who asked says thanks, or that it worked</li>
+        <li>Staff approve the picture Billy posts, or Billy gives the point automatically</li>
+      </ol>
+      <ul class="perks">
+        <li class="tag">Level you choose</li>
+        <li class="tag">Review or automatic</li>
+        <li class="tag">Top Helper of the Week</li>
+        <li class="tag">Spreadsheet export</li>
+      </ul>
+      <a class="apply" href="/commands/#moderation">See the commands</a>
+    </div>
+    <div class="program-art" aria-hidden="true">🤝</div>
+  </section>
+
+  <section class="program marketing reveal" id="marketing">
+    <div>
+      <h2>Marketing Team</h2>
+      <p>Let your members make videos and posts about your community, and reward the best of it.</p>
+      <ol class="steps">
+        <li><code>/marketing setup</code> picks the team role and a staff channel</li>
+        <li><code>/marketing recruit</code> posts an Apply button with a short form</li>
+        <li>Team members send their posts with <code>/marketing submit</code></li>
+        <li>Staff approve: the post is shared and earns Marketing Points</li>
+      </ol>
+      <ul class="perks">
+        <li class="tag">Roster and role</li>
+        <li class="tag">Content review</li>
+        <li class="tag">Showcase channel</li>
+        <li class="tag">Top Marketer of the Week</li>
+      </ul>
+      <a class="apply" href="/commands/#community">See the commands</a>
+    </div>
+    <div class="program-art" aria-hidden="true">🎬</div>
+  </section>
+
+  <section class="program scouting reveal" id="scouting">
+    <div>
+      <h2>Scouting Team</h2>
+      <p>Trusted members who find your next moderators. Scouts see who helps the most and recommend them, with the facts attached.</p>
+      <ol class="steps">
+        <li><code>/scout setup</code> picks the scout role and a staff-only channel</li>
+        <li><code>/scout recruit</code> posts an Apply button</li>
+        <li>Scouts check <code>/scout prospects</code>, ranked by Helper Points</li>
+        <li><code>/scout recommend</code> sends a member to your admins, who decide</li>
+      </ol>
+      <ul class="perks">
+        <li class="tag">Roster and role</li>
+        <li class="tag">Prospects list</li>
+        <li class="tag">Private recommendations</li>
+      </ul>
+      <a class="apply" href="/commands/#moderation">See the commands</a>
+    </div>
+    <div class="program-art" aria-hidden="true">🔭</div>
+  </section>
+
+  <div class="cta-card reveal" style="margin-top:48px">
+    <span class="badge">Free on every plan</span>
+    <h2>Start a Team in Your Server</h2>
+    <p>Add Billy, then run the setup command, or open the Control Room and switch it on under Modules.</p>
+    <div class="buttons center-buttons">
+      <a class="btn btn-primary" href="https://discord.com/oauth2/authorize?client_id=1515868648819003402&amp;scope=bot%20applications.commands">Add Billy to Discord</a>
+      <a class="btn" href="/dashboard/">Open the Control Room</a>
+    </div>
+  </div>
 </main>
 
 <footer class="site-footer">
@@ -134,30 +189,23 @@
 </footer>
 
 <script>
-/* One published form link per program.
+/* One published form link per Billy program.
    These must be the SHARE links (Send -> the link icon), not the /edit
    address from the browser bar: an /edit link sends everyone who cannot edit
    the form to a Google sign-in page instead of the questions.
 
-   Both links below are share links and load without a sign-in. Leaving one
-   blank is what turns its button back into "Applications opening soon",
-   rather than pointing applicants at a wall. */
-/* Three states, because there are three:
+   Three states, because there are three:
      a url and open       -> "Apply to join", the button works
      a url and closed     -> the form exists but Google is refusing responses
      no url               -> "Applications opening soon"
 
-   The middle one is not the same as the last one, and saying "opening soon"
-   about a form that has already been and closed is just wrong. The page
-   cannot detect this itself -- a browser cannot read a Google Forms page from
-   another origin -- so `closed` is set by hand here. Billy's /form command
-   checks Google directly and does not depend on this flag. */
+   The page cannot detect a closed form itself -- a browser cannot read a
+   Google Forms page from another origin -- so `closed` is set by hand here.
+   The Marketing and Scouting Teams are not here: servers run their own with
+   Billy's Apply button, so there is no Billy form for them. */
 const FORMS = {
   "apply-mod": { url: "https://forms.gle/vYZ4dWtPvJ4b1DPS7" },
   "apply-tester": { url: "https://forms.gle/agY3gDyHWsoWu6GEA", closed: true },
-  // Paste each form's share link here when it is ready. Empty = "opening soon".
-  "apply-marketing": { url: "" },
-  "apply-scouting": { url: "" },
 };
 
 (function () {

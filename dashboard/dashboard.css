@@ -1,6 +1,6 @@
 /* Billy Control Room styles
  *
- * Dark with gold, to match the website. The Neural core and B.I.L.L.Y pages
+ * Billy's cream and amber, to match the website. The Neural core and B.I.L.L.Y pages
  * draw their own light-on-dark graphics inside a darker stage.
  *
  * Most of the dashboard is built by JavaScript, so a lot of the class names
@@ -15,23 +15,25 @@
 }
 
 :root {
-  --bg: #0e0d0b;
-  --surface: #151311;
-  --surface-2: #1f1c19;
-  --line: #2c2926;
-  --line-soft: #24211e;
-  --text: #efece7;
-  --muted: #8f867c;
-  --faint: #7a7268;
-  --amber: #ffc61a;
-  --amber-2: #ffd24d;
-  --on-amber: #1a1302;
-  --accent-soft: rgba(255, 198, 26, 0.1);
-  --gold-line: rgba(255, 198, 26, 0.3);
-  --glow: 0 0 20px rgba(255, 198, 26, 0.12), 0 0 40px rgba(255, 198, 26, 0.05);
-  --display: Bungee, "Space Grotesk", system-ui, sans-serif;
-  --green: #5fd48f;
-  --red: #ff7b6b;
+  --bg: #070604;
+  --surface: #100e0b;
+  --surface-2: #17130f;
+  --line: rgba(255, 226, 190, 0.14);
+  --line-soft: rgba(255, 226, 190, 0.08);
+  --text: #fffaf0;
+  --muted: #b9aa99;
+  --faint: #857767;
+  --amber: #efb773;
+  --amber-2: #ffd49f;
+  --amber-deep: #d88a48;
+  --cream: #fff0d2;
+  --on-amber: #17100a;
+  --accent-soft: rgba(239, 183, 115, 0.1);
+  --gold-line: rgba(239, 183, 115, 0.34);
+  --glow: 0 18px 50px rgba(0, 0, 0, 0.3), 0 0 36px rgba(239, 183, 115, 0.1);
+  --display: CuteDino, ui-rounded, system-ui, sans-serif;
+  --green: #73d9a4;
+  --red: #ff8a70;
   --blue: #7fb2ff;
   --purple: #bd9cff;
 }
@@ -48,7 +50,7 @@ body {
   min-height: 100vh;
   background: var(--bg);
   color: var(--text);
-  font-family: "Space Grotesk", system-ui, -apple-system, "Segoe UI", sans-serif;
+  font-family: CuteDino, ui-rounded, system-ui, -apple-system, "Segoe UI", sans-serif;
   font-size: 15px;
   line-height: 1.5;
 }
@@ -871,110 +873,91 @@ body.is-developer .post-delete { display: inline-flex; }
   .switch::after, .toast { transition: none; }
 }
 
-/* ------------------------------------------------------------ gold theme
- * Matches the website: a warm near-black, gold highlights, Bungee on the
- * labels and buttons, and a soft gold glow on things you can hover.
+/* ------------------------------------------------------------- Billy theme
+ * The Control Room's own look, the same as the website: a warm near-black
+ * with a faint grid, cream text, amber highlights and Cute Dino. Glass
+ * panels with soft rounded corners, and motion that is felt more than seen.
  */
 
-body { background: radial-gradient(1000px 500px at 50% -180px, rgba(255, 198, 26, 0.07), transparent 70%) no-repeat, var(--bg); }
-.topbar { background: rgba(14, 13, 11, 0.85); backdrop-filter: blur(10px); }
-.sidebar { background: rgba(14, 13, 11, 0.7); }
+body {
+  background:
+    radial-gradient(circle at 12% 0%, rgba(239, 183, 115, 0.1), transparent 30rem),
+    linear-gradient(rgba(255, 255, 255, 0.022) 1px, transparent 1px) 0 0 / 44px 44px,
+    linear-gradient(90deg, rgba(255, 255, 255, 0.022) 1px, transparent 1px) 0 0 / 44px 44px,
+    var(--bg);
+}
 
-.brand strong { font-family: var(--display); font-size: 17px; letter-spacing: 0.02em; }
-.brand img { box-shadow: 0 0 0 1px var(--gold-line), 0 0 14px rgba(255, 198, 26, 0.2); }
+.topbar { background: rgba(9, 7, 5, 0.78); -webkit-backdrop-filter: blur(16px); backdrop-filter: blur(16px); border-bottom-color: var(--line); }
+.sidebar { background: rgba(9, 7, 5, 0.72); border-right-color: var(--line); }
+
+.brand strong { font-size: 18px; letter-spacing: 0.12em; text-transform: uppercase; text-shadow: 0 0 20px rgba(239, 183, 115, 0.3); }
+.brand small { color: var(--muted); letter-spacing: 0.08em; }
+.brand img { border: 1px solid rgba(255, 240, 210, 0.5); box-shadow: 0 0 20px rgba(239, 183, 115, 0.2); }
 
 .eyebrow {
-  display: inline-block;
-  margin-bottom: 6px;
-  padding: 2px 10px;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 8px;
+  padding: 4px 12px;
   border: 1px solid var(--gold-line);
   border-radius: 999px;
   background: var(--accent-soft);
-  font-family: var(--display);
+  color: #e9bd86;
   font-size: 11px;
-  font-weight: 400;
-  letter-spacing: 0.04em;
-  text-transform: uppercase;
-  color: var(--amber);
-}
-
-.page-head h1, .mod-room-head h1, .update-hero h2 {
-  font-family: "Space Grotesk", system-ui, sans-serif;
   font-weight: 700;
-  letter-spacing: -0.01em;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
 }
 
-.nav-btn.active { box-shadow: inset 2px 0 0 var(--amber); }
-.nav-btn.active .icon { color: var(--amber); }
-
-.button { transition: border-color 0.2s, box-shadow 0.2s, color 0.2s; }
-.button:hover { border-color: var(--gold-line); }
-
-.button.amber, .button.primary {
-  background: var(--accent-soft);
-  border-color: var(--gold-line);
-  color: var(--amber);
-  font-family: var(--display);
-  font-weight: 400;
-  font-size: 13px;
-  letter-spacing: 0.02em;
-}
-
-.button.amber:hover, .button.primary:hover { border-color: var(--amber); box-shadow: var(--glow); }
+.page-head h1, .mod-room-head h1, .update-hero h2 { font-weight: 700; letter-spacing: -0.02em; }
 
 .panel, .stat, .module, .mod-tile, .mod-card, .plan, .team-card, .countdown-card,
-.update-hero, .stat-tile, .lane, .side-card, .owner-notice { background-color: rgba(25, 23, 21, 0.6); }
-
-.stat, .module, .mod-tile, .team-card { transition: border-color 0.25s, box-shadow 0.25s; }
-.stat:hover, .module:hover, .mod-tile:hover, .team-card:hover { border-color: #3a352f; box-shadow: var(--glow); }
-
-.stat strong, .stat-tile b, .plan-price, .ring-content strong, .countdown-unit strong { font-family: var(--display); font-weight: 400; }
-.plan-price { color: var(--amber); }
-
-.module h3, .mod-tile-top b, .team-name, .plan h3 {
-  font-family: var(--display);
-  font-weight: 400;
-  font-size: 14px;
-  letter-spacing: 0.02em;
-  text-transform: uppercase;
+.update-hero, .stat-tile, .lane, .side-card, .owner-notice {
+  background: linear-gradient(145deg, rgba(24, 19, 14, 0.92), rgba(9, 8, 6, 0.95));
+  border-color: var(--line);
+  border-radius: 18px;
 }
 
-.team-name { font-size: 16px; }
-.team-role { color: var(--amber); }
-.team-avatar { border-radius: 12px; }
+.stat, .module, .mod-tile, .mod-card, .team-card, .quick { transition: transform 0.2s cubic-bezier(0.2, 0.8, 0.3, 1), border-color 0.25s, box-shadow 0.25s; }
+.stat:hover, .module:hover, .mod-tile:hover, .mod-card:hover, .team-card:hover { border-color: rgba(239, 183, 115, 0.45); box-shadow: var(--glow); }
+.module:hover, .mod-tile:hover, .team-card:hover { transform: translateY(-3px); }
 
-.switch.on { background: var(--amber); }
-.plan.featured, .plan.selected { box-shadow: var(--glow); }
-.update-filters button.active { background: var(--accent-soft); border-color: var(--gold-line); color: var(--amber); }
+.stat { overflow: hidden; }
+.stat::after { content: ""; position: absolute; top: -50px; right: -40px; width: 130px; height: 130px; border-radius: 50%; pointer-events: none; background: radial-gradient(circle, rgba(239, 183, 115, 0.2), transparent 70%); }
+.stat strong, .stat-tile b, .ring-content strong, .countdown-unit strong { color: var(--text); letter-spacing: -0.02em; }
+.plan-price { color: var(--amber-2); }
+.team-role { color: #e9a65c; }
+
+.nav-btn { border-radius: 12px; transition: background 0.2s, color 0.2s; }
+.nav-btn:hover { background: rgba(255, 255, 255, 0.04); }
+.nav-btn.active { background: linear-gradient(135deg, var(--cream), var(--amber)); color: var(--on-amber); box-shadow: 0 10px 26px rgba(239, 183, 115, 0.2); }
+.nav-btn.active .icon { color: var(--on-amber); }
+.nav-btn.active .count { background: rgba(0, 0, 0, 0.14); color: var(--on-amber); }
+
+.button { border-radius: 12px; transition: transform 0.18s cubic-bezier(0.2, 0.8, 0.3, 1), border-color 0.2s, box-shadow 0.2s, background 0.2s; }
+.button:hover { transform: translateY(-1px); border-color: rgba(255, 255, 255, 0.24); }
+.button:active { transform: translateY(1px) scale(0.985); }
+.button.amber, .button.primary { background: linear-gradient(135deg, var(--amber), var(--amber-deep)); border-color: #ffd39a; color: var(--on-amber); font-weight: 700; }
+.button.amber:hover, .button.primary:hover { background: linear-gradient(135deg, var(--amber-2), var(--amber)); box-shadow: 0 12px 32px rgba(239, 183, 115, 0.3); }
+
+.side-card button { background: linear-gradient(135deg, var(--amber), var(--amber-deep)); border-color: #ffd39a; color: var(--on-amber); font-weight: 700; }
+
+.switch.on { background: linear-gradient(135deg, var(--amber-2), var(--amber)); }
+.plan.featured, .plan.selected { border-color: rgba(239, 183, 115, 0.55); box-shadow: var(--glow); }
+.update-filters button.active { background: var(--accent-soft); border-color: var(--gold-line); color: var(--amber-2); }
 .status-pill i { box-shadow: 0 0 8px var(--green); }
-.field:focus { box-shadow: var(--glow); }
+.field { border-radius: 10px; }
+.field:focus { border-color: var(--amber); box-shadow: 0 0 0 3px rgba(239, 183, 115, 0.14); outline: none; }
+select.field[multiple] { padding: 6px; }
+select.field[multiple] option { padding: 4px 8px; border-radius: 6px; }
+select.field[multiple] option:checked { background: var(--accent-soft); color: var(--amber-2); }
+.table th { color: #e9bd86; letter-spacing: 0.06em; }
 
-.side-card button {
-  background: var(--accent-soft);
-  border-color: var(--gold-line);
-  color: var(--amber);
-  font-family: var(--display);
-  font-weight: 400;
-  font-size: 12px;
-  letter-spacing: 0.02em;
-}
+/* faint grain over everything */
+body::before { content: ""; position: fixed; inset: 0; z-index: 0; pointer-events: none; opacity: 0.035; background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 160 160' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.8' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='.8'/%3E%3C/svg%3E"); }
 
-
-/* ------------------------------------------- the first control room's touches
- * Brought back in gold: BILLY flickers on like a sign when the page opens,
- * each page's heading rises in, a faint grain sits over everything, stat
- * cards glow in the corner, and the open page is a gold pill in the sidebar.
- */
-
-body::before {
-  content: "";
-  position: fixed;
-  inset: 0;
-  pointer-events: none;
-  opacity: 0.035;
-  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 160 160' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.8' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='.8'/%3E%3C/svg%3E");
-}
-
+/* BILLY flickers on like a sign; each page's heading rises in */
 @keyframes billyFlicker {
   0% { opacity: 1; } 5% { opacity: 0.1; } 10% { opacity: 0.9; } 15% { opacity: 0.05; }
   20% { opacity: 1; } 25% { opacity: 0.3; } 30% { opacity: 1; } 40% { opacity: 0.8; }
@@ -990,39 +973,14 @@ body::before {
   100% { opacity: 1; transform: none; filter: none; }
 }
 
-.brand strong { animation: billyFlicker 0.9s ease 0s 1; text-shadow: 0 0 18px rgba(255, 198, 26, 0.35); }
+.brand strong { animation: billyFlicker 0.9s ease 0s 1; }
 .brand small { animation: billyFlicker 0.9s ease 0.12s 1; }
-
 .intro-in { animation: billyIntroIn 0.6s cubic-bezier(0.2, 0.7, 0.3, 1) backwards; }
 .intro-in.step-2 { animation-delay: 0.2s; }
 .intro-in.step-3 { animation-delay: 0.38s; }
-.intro-hero { animation: billyIntroIn 0.6s cubic-bezier(0.2, 0.7, 0.3, 1) backwards, billyFlicker 0.9s ease 0.6s 1; text-shadow: 0 0 36px rgba(255, 198, 26, 0.25); }
-
-.stat { overflow: hidden; }
-
-.stat::after {
-  content: "";
-  position: absolute;
-  top: -50px;
-  right: -40px;
-  width: 120px;
-  height: 120px;
-  border-radius: 50%;
-  pointer-events: none;
-  background: radial-gradient(circle, rgba(255, 198, 26, 0.22), transparent 70%);
-}
-
-.nav-btn.active { background: linear-gradient(135deg, #ffe07a, #ffc61a); color: #1a1302; box-shadow: 0 8px 24px rgba(255, 198, 26, 0.18); }
-.nav-btn.active .icon { color: #1a1302; }
-.nav-btn.active .count { background: rgba(0, 0, 0, 0.15); color: #1a1302; }
-
-.button { transition: transform 0.18s, border-color 0.2s, box-shadow 0.2s, color 0.2s; }
-.button:hover { transform: translateY(-1px); }
-.quick { transition: transform 0.2s, border-color 0.2s; }
-.quick:hover { transform: translateY(-2px); }
-.module:hover, .team-card:hover { transform: translateY(-3px); }
+.intro-hero { animation: billyIntroIn 0.6s cubic-bezier(0.2, 0.7, 0.3, 1) backwards, billyFlicker 0.9s ease 0.6s 1; text-shadow: 0 0 36px rgba(239, 183, 115, 0.22); }
 
 @media (prefers-reduced-motion: reduce) {
   .brand strong, .brand small, .intro-in, .intro-hero { animation: none; }
-  .button:hover, .quick:hover, .module:hover, .team-card:hover { transform: none; }
+  .button:hover, .button:active, .module:hover, .mod-tile:hover, .team-card:hover { transform: none; }
 }
