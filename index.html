@@ -8,7 +8,7 @@
 <meta property="og:title" content="Billy the AI | A Discord bot for Gorilla Tag fan-game servers">
 <meta property="og:description" content="Billy is a free Discord bot for Gorilla Tag fan-game communities. He answers questions from your server's own channels, helps staff with tickets and moderation, and notices the members who help others.">
 <meta property="og:image" content="https://billy-the-ai.github.io/og.png">
-<meta name="theme-color" content="#070604">
+<meta name="theme-color" content="#f6f4ee">
 <link rel="icon" href="/billy-icon.webp" type="image/webp">
 <script>document.documentElement.classList.add("js");</script>
 <link rel="preload" href="/fonts/Cute-Dino.otf" as="font" type="font/otf" crossorigin>
@@ -38,24 +38,7 @@
   </div>
 </header>
 
-<!-- dots down the left edge; the script at the bottom lights up the current one -->
-<nav class="side-dots" aria-hidden="true">
-  <a href="#top" tabindex="-1" title="Top"></a>
-  <a href="#community" tabindex="-1" title="Community"></a>
-  <a href="#in-action" tabindex="-1" title="Billy in action"></a>
-  <a href="#motion" tabindex="-1" title="Billy in motion"></a>
-  <a href="#features" tabindex="-1" title="What Billy does"></a>
-  <a href="#teams" tabindex="-1" title="Teams"></a>
-  <a href="#knowledge" tabindex="-1" title="Knowledge engine"></a>
-  <a href="#watch" tabindex="-1" title="Watch Billy"></a>
-  <a href="#plans" tabindex="-1" title="Plans"></a>
-  <a href="#roadmap" tabindex="-1" title="Roadmap"></a>
-  <a href="#faq" tabindex="-1" title="Questions"></a>
-  <a href="#team" tabindex="-1" title="The team"></a>
-</nav>
-
 <section class="hero" id="top">
-  <canvas id="sparkles" aria-hidden="true"></canvas>
   <div class="container hero-grid">
     <div class="hero-copy">
       <p class="eyebrow"><span></span>Built for Gorilla Tag fan-game communities</p>
@@ -608,10 +591,6 @@
   </div>
 </footer>
 
-<button class="music-toggle" id="musicToggle" type="button" aria-pressed="false" aria-label="Play music" data-src="/media/billy-ambient.mp3">
-  <svg class="icon mute" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 9h4l5-4v14l-5-4H4V9Z"/><path d="m17 9 4 6M21 9l-4 6"/></svg>
-  <svg class="icon wave" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 9h4l5-4v14l-5-4H4V9Z"/><path d="M16.5 8.5a5 5 0 0 1 0 7M19 6a8.5 8.5 0 0 1 0 12"/></svg>
-</button>
 
 <script>
 // Social links. Paste the full link between the quotes and the button turns on.
@@ -659,93 +638,6 @@ fetch("https://billyserverai.duckdns.org/api/status", { cache: "no-store" })
   });
 </script>
 
-<script>
-// Warm dust drifting up behind the hero. It sits still for people who asked
-// their device for less motion, and the browser pauses it in background tabs.
-(function () {
-  var canvas = document.getElementById("sparkles");
-  if (!canvas || !canvas.getContext) return;
-  var ctx = canvas.getContext("2d");
-  var calm = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-  var dots = [];
-  var width = 0;
-  var height = 0;
-
-  function setup() {
-    var ratio = window.devicePixelRatio || 1;
-    width = canvas.offsetWidth;
-    height = canvas.offsetHeight;
-    canvas.width = width * ratio;
-    canvas.height = height * ratio;
-    ctx.setTransform(ratio, 0, 0, ratio, 0, 0);
-    dots = [];
-    var count = Math.min(70, Math.round(width * height / 22000));
-    for (var i = 0; i < count; i++) {
-      dots.push({
-        x: Math.random() * width,
-        y: Math.random() * height,
-        size: Math.random() * 1.4 + 0.5,
-        speed: Math.random() * 0.2 + 0.04,
-        phase: Math.random() * Math.PI * 2,
-        warm: Math.random() < 0.6
-      });
-    }
-  }
-
-  function draw(time) {
-    ctx.clearRect(0, 0, width, height);
-    for (var i = 0; i < dots.length; i++) {
-      var dot = dots[i];
-      if (!calm) {
-        dot.y -= dot.speed;
-        if (dot.y < -5) {
-          dot.y = height + 5;
-          dot.x = Math.random() * width;
-        }
-      }
-      ctx.fillStyle = dot.warm ? "#efb773" : "#fff0d2";
-      ctx.shadowColor = ctx.fillStyle;
-      ctx.globalAlpha = 0.2 + 0.5 * Math.abs(Math.sin(time / 1700 + dot.phase));
-      ctx.shadowBlur = dot.size * 6;
-      ctx.beginPath();
-      ctx.arc(dot.x, dot.y, dot.size, 0, Math.PI * 2);
-      ctx.fill();
-    }
-    if (!calm) requestAnimationFrame(draw);
-  }
-
-  setup();
-  window.addEventListener("resize", function () {
-    setup();
-    if (calm) draw(0);
-  });
-  requestAnimationFrame(draw);
-})();
-</script>
-
-<script>
-// Light up the side dot for whichever section is in the middle of the screen.
-(function () {
-  var dots = document.querySelectorAll(".side-dots a");
-  if (!dots.length || !("IntersectionObserver" in window)) return;
-  var byId = {};
-  dots.forEach(function (dot) { byId[dot.getAttribute("href").slice(1)] = dot; });
-
-  var observer = new IntersectionObserver(function (entries) {
-    entries.forEach(function (entry) {
-      if (!entry.isIntersecting) return;
-      dots.forEach(function (dot) { dot.classList.remove("on"); });
-      var dot = byId[entry.target.id];
-      if (dot) dot.classList.add("on");
-    });
-  }, { rootMargin: "-45% 0px -50% 0px" });
-
-  Object.keys(byId).forEach(function (id) {
-    var section = document.getElementById(id);
-    if (section) observer.observe(section);
-  });
-})();
-</script>
 <script src="/site.js" defer></script>
 <script src="/analytics.js" defer></script>
 <script src="/consent.js" defer></script>

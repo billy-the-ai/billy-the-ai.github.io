@@ -1,8 +1,8 @@
 /* Billy's scrollbars.
  *
  * Every page shipped with the operating system's default bar: a grey slab
- * with arrow buttons at both ends sitting in a pale channel. On a near-black
- * amber page that reads as a piece of somebody else's software bolted to the
+ * with arrow buttons at both ends sitting in a pale channel. On a porcelain
+ * page that reads as a piece of somebody else's software bolted to the
  * side of Billy's -- which is exactly what it is.
  *
  * This styles EVERY scrollbar on the site: the page itself, the dashboard
@@ -37,10 +37,10 @@
      that never defined --amber, and still matches the ones that did. */
   --sb-size: 11px;
   --sb-size-panel: 8px;
-  --sb-track: rgba(255, 255, 255, .028);
-  --sb-thumb: rgba(233, 166, 92, .34);
-  --sb-thumb-hover: rgba(255, 212, 159, .62);
-  --sb-thumb-active: rgba(255, 212, 159, .85);
+  --sb-track: rgba(20, 33, 61, .04);
+  --sb-thumb: rgba(35, 80, 200, .32);
+  --sb-thumb-hover: rgba(35, 80, 200, .55);
+  --sb-thumb-active: rgba(23, 57, 154, .8);
 }
 
 /* ---- The smooth part ------------------------------------------------------
@@ -186,18 +186,18 @@ html,
 }
 
 /* Somebody who has asked their OS for high contrast needs a bar they can
-   actually see, not a tasteful amber whisper. */
+   actually see, not a tasteful cobalt whisper. */
 @media (prefers-contrast: more) {
   :root {
-    --sb-thumb: rgba(255, 212, 159, .74);
-    --sb-thumb-hover: rgba(255, 248, 236, .92);
-    --sb-thumb-active: rgba(255, 255, 255, .95);
-    --sb-track: rgba(255, 255, 255, .10);
+    --sb-thumb: rgba(23, 57, 154, .8);
+    --sb-thumb-hover: rgba(20, 33, 61, .9);
+    --sb-thumb-active: rgba(20, 33, 61, 1);
+    --sb-track: rgba(20, 33, 61, .10);
   }
 }
 
 /* Touch devices draw their own overlay bars that fade out when idle. Forcing
-   a permanent 11px amber rail on top of that is worse than leaving it be. */
+   a permanent 11px cobalt rail on top of that is worse than leaving it be. */
 @media (hover: none) and (pointer: coarse) {
   html,
   * {

@@ -8,7 +8,6 @@
  *   .reveal           rises into place the first time it is on screen
  *   data-count        a number that counts up the first time it is on screen
  *   .tilt             a card that leans toward the pointer
- *   #musicToggle      the music button (off until someone presses it)
  */
 (function () {
   "use strict";
@@ -16,7 +15,7 @@
   var calm = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
   var finePointer = window.matchMedia("(hover: hover) and (pointer: fine)").matches;
 
-  /* ---- the amber line along the top that fills as you scroll ---- */
+  /* ---- the cobalt line along the top that fills as you scroll ---- */
   var progress = document.createElement("div");
   progress.className = "page-progress";
   progress.setAttribute("aria-hidden", "true");
@@ -110,7 +109,7 @@
     watched.forEach(function (el) { el.classList.add("in"); });
   }
 
-  /* ---- tilt and the pointer glow ---- */
+  /* ---- tilt ---- */
   if (finePointer && !calm) {
     document.querySelectorAll(".tilt").forEach(function (card) {
       card.addEventListener("pointermove", function (event) {
@@ -125,49 +124,6 @@
       card.addEventListener("pointerleave", function () { card.style.transform = ""; });
     });
 
-    // A soft gold light under the pointer. The real cursor is never hidden.
-    var glow = document.createElement("div");
-    glow.className = "cursor-glow";
-    glow.setAttribute("aria-hidden", "true");
-    document.body.appendChild(glow);
-    var gx = 0, gy = 0, queued = false;
-    window.addEventListener("pointermove", function (event) {
-      gx = event.clientX;
-      gy = event.clientY;
-      if (queued) return;
-      queued = true;
-      requestAnimationFrame(function () {
-        queued = false;
-        glow.style.transform = "translate(" + (gx - 200) + "px," + (gy - 200) + "px)";
-        glow.classList.add("on");
-      });
-    }, { passive: true });
-    document.documentElement.addEventListener("pointerleave", function () {
-      glow.classList.remove("on");
-    });
   }
 
-  /* ---- music ---- */
-  var musicButton = document.getElementById("musicToggle");
-  if (musicButton) {
-    var audio = null;
-    musicButton.addEventListener("click", function () {
-      if (!audio) {
-        audio = new Audio(musicButton.getAttribute("data-src"));
-        audio.loop = true;
-        audio.volume = 0.35;
-      }
-      var playing = !audio.paused;
-      if (playing) {
-        audio.pause();
-        musicButton.classList.remove("on");
-        musicButton.setAttribute("aria-pressed", "false");
-        return;
-      }
-      audio.play().then(function () {
-        musicButton.classList.add("on");
-        musicButton.setAttribute("aria-pressed", "true");
-      }).catch(function () {});
-    });
-  }
 })();
