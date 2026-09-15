@@ -1419,7 +1419,7 @@ setOverviewText('moderationFalsePositivesNote',falsePositives?'Reviews staff dis
       {key:'weekly',icon:'🏆',name:'Weekly winners',badge:'new',configurable:true,
        blurb:'Announce who sent the most messages, spent longest in voice and brought the most people.'},
       {key:'helperpoints',icon:'🤝',name:'Helper Points',badge:'new',configurable:true,
-       blurb:'Billy notices when a member at your chosen level answers someone and gets thanked. Staff approve it, or points are given automatically. Leaderboard and Top Helper of the Week included.'},
+       blurb:'Billy notices when a member at your chosen level helps someone, and posts a picture of the conversation saying who helped whom. Staff approve it, or points are given automatically.'},
       {key:'marketing',icon:'🎬',name:'Marketing Team',badge:'new',configurable:true,
        blurb:'A roster with its own role, an Apply button, content submissions staff approve, a showcase channel, Marketing Points and Top Marketer of the Week.'},
       {key:'scouting',icon:'🔭',name:'Scouting Team',badge:'new',configurable:true,
@@ -2055,7 +2055,7 @@ setOverviewText('moderationFalsePositivesNote',falsePositives?'Reviews staff dis
           approval:hpApproval.value,ai_check:pkIsOn(hpAi),
           watch_channel_ids:[...hpWatch.selectedOptions].map(o=>o.value)},hpWeekly.payload());
         const hp_=pkSwitchCard('helperpoints','🤝','Helper Points',
-          'Billy watches for a question, an answer from a member at your level, and a thank-you from the person who asked. Nobody has to press anything.',
+          'Billy watches for a question and a real answer from a member at your level, then posts a picture of it. Nobody has to react or press anything.',
           hp,()=>hpChannel.value?'':'Choose where Billy posts the help he spots first.',hpPayload);
         hp_.card.bodyEl.append(
           moduleRow('Post channel','Where each help Billy spots is posted. Staff-only is best.',hpChannel),
