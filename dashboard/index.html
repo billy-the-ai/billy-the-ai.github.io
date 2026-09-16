@@ -1418,6 +1418,14 @@ setOverviewText('moderationFalsePositivesNote',falsePositives?'Reviews staff dis
        blurb:'Switch a command off, keep it to one channel, or limit it to a role.'},
       {key:'weekly',icon:'🏆',name:'Weekly winners',badge:'new',configurable:true,
        blurb:'Announce who sent the most messages, spent longest in voice and brought the most people.'},
+      {key:'infinity_report',icon:'📊',name:'Weekly staff report',badge:'infinity',command:'/infinity schedule',
+       blurb:'Billy Infinity. Every week: each moderator\u2019s actions, how fast tickets get closed, top helpers, and what members asked that Billy couldn\u2019t answer.'},
+      {key:'infinity_snapshots',icon:'🗂️',name:'Server snapshots',badge:'infinity',command:'/infinity snapshots',
+       blurb:'Billy Infinity. Roles, channels and permissions saved every day. After a raid, rebuild everything that was deleted with /infinity restore.'},
+      {key:'infinity_persona',icon:'🎭',name:'Your own Billy',badge:'infinity',command:'/infinity persona',
+       blurb:'Billy Infinity. Answers and welcomes come from your server\u2019s own bot name and picture.'},
+      {key:'infinity_translate',icon:'🌐',name:'Translation',badge:'infinity',command:'/infinity translate',
+       blurb:'Billy Infinity. Right-click any message to translate it, and auto-translate channels into your server\u2019s language.'},
       {key:'helperpoints',icon:'🤝',name:'Helper Points',badge:'new',configurable:true,
        blurb:'Billy notices when a member at your chosen level helps someone, and posts a picture of the conversation saying who helped whom. Staff approve it, or points are given automatically.'},
       {key:'marketing',icon:'🎬',name:'Marketing Team',badge:'new',configurable:true,
@@ -1536,7 +1544,7 @@ setOverviewText('moderationFalsePositivesNote',falsePositives?'Reviews staff dis
         const name=document.createElement('b');name.textContent=entry.name;
         top.append(icon,name);
         if(entry.badge){const b=document.createElement('span');
-          b.className='mod-badge '+entry.badge;b.textContent=entry.badge==='new'?'New':'Ultimate';top.append(b)}
+          b.className='mod-badge '+entry.badge;b.textContent=({new:'New',infinity:'Infinity'})[entry.badge]||'Ultimate';top.append(b)}
         const on=moduleIsOn(entry);
         const state=document.createElement('span');
         state.className='mod-tile-state'+(on?' on':'');state.textContent=on?'On':'Off';

@@ -36,17 +36,17 @@
 <main class="container">
   <section class="page-top">
     <h1>Commands</h1>
-    <p class="lede">Every command Billy has (303 in total), what it does, and who is allowed to use it.</p>
+    <p class="lede">Every command Billy has (313 in total), what it does, and who is allowed to use it.</p>
     <p class="note how-to"><b>Can't find a command in Discord?</b> Typing <code>/</code> shows 28 entries instead of all of them.
       Twelve are commands you type directly, like <code>/warn</code>, <code>/ban</code>, <code>/softban</code>, <code>/kick</code>, <code>/timeout</code>, <code>/purge</code>, <code>/ask</code>.
       The other sixteen are menus that hold everything else: <code>/moderation</code> <code>/automod</code> <code>/ai</code> <code>/tickets</code> <code>/events</code> <code>/giveaways</code> <code>/levels</code> <code>/leaderboards</code> <code>/community</code> <code>/form</code> <code>/rolemenu</code> <code>/setup</code> <code>/games</code> <code>/creator</code> <code>/subscriptions</code> <code>/official</code>.
-      Four more are right-click actions: right-click a message or a person, then Apps.</p>
+      Five more are right-click actions: right-click a message or a person, then Apps.</p>
   </section>
 
   <div class="cmd-tools">
     <div class="cmd-search">
       <input id="cmdSearch" type="search" placeholder="Search, e.g. warn, level, ticket" aria-label="Search commands" autocomplete="off">
-      <span class="tag" id="cmdCount">303</span>
+      <span class="tag" id="cmdCount">313</span>
     </div>
     <nav class="cmd-jump" aria-label="Jump to a category">
       <a href="#getting-started">Getting Started</a>
@@ -65,12 +65,13 @@
 
   <div id="cmdResults">
     <section class="cmd-group" id="getting-started" data-name="Getting Started">
-      <h2>Getting Started <small>73</small></h2>
+      <h2>Getting Started <small>74</small></h2>
       <ul class="cmd-list">
         <li><code>(right-click) Ask Billy about this</code><span>Right-click a message or person, then Apps.</span><b class="tag">Everyone</b></li>
         <li><code>(right-click) Report this to staff</code><span>Right-click a message or person, then Apps.</span><b class="tag">Everyone</b></li>
         <li><code>(right-click) Scan this image</code><span>Right-click a message or person, then Apps.</span><b class="tag">Everyone</b></li>
         <li><code>(right-click) Who is this?</code><span>Right-click a message or person, then Apps.</span><b class="tag">Everyone</b></li>
+        <li><code>(right-click) Translate</code><span>Billy Infinity: translate any message into your language</span><b class="tag">Everyone</b></li>
         <li><code>/access</code><span>Grant or revoke Billy moderator or beta tester access</span><b class="tag">Everyone</b></li>
         <li><code>/backup auto</code><span>Choose the private channel backups are sent to</span><b class="tag">Everyone</b></li>
         <li><code>/backup list</code><span>See the most recent backups</span><b class="tag">Everyone</b></li>
@@ -419,7 +420,7 @@
     </section>
 
     <section class="cmd-group" id="premium" data-name="Premium">
-      <h2>Premium <small>9</small></h2>
+      <h2>Premium <small>18</small></h2>
       <ul class="cmd-list">
         <li><code>/subscriptions buy</code><span>Subscribe this server to Billy Premium, Ultimate or Infinity</span><b class="tag">Everyone</b></li>
         <li><code>/subscriptions compare</code><span>See what each plan includes</span><b class="tag">Everyone</b></li>
@@ -430,6 +431,15 @@
         <li><code>/subscriptions remove [server] [user] [note]</code><span>Billy owner only: take a subscription away</span><b class="tag">Bot owner</b></li>
         <li><code>/subscriptions view</code><span>See this server&#x27;s Billy subscription and what it includes</span><b class="tag">Everyone</b></li>
         <li><code>/subscriptions whohas</code><span>Billy owner only: check exactly where one person&#x27;s grant reaches</span><b class="tag">Everyone</b></li>
+        <li><code>/infinity status</code><span>Billy Infinity: see which Infinity features are on</span><b class="tag">Manage Server</b></li>
+        <li><code>/infinity report [days] [channel]</code><span>Billy Infinity: the staff report, right now</span><b class="tag">Manage Server</b></li>
+        <li><code>/infinity schedule [channel] [day] [hour_utc] [turn_off]</code><span>Billy Infinity: post the staff report every week</span><b class="tag">Manage Server</b></li>
+        <li><code>/infinity scorecard [member]</code><span>Billy Infinity: one staff member&#x27;s last 30 days</span><b class="tag">Manage Server</b></li>
+        <li><code>/infinity snapshot</code><span>Billy Infinity: save your roles, channels and permissions now</span><b class="tag">Manage Server</b></li>
+        <li><code>/infinity snapshots</code><span>Billy Infinity: saved snapshots and what&#x27;s missing since</span><b class="tag">Manage Server</b></li>
+        <li><code>/infinity restore [snapshot]</code><span>Billy Infinity: rebuild deleted roles and channels</span><b class="tag">Administrator</b></li>
+        <li><code>/infinity persona [name] [avatar_url] [answers] [welcomes] [turn_off]</code><span>Billy Infinity: your own Billy name and picture</span><b class="tag">Manage Server</b></li>
+        <li><code>/infinity translate &lt;action&gt; [channel]</code><span>Billy Infinity: auto-translate a channel</span><b class="tag">Manage Server</b></li>
       </ul>
     </section>
   </div>
