@@ -66,7 +66,7 @@
       <h2>Getting a key</h2>
       <p>Run this in your server. You need Administrator, because a key can read everything below.</p>
     </div>
-    <pre class="snippet">/settings api action:Make a new key</pre>
+    <pre class="snippet">/config api action:Make a new key</pre>
     <p class="note" style="margin-top:18px">Billy stores only a fingerprint of the key, so it is shown once and never again. Lose it and you make another one, which replaces the old one. Keep it on your server — a key shipped inside a game client is a key everybody has.</p>
     <p class="note">Add <code>allow_posting:true</code> if you also want the key to post messages. Leave it off if you only need to read; you can always make a new key later.</p>
     <h3 style="margin-top:34px">Sending it</h3>
@@ -130,7 +130,7 @@
       <h2>Event webhooks</h2>
       <p>The other direction. Billy POSTs to a URL you own when something happens in your server.</p>
     </div>
-    <pre class="snippet">/settings webhook action:Set the URL url:https://api.yourgame.com/billy events:case.created,member.joined</pre>
+    <pre class="snippet">/config webhook action:Set the URL url:https://api.yourgame.com/billy events:case.created,member.joined</pre>
     <div class="event-grid">
       <div class="card">
         <h3>case.created</h3>
@@ -164,7 +164,7 @@ if not hmac.compare_digest(expected, request.headers["X-Billy-Signature"]):
     <ul class="check-list">
       <li>The URL has to be <b>https</b>, on a public host. Addresses inside a private network are refused, on purpose.</li>
       <li>An event says what happened and who it involved. Message content, ticket transcripts and the reasons moderators type are never sent — ask for those with your key, where your server had to authenticate.</li>
-      <li>A URL that fails twenty times in a row is switched off. <code>/settings webhook</code> shows you the last response Billy got.</li>
+      <li>A URL that fails twenty times in a row is switched off. <code>/config webhook</code> shows you the last response Billy got.</li>
       <li>Billy does not retry a delivery, and does not wait for your endpoint. Your server being down never slows a ban down.</li>
     </ul>
   </section>

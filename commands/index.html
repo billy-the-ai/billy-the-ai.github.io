@@ -65,7 +65,7 @@
 
   <div id="cmdResults">
     <section class="cmd-group" id="getting-started" data-name="Getting Started">
-      <h2>Getting Started <small>77</small></h2>
+      <h2>Getting Started <small>76</small></h2>
       <ul class="cmd-list">
         <li><code>(right-click) Ask Billy about this</code><span>Right-click a message or person, then Apps.</span><b class="tag">Everyone</b></li>
         <li><code>(right-click) Report this to staff</code><span>Right-click a message or person, then Apps.</span><b class="tag">Everyone</b></li>
@@ -90,8 +90,10 @@
         <li><code>/check moderation [member]</code><span>Review a member&#x27;s warnings, cases, and recent safety reports</span><b class="tag">Moderator</b></li>
         <li><code>/check security</code><span>Privately check this server for risky permissions and Billy setup problems</span><b class="tag">Manage Server</b></li>
         <li><code>/check setup</code><span>Test Billy&#x27;s channel permissions and required configuration</span><b class="tag">Manage Server</b></li>
+        <li><code>/config api [action] [allow_posting]</code><span>A key so your own code can read this server&#x27;s Billy data</span><b class="tag">Administrator</b></li>
         <li><code>/config load</code><span>Apply a saved setup file to this server</span><b class="tag">Everyone</b></li>
         <li><code>/config save</code><span>Download this server&#x27;s Billy setup as a file</span><b class="tag">Everyone</b></li>
+        <li><code>/config webhook [action] [url] [events]</code><span>Have Billy POST to your own URL when things happen here</span><b class="tag">Administrator</b></li>
         <li><code>/configchannels create [kind] [category] [style]</code><span>Make several channels at once, one name per line</span><b class="tag">Manage Channels</b></li>
         <li><code>/configchannels decorate &lt;emoji&gt; [style] [restyle]</code><span>Put an emoji and separator on a selection of channels</span><b class="tag">Manage Channels</b></li>
         <li><code>/configchannels delete</code><span>Delete several channels, after showing you the list</span><b class="tag">Manage Channels</b></li>
@@ -108,7 +110,6 @@
         <li><code>/say</code><span>Owner-only: make Billy send a message in a server channel</span><b class="tag">Administrator</b></li>
         <li><code>/serverhelp</code><span>Show Billy&#x27;s useful member commands and this server&#x27;s help channels</span><b class="tag">Everyone</b></li>
         <li><code>/settings aichannel</code><span>Set the private AI testing channel for official Billy Beta Testers</span><b class="tag">Everyone</b></li>
-        <li><code>/settings api [action] [allow_posting]</code><span>A key so your own code can read this server&#x27;s Billy data</span><b class="tag">Administrator</b></li>
         <li><code>/settings answerin</code><span>Let Billy answer support questions here without being named</span><b class="tag">Everyone</b></li>
         <li><code>/settings betachannel</code><span>Set the official channel that receives Billy beta feedback</span><b class="tag">Everyone</b></li>
         <li><code>/settings channel</code><span>Set or remove one of Billy&#x27;s channels</span><b class="tag">Everyone</b></li>
@@ -128,8 +129,6 @@
         <li><code>/settings securitychannel</code><span>Set the official private channel for Billy security reports</span><b class="tag">Everyone</b></li>
         <li><code>/settings staffroles</code><span>Set Billy&#x27;s moderator and beta tester access roles</span><b class="tag">Everyone</b></li>
         <li><code>/settings timezone</code><span>Set this server&#x27;s local midnight for daily message streaks</span><b class="tag">Everyone</b></li>
-        <li><code>/settings websearch [turn_on]</code><span>Let Billy look things up on the public web for general questions</span><b class="tag">Manage Server</b></li>
-        <li><code>/settings webhook [action] [url] [events]</code><span>Have Billy POST to your own URL when things happen here</span><b class="tag">Administrator</b></li>
         <li><code>/settings weekly</code><span>Announce weekly winners for messages, voice time and invites</span><b class="tag">Everyone</b></li>
         <li><code>/settings weeklypreview</code><span>See who would win this week, without posting it</span><b class="tag">Manage Server</b></li>
         <li><code>/setup</code><span>Configure Billy for this server</span><b class="tag">Administrator</b></li>
@@ -220,13 +219,14 @@
     </section>
 
     <section class="cmd-group" id="ai-knowledge" data-name="AI &amp; Knowledge">
-      <h2>AI &amp; Knowledge <small>14</small></h2>
+      <h2>AI &amp; Knowledge <small>15</small></h2>
       <ul class="cmd-list">
         <li><code>/agents</code><span>See which specialist agent handles each kind of question</span><b class="tag">Everyone</b></li>
         <li><code>/answers add &lt;question&gt; &lt;answer&gt;</code><span>Teach Billy an answer without waiting for a question</span><b class="tag">Everyone</b></li>
         <li><code>/answers corrections</code><span>Times somebody told Billy he was wrong, and what they said instead</span><b class="tag">Manage Server</b></li>
         <li><code>/answers gaps</code><span>Questions Billy could not answer or got wrong</span><b class="tag">Everyone</b></li>
         <li><code>/answers stale</code><span>Facts Billy has been repeating for a long time without anyone checking</span><b class="tag">Manage Server</b></li>
+        <li><code>/answers websearch [turn_on]</code><span>Let Billy look things up on the public web for general questions</span><b class="tag">Manage Server</b></li>
         <li><code>/answers teach &lt;id&gt;</code><span>Answer one of the waiting questions</span><b class="tag">Everyone</b></li>
         <li><code>/ask &lt;question&gt; [private]</code><span>Ask Billy anything — server questions, games, or general knowledge</span><b class="tag">Everyone</b></li>
         <li><code>/digest [days]</code><span>Privately summarize this server&#x27;s recent activity and staff workload</span><b class="tag">Manage Server</b></li>
