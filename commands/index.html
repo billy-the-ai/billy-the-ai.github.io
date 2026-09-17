@@ -36,7 +36,7 @@
 <main class="container">
   <section class="page-top">
     <h1>Commands</h1>
-    <p class="lede">Every command Billy has (313 in total), what it does, and who is allowed to use it.</p>
+    <p class="lede">Every command Billy has (323 in total), what it does, and who is allowed to use it.</p>
     <p class="note how-to"><b>Can't find a command in Discord?</b> Typing <code>/</code> shows 28 entries instead of all of them.
       Twelve are commands you type directly, like <code>/warn</code>, <code>/ban</code>, <code>/softban</code>, <code>/kick</code>, <code>/timeout</code>, <code>/purge</code>, <code>/ask</code>.
       The other sixteen are menus that hold everything else: <code>/moderation</code> <code>/automod</code> <code>/ai</code> <code>/tickets</code> <code>/events</code> <code>/giveaways</code> <code>/levels</code> <code>/leaderboards</code> <code>/community</code> <code>/form</code> <code>/rolemenu</code> <code>/setup</code> <code>/games</code> <code>/creator</code> <code>/subscriptions</code> <code>/official</code>.
@@ -46,7 +46,7 @@
   <div class="cmd-tools">
     <div class="cmd-search">
       <input id="cmdSearch" type="search" placeholder="Search, e.g. warn, level, ticket" aria-label="Search commands" autocomplete="off">
-      <span class="tag" id="cmdCount">313</span>
+      <span class="tag" id="cmdCount">323</span>
     </div>
     <nav class="cmd-jump" aria-label="Jump to a category">
       <a href="#getting-started">Getting Started</a>
@@ -420,7 +420,7 @@
     </section>
 
     <section class="cmd-group" id="premium" data-name="Premium">
-      <h2>Premium <small>18</small></h2>
+      <h2>Premium <small>28</small></h2>
       <ul class="cmd-list">
         <li><code>/subscriptions buy</code><span>Subscribe this server to Billy Premium, Ultimate or Infinity</span><b class="tag">Everyone</b></li>
         <li><code>/subscriptions compare</code><span>See what each plan includes</span><b class="tag">Everyone</b></li>
@@ -431,6 +431,16 @@
         <li><code>/subscriptions remove [server] [user] [note]</code><span>Billy owner only: take a subscription away</span><b class="tag">Bot owner</b></li>
         <li><code>/subscriptions view</code><span>See this server&#x27;s Billy subscription and what it includes</span><b class="tag">Everyone</b></li>
         <li><code>/subscriptions whohas</code><span>Billy owner only: check exactly where one person&#x27;s grant reaches</span><b class="tag">Everyone</b></li>
+        <li><code>/premium welcome [background] [accent] [title] [message] [background_image_url]</code><span>Billy Premium: design your welcome card</span><b class="tag">Manage Server</b></li>
+        <li><code>/premium welcomereset</code><span>Billy Premium: go back to the standard welcome card</span><b class="tag">Manage Server</b></li>
+        <li><code>/premium milestones [channel] [turn_off]</code><span>Billy Premium: celebrate member milestones and anniversaries</span><b class="tag">Manage Server</b></li>
+        <li><code>/premium slowmode &lt;turn_on&gt; [messages_per_10s]</code><span>Billy Premium: slowmode that switches on when chat floods</span><b class="tag">Manage Server</b></li>
+        <li><code>/premium poll &lt;question&gt; &lt;answers&gt; &lt;hours_open&gt; &lt;channel&gt; [start_in_minutes]</code><span>Billy Premium: post a poll now or later</span><b class="tag">Manage Server</b></li>
+        <li><code>/ultimate queue</code><span>Billy Ultimate: everything waiting for staff, in one place</span><b class="tag">Moderator</b></li>
+        <li><code>/ultimate profile &lt;member&gt;</code><span>Billy Ultimate: a private staff card for one member</span><b class="tag">Moderator</b></li>
+        <li><code>/ultimate note &lt;member&gt; &lt;note&gt;</code><span>Billy Ultimate: add a private staff note</span><b class="tag">Moderator</b></li>
+        <li><code>/ultimate announce &lt;idea&gt; &lt;channel&gt; [post_in_minutes]</code><span>Billy Ultimate: Billy drafts an announcement for you</span><b class="tag">Manage Server</b></li>
+        <li><code>/ultimate summaries &lt;turn_on&gt;</code><span>Billy Ultimate: AI summaries of closed tickets</span><b class="tag">Manage Server</b></li>
         <li><code>/infinity status</code><span>Billy Infinity: see which Infinity features are on</span><b class="tag">Manage Server</b></li>
         <li><code>/infinity report [days] [channel]</code><span>Billy Infinity: the staff report, right now</span><b class="tag">Manage Server</b></li>
         <li><code>/infinity schedule [channel] [day] [hour_utc] [turn_off]</code><span>Billy Infinity: post the staff report every week</span><b class="tag">Manage Server</b></li>

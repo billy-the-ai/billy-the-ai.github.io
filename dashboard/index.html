@@ -1418,6 +1418,22 @@ setOverviewText('moderationFalsePositivesNote',falsePositives?'Reviews staff dis
        blurb:'Switch a command off, keep it to one channel, or limit it to a role.'},
       {key:'weekly',icon:'🏆',name:'Weekly winners',badge:'new',configurable:true,
        blurb:'Announce who sent the most messages, spent longest in voice and brought the most people.'},
+      {key:'premium_welcome',icon:'🎨',name:'Welcome card designer',badge:'premium',command:'/premium welcome',
+       blurb:'Billy Premium. Your colours, background picture and words on the welcome card.'},
+      {key:'premium_milestones',icon:'🎉',name:'Member milestones',badge:'premium',command:'/premium milestones',
+       blurb:'Billy Premium. Celebrate 100, 500, 1,000 members and join anniversaries automatically.'},
+      {key:'premium_slowmode',icon:'🐢',name:'Smart slowmode',badge:'premium',command:'/premium slowmode',
+       blurb:'Billy Premium. Slowmode switches on by itself when a channel floods, and off when it calms down.'},
+      {key:'premium_polls',icon:'📊',name:'Scheduled polls',badge:'premium',command:'/premium poll',
+       blurb:'Billy Premium. Discord polls that open on their own at the time you pick.'},
+      {key:'ultimate_summaries',icon:'📝',name:'AI ticket summaries',badge:'ultimate',command:'/ultimate summaries',
+       blurb:'Billy Ultimate. Every closed ticket gets a short summary: the problem, what staff did, the outcome.'},
+      {key:'ultimate_queue',icon:'📥',name:'Mod queue',badge:'ultimate',command:'/ultimate queue',
+       blurb:'Billy Ultimate. Reports, appeals, tickets, Helper Clips and applications waiting, in one card.'},
+      {key:'ultimate_profile',icon:'🗂️',name:'Member profiles',badge:'ultimate',command:'/ultimate profile',
+       blurb:'Billy Ultimate. Warnings, cases, reports, notes, alt signals and a risk level for any member.'},
+      {key:'ultimate_announce',icon:'📣',name:'AI announcements',badge:'ultimate',command:'/ultimate announce',
+       blurb:'Billy Ultimate. Billy drafts the announcement, you edit it, and it posts when you want.'},
       {key:'infinity_report',icon:'📊',name:'Weekly staff report',badge:'infinity',command:'/infinity schedule',
        blurb:'Billy Infinity. Every week: each moderator\u2019s actions, how fast tickets get closed, top helpers, and what members asked that Billy couldn\u2019t answer.'},
       {key:'infinity_snapshots',icon:'🗂️',name:'Server snapshots',badge:'infinity',command:'/infinity snapshots',
@@ -1544,7 +1560,7 @@ setOverviewText('moderationFalsePositivesNote',falsePositives?'Reviews staff dis
         const name=document.createElement('b');name.textContent=entry.name;
         top.append(icon,name);
         if(entry.badge){const b=document.createElement('span');
-          b.className='mod-badge '+entry.badge;b.textContent=({new:'New',infinity:'Infinity'})[entry.badge]||'Ultimate';top.append(b)}
+          b.className='mod-badge '+entry.badge;b.textContent=({new:'New',premium:'Premium',ultimate:'Ultimate',infinity:'Infinity'})[entry.badge]||'New';top.append(b)}
         const on=moduleIsOn(entry);
         const state=document.createElement('span');
         state.className='mod-tile-state'+(on?' on':'');state.textContent=on?'On':'Off';

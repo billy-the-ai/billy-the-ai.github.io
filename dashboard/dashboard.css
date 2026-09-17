@@ -449,6 +449,7 @@ main { width: 100%; max-width: 1400px; min-width: 0; margin: 0 auto; padding: 28
 .mod-badge { padding: 0 7px; border: 1px solid currentColor; border-radius: 999px; font-size: 11px; font-weight: 700; }
 .mod-badge.new { color: var(--green); }
 .mod-badge.ultimate { color: var(--purple); }
+.mod-badge.premium { color: #d9822b; border-color: rgba(217, 130, 43, 0.5); background: rgba(217, 130, 43, 0.08); }
 .mod-badge.infinity { color: #8b5cf6; border-color: rgba(139, 92, 246, 0.5); background: rgba(139, 92, 246, 0.08); }
 .mod-where { font-size: 13px; color: var(--muted); }
 
