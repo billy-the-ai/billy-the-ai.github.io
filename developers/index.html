@@ -1,0 +1,205 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Developers | Billy the AI</title>
+<meta name="description" content="Billy's API and event webhooks. Read your server's levels, points, tickets and cases from your own code, and have Billy POST to your URL when something happens.">
+<meta property="og:title" content="Developers | Billy the AI">
+<meta property="og:description" content="Billy's API and event webhooks. Read your server's levels, points, tickets and cases from your own code, and have Billy POST to your URL when something happens.">
+<meta property="og:image" content="https://billy-the-ai.github.io/og.png">
+<meta name="theme-color" content="#f6f4ee">
+<link rel="icon" href="/billy-icon.webp" type="image/webp">
+<script>document.documentElement.classList.add("js");</script>
+<link rel="preload" href="/fonts/Cute-Dino.otf" as="font" type="font/otf" crossorigin>
+<script src="/theme.js"></script>
+<link rel="stylesheet" href="/site.css">
+<link rel="stylesheet" href="/scrollbars.css">
+<style>
+  .api-list { display: grid; gap: 14px; margin: 26px 0 0; padding: 0; list-style: none; }
+  .api-row { display: grid; grid-template-columns: 62px 1fr; gap: 16px; align-items: start;
+             padding: 16px 18px; border: 1px solid var(--line); border-radius: 14px; }
+  .api-row b { font: 700 11px/1.6 var(--mono); letter-spacing: 0.08em; text-transform: uppercase;
+               color: var(--accent); padding-top: 3px; }
+  .api-row code { background: none; border: 0; padding: 0; font-weight: 700; word-break: break-word; }
+  .api-row p { margin: 6px 0 0; color: var(--faint); font-size: 15px; }
+  pre.snippet { margin: 18px 0 0; padding: 18px; overflow-x: auto; border: 1px solid var(--line);
+                border-radius: 14px; background: rgba(20, 33, 61, 0.04);
+                font: 13px/1.7 var(--mono); color: var(--ink-soft); }
+  :root[data-theme="dark"] pre.snippet { background: rgba(226, 234, 255, 0.05); }
+  @media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) pre.snippet { background: rgba(226, 234, 255, 0.05); } }
+  .event-grid { display: grid; gap: 14px; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); margin-top: 26px; }
+  @media (max-width: 620px) { .api-row { grid-template-columns: 1fr; gap: 6px; } }
+</style>
+</head>
+<body>
+
+<header class="site-header">
+  <div class="container">
+    <a class="logo" href="/"><img src="/billy-icon.webp" alt="">Billy</a>
+    <nav class="site-nav" aria-label="Main">
+      <a href="/commands/">Commands</a>
+      <a href="/premium/">Premium</a>
+      <a href="/programs/">Programs</a>
+      <a href="/network/">Network</a>
+      <a href="/status/">Status</a>
+      <a href="/dashboard/">Dashboard</a>
+    </nav>
+    <a class="btn btn-primary btn-small" href="https://discord.com/oauth2/authorize?client_id=1515868648819003402&amp;scope=bot%20applications.commands">Add to Discord</a>
+  </div>
+</header>
+
+<main class="container">
+  <section class="page-top">
+    <span class="badge">Billy Platform</span>
+    <h1 style="margin-top:18px">Developers</h1>
+    <p class="lede">Your game and your website can read what Billy knows about your server, and Billy can tell them when something happens in it. Two directions, one key.</p>
+    <div class="buttons">
+      <a class="btn" href="#key">Get a key</a>
+      <a class="btn" href="#endpoints">Endpoints</a>
+      <a class="btn" href="#webhooks">Event webhooks</a>
+    </div>
+  </section>
+
+  <section class="home-section" id="key">
+    <div class="section-head">
+      <h2>Getting a key</h2>
+      <p>Run this in your server. You need Administrator, because a key can read everything below.</p>
+    </div>
+    <pre class="snippet">/settings api action:Make a new key</pre>
+    <p class="note" style="margin-top:18px">Billy stores only a fingerprint of the key, so it is shown once and never again. Lose it and you make another one, which replaces the old one. Keep it on your server — a key shipped inside a game client is a key everybody has.</p>
+    <p class="note">Add <code>allow_posting:true</code> if you also want the key to post messages. Leave it off if you only need to read; you can always make a new key later.</p>
+    <h3 style="margin-top:34px">Sending it</h3>
+    <pre class="snippet">curl https://billyserverai.duckdns.org/api/v1/server \
+  -H "Authorization: Bearer billy_your_key_here"</pre>
+    <p class="note" style="margin-top:18px">There is no server id anywhere in these paths. The key says which server you are asking about, so a key can only ever read the one server it was made in.</p>
+  </section>
+
+  <section class="home-section" id="endpoints">
+    <div class="section-head">
+      <h2>Endpoints</h2>
+      <p>Everything answers JSON. Sixty requests a minute per key.</p>
+    </div>
+    <ul class="api-list">
+      <li class="api-row"><b>Get</b><div>
+        <code>/api/v1/server</code>
+        <p>Name, member count, the plan this server is on, and when it was created.</p>
+      </div></li>
+      <li class="api-row"><b>Get</b><div>
+        <code>/api/v1/members/{user_id}</code>
+        <p>Messages, level and progress, Helper, Marketing and Scouting points, roles, and when they joined. Someone who has left still has a record.</p>
+      </div></li>
+      <li class="api-row"><b>Get</b><div>
+        <code>/api/v1/leaderboard/{kind}</code>
+        <p><code>helper</code>, <code>marketing</code>, <code>scouting</code> or <code>messages</code>. Takes <code>?limit=</code>, up to 50.</p>
+      </div></li>
+      <li class="api-row"><b>Get</b><div>
+        <code>/api/v1/tickets</code>
+        <p>How many tickets are open and closed, and the count for every status you use.</p>
+      </div></li>
+      <li class="api-row"><b>Get</b><div>
+        <code>/api/v1/cases</code>
+        <p>Recent moderation cases, newest first: number, action, who, which moderator, and the reason. Takes <code>?limit=</code>, up to 100.</p>
+      </div></li>
+      <li class="api-row"><b>Post</b><div>
+        <code>/api/v1/say</code>
+        <p>Post a message to a channel, as Billy. Needs a key made with posting allowed. Body: <code>{"channel_id": "…", "content": "…"}</code>. Mentions never ping — a machine cannot @everyone your server — and every post is written to your audit trail.</p>
+      </div></li>
+    </ul>
+    <h3 style="margin-top:38px">What an answer looks like</h3>
+    <pre class="snippet">{
+  "ok": true,
+  "member": {
+    "id": "204…",
+    "in_server": true,
+    "name": "Ricky",
+    "joined_at": "2025-05-01T00:00:00+00:00",
+    "roles": [{ "id": "998…", "name": "Helper" }],
+    "messages": 1204,
+    "level": 7,
+    "progress": 54,
+    "needed": 210,
+    "points": { "helper": 12, "marketing": 3, "scouting": 0 }
+  }
+}</pre>
+    <p class="note" style="margin-top:18px">Failures answer with <code>{"ok": false, "error": "…"}</code> and a normal status code: 401 for a key that is not valid, 403 for something the key is not allowed to do, 404 for something that is not there, 429 when you are going too fast.</p>
+  </section>
+
+  <section class="home-section" id="webhooks">
+    <div class="section-head">
+      <h2>Event webhooks</h2>
+      <p>The other direction. Billy POSTs to a URL you own when something happens in your server.</p>
+    </div>
+    <pre class="snippet">/settings webhook action:Set the URL url:https://api.yourgame.com/billy events:case.created,member.joined</pre>
+    <div class="event-grid">
+      <div class="card">
+        <h3>case.created</h3>
+        <p>A moderation case got its number. Sends the case, the action, who it was about and which moderator.</p>
+      </div>
+      <div class="card">
+        <h3>ticket.closed</h3>
+        <p>Support finished with someone. Sends the ticket, its type, who opened it and who closed it.</p>
+      </div>
+      <div class="card">
+        <h3>helper.clip</h3>
+        <p>Billy caught a member helping another member. Sends both people and a link to the conversation.</p>
+      </div>
+      <div class="card">
+        <h3>member.joined</h3>
+        <p>Somebody arrived. Sends who, when their account was made, and the new member count.</p>
+      </div>
+    </div>
+    <h3 style="margin-top:38px">Checking a delivery is really Billy</h3>
+    <p>Every request carries an HMAC of the exact body, made with the signing secret you were shown when you set the URL. Compare it before you trust anything in the payload.</p>
+    <pre class="snippet">X-Billy-Event: case.created
+X-Billy-Delivery: 9f2c1a7b4e0d3a58
+X-Billy-Signature: sha256=&lt;hmac of the raw body&gt;
+
+# Python
+import hmac, hashlib
+expected = "sha256=" + hmac.new(secret.encode(), raw_body, hashlib.sha256).hexdigest()
+if not hmac.compare_digest(expected, request.headers["X-Billy-Signature"]):
+    abort(401)</pre>
+    <h3 style="margin-top:38px">The rules Billy keeps</h3>
+    <ul class="check-list">
+      <li>The URL has to be <b>https</b>, on a public host. Addresses inside a private network are refused, on purpose.</li>
+      <li>An event says what happened and who it involved. Message content, ticket transcripts and the reasons moderators type are never sent — ask for those with your key, where your server had to authenticate.</li>
+      <li>A URL that fails twenty times in a row is switched off. <code>/settings webhook</code> shows you the last response Billy got.</li>
+      <li>Billy does not retry a delivery, and does not wait for your endpoint. Your server being down never slows a ban down.</li>
+    </ul>
+  </section>
+
+  <section class="cta-final">
+    <div class="cta-card">
+      <h2>Building something with Billy?</h2>
+      <p>Tell us what you are making and what is missing. The endpoints that exist are the ones people asked for.</p>
+      <div class="buttons"><a class="btn btn-primary" href="https://discord.gg/uXHNJz6fDh">Ask in the Discord</a></div>
+    </div>
+  </section>
+</main>
+
+<footer class="site-footer">
+  <div class="container">
+    <nav aria-label="More links">
+      <a href="/">Home</a>
+      <a href="/commands/">Commands</a>
+      <a href="/premium/">Premium</a>
+      <a href="/programs/">Programs</a>
+      <a href="/network/">Network</a>
+      <a href="/developers/">Developers</a>
+      <a href="/status/">Status</a>
+      <a href="/dashboard/">Dashboard</a>
+      <a href="https://discord.gg/uXHNJz6fDh">Discord server</a>
+      <a href="/terms/">Terms</a>
+      <a href="/privacy/">Privacy</a>
+      <a href="#" onclick="window.billyConsentReopen();return false;">Cookie choices</a>
+    </nav>
+    <p>&copy; 2026 Billy the AI. Not affiliated with Discord or Another Axiom.</p>
+  </div>
+</footer>
+
+<script src="/site.js" defer></script>
+<script src="/analytics.js" defer></script>
+<script src="/consent.js" defer></script>
+</body>
+</html>
