@@ -8,6 +8,8 @@
 <meta property="og:title" content="Commands | Billy the AI">
 <meta property="og:description" content="Every Billy command, what it does, and the permission it needs.">
 <meta property="og:image" content="https://billy-the-ai.github.io/og.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
 <meta name="theme-color" content="#f6f4ee">
 <link rel="icon" href="/billy-icon.webp" type="image/webp">
 <script>document.documentElement.classList.add("js");</script>
@@ -36,7 +38,7 @@
 <main class="container">
   <section class="page-top">
     <h1>Commands</h1>
-    <p class="lede">Every command Billy has (329 in total), what it does, and who is allowed to use it.</p>
+    <p class="lede">Every command Billy has (330 in total), what it does, and who is allowed to use it.</p>
     <p class="note how-to"><b>Can't find a command in Discord?</b> Typing <code>/</code> shows 28 entries instead of all of them.
       Twelve are commands you type directly, like <code>/warn</code>, <code>/ban</code>, <code>/softban</code>, <code>/kick</code>, <code>/timeout</code>, <code>/purge</code>, <code>/ask</code>.
       The other sixteen are menus that hold everything else: <code>/moderation</code> <code>/automod</code> <code>/ai</code> <code>/tickets</code> <code>/events</code> <code>/giveaways</code> <code>/levels</code> <code>/leaderboards</code> <code>/community</code> <code>/form</code> <code>/rolemenu</code> <code>/setup</code> <code>/games</code> <code>/creator</code> <code>/subscriptions</code> <code>/official</code>.
@@ -46,7 +48,7 @@
   <div class="cmd-tools">
     <div class="cmd-search">
       <input id="cmdSearch" type="search" placeholder="Search, e.g. warn, level, ticket" aria-label="Search commands" autocomplete="off">
-      <span class="tag" id="cmdCount">329</span>
+      <span class="tag" id="cmdCount">330</span>
     </div>
     <nav class="cmd-jump" aria-label="Jump to a category">
       <a href="#getting-started">Getting Started</a>
@@ -250,7 +252,7 @@
         <li><code>/autopurge list</code><span>Which channels clear themselves</span><b class="tag">Manage Messages</b></li>
         <li><code>/autopurge off &lt;channel&gt;</code><span>Stop a channel clearing itself</span><b class="tag">Manage Messages</b></li>
         <li><code>/autopurge set &lt;channel&gt; &lt;minutes&gt;</code><span>Clear messages in a channel once they get old</span><b class="tag">Manage Messages</b></li>
-        <li><code>/ban &lt;member&gt; &lt;reason&gt; [delete_message_days]</code><span>Ban a member from the server</span><b class="tag">Moderator</b></li>
+        <li><code>/ban &lt;member&gt; &lt;reason&gt; [delete_message_days]</code><span>Ban someone, even if they already left the server</span><b class="tag">Moderator</b></li>
         <li><code>/case [case_number] [member]</code><span>Privately review saved moderation cases from this server</span><b class="tag">Moderator</b></li>
         <li><code>/copilot now</code><span>Show what Billy has noticed right now</span><b class="tag">Manage Server</b></li>
         <li><code>/copilot off</code><span>Stop the staff briefings</span><b class="tag">Manage Server</b></li>
@@ -403,10 +405,11 @@
     </section>
 
     <section class="cmd-group" id="levels-activity" data-name="Levels &amp; Activity">
-      <h2>Levels &amp; Activity <small>17</small></h2>
+      <h2>Levels &amp; Activity <small>18</small></h2>
       <ul class="cmd-list">
         <li><code>/leaderboard</code><span>Open all server activity leaderboards from one menu</span><b class="tag">Everyone</b></li>
         <li><code>/level [member]</code><span>Show a member&#x27;s message level, progress, and server rank</span><b class="tag">Everyone</b></li>
+        <li><code>/levels givexp &lt;role&gt; &lt;action&gt; &lt;amount&gt; [reason]</code><span>Give or remove XP for everyone with a role, in one go</span><b class="tag">Administrator</b></li>
         <li><code>/levels removereward &lt;level&gt;</code><span>Stop automatically granting the reward configured for one level</span><b class="tag">Manage Server</b></li>
         <li><code>/levels rewards</code><span>Show this server&#x27;s automatic message-level role rewards</span><b class="tag">Everyone</b></li>
         <li><code>/levels settings [confirm]</code><span>Create Billy&#x27;s recommended automatic level reward roles</span><b class="tag">Manage Server</b></li>
