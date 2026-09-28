@@ -60,6 +60,7 @@
       <a class="btn" href="#key">Get a key</a>
       <a class="btn" href="#endpoints">Endpoints</a>
       <a class="btn" href="#webhooks">Event webhooks</a>
+      <a class="btn" href="#player-link">Player Link</a>
     </div>
   </section>
 
@@ -150,6 +151,14 @@
         <h3>member.joined</h3>
         <p>Somebody arrived. Sends who, when their account was made, and the new member count.</p>
       </div>
+      <div class="card">
+        <h3>player.linked</h3>
+        <p>A member linked their game account. Sends their Discord id and your player id.</p>
+      </div>
+      <div class="card">
+        <h3>player.banned</h3>
+        <p>A linked member was banned on Discord. Sends both ids, so your game can ban them too.</p>
+      </div>
     </div>
     <h3 style="margin-top:38px">Checking a delivery is really Billy</h3>
     <p>Every request carries an HMAC of the exact body, made with the signing secret you were shown when you set the URL. Compare it before you trust anything in the payload.</p>
@@ -168,6 +177,41 @@ if not hmac.compare_digest(expected, request.headers["X-Billy-Signature"]):
       <li>An event says what happened and who it involved. Message content, ticket transcripts and the reasons moderators type are never sent — ask for those with your key, where your server had to authenticate.</li>
       <li>A URL that fails twenty times in a row is switched off. <code>/config webhook</code> shows you the last response Billy got.</li>
       <li>Billy does not retry a delivery, and does not wait for your endpoint. Your server being down never slows a ban down.</li>
+    </ul>
+  </section>
+
+  <section class="home-section" id="player-link">
+    <div class="section-head">
+      <h2>Player Link</h2>
+      <p>Prove which Discord member is which player. The code is the proof: only the member who asked sees it, it works once, and it expires in ten minutes.</p>
+    </div>
+    <ol class="check-list">
+      <li>A member runs <code>/link start</code> and Billy shows them a code like <code>K7QX2M</code>.</li>
+      <li>They type it into your game.</li>
+      <li>Your <b>game server</b> sends it to Billy with your key. Never from the game client — the key would be in everyone's copy of the game.</li>
+    </ol>
+    <pre class="snippet">POST /api/v1/link
+Authorization: Bearer billy_your_key_here
+
+{ "code": "K7QX2M", "player_id": "PF-12345", "player_name": "RiftRunner" }</pre>
+    <p class="note" style="margin-top:18px">Billy gives the member your Verified Player role (<code>/gameadmin linkrole</code>), puts the name on their <code>/profile</code> marked verified, and DMs them. A player id belongs to one member at a time: linking it to someone new unlinks the old one.</p>
+    <ul class="api-list">
+      <li class="api-row"><b>Post</b><div>
+        <code>/api/v1/link</code>
+        <p>Redeem a member's code. Answers with their Discord id, and who lost the link if the player was linked to someone else.</p>
+      </div></li>
+      <li class="api-row"><b>Get</b><div>
+        <code>/api/v1/players/{player_id}</code>
+        <p>Who that player is on Discord, whether they're still in the server, and their last rank.</p>
+      </div></li>
+      <li class="api-row"><b>Post</b><div>
+        <code>/api/v1/players/{player_id}/sync</code>
+        <p>Body <code>{"rank": "Gold"}</code>. Billy gives the role you mapped with <code>/gameadmin rankrole</code> and takes their other rank roles away.</p>
+      </div></li>
+      <li class="api-row"><b>Post</b><div>
+        <code>/api/v1/players/{player_id}/ban</code>
+        <p>Body <code>{"reason": "…"}</code>. Bans the linked member on Discord — but only if staff switched it on with <code>/gameadmin bansync</code>. Every one is in the audit log.</p>
+      </div></li>
     </ul>
   </section>
 

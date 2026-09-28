@@ -38,7 +38,7 @@
 <main class="container">
   <section class="page-top">
     <h1>Commands</h1>
-    <p class="lede">Every command Billy has (330 in total), what it does, and who is allowed to use it.</p>
+    <p class="lede">Every command Billy has (356 in total), what it does, and who is allowed to use it.</p>
     <p class="note how-to"><b>Can't find a command in Discord?</b> Typing <code>/</code> shows 28 entries instead of all of them.
       Twelve are commands you type directly, like <code>/warn</code>, <code>/ban</code>, <code>/softban</code>, <code>/kick</code>, <code>/timeout</code>, <code>/purge</code>, <code>/ask</code>.
       The other sixteen are menus that hold everything else: <code>/moderation</code> <code>/automod</code> <code>/ai</code> <code>/tickets</code> <code>/events</code> <code>/giveaways</code> <code>/levels</code> <code>/leaderboards</code> <code>/community</code> <code>/form</code> <code>/rolemenu</code> <code>/setup</code> <code>/games</code> <code>/creator</code> <code>/subscriptions</code> <code>/official</code>.
@@ -48,7 +48,7 @@
   <div class="cmd-tools">
     <div class="cmd-search">
       <input id="cmdSearch" type="search" placeholder="Search, e.g. warn, level, ticket" aria-label="Search commands" autocomplete="off">
-      <span class="tag" id="cmdCount">330</span>
+      <span class="tag" id="cmdCount">356</span>
     </div>
     <nav class="cmd-jump" aria-label="Jump to a category">
       <a href="#getting-started">Getting Started</a>
@@ -149,19 +149,8 @@
     </section>
 
     <section class="cmd-group" id="community" data-name="Community">
-      <h2>Community <small>69</small></h2>
+      <h2>Community <small>86</small></h2>
       <ul class="cmd-list">
-        <li><code>/marketing setup &lt;team_role&gt; &lt;staff_channel&gt; [showcase_channel] [points_per_post]</code><span>Set up your server&#x27;s Marketing Team</span><b class="tag">Manage Server</b></li>
-        <li><code>/marketing off</code><span>Close the Marketing Team. The roster and points are kept</span><b class="tag">Manage Server</b></li>
-        <li><code>/marketing roster &lt;action&gt; [member]</code><span>List, add or remove Marketing Team members</span><b class="tag">Manage Server</b></li>
-        <li><code>/marketing recruit [channel] [close]</code><span>Post an Apply button for the Marketing Team, or close applications</span><b class="tag">Manage Server</b></li>
-        <li><code>/marketing submit &lt;link&gt; [note]</code><span>Send a post you made about the server to staff</span><b class="tag">Team members</b></li>
-        <li><code>/marketing top [period]</code><span>The Marketing Points leaderboard</span><b class="tag">Everyone</b></li>
-        <li><code>/marketing check [member]</code><span>See someone&#x27;s Marketing Points</span><b class="tag">Everyone</b></li>
-        <li><code>/marketing adjust &lt;member&gt; &lt;amount&gt; &lt;reason&gt;</code><span>Add or take away Marketing Points by hand</span><b class="tag">Manage Server</b></li>
-        <li><code>/marketing export</code><span>Download every Marketing Point as a spreadsheet</span><b class="tag">Manage Server</b></li>
-        <li><code>/marketing sheet [apps_script_url] [disconnect]</code><span>Send every new Marketing Point to a Google Sheet</span><b class="tag">Manage Server</b></li>
-        <li><code>/marketing weekly [turn_on] [channel] [day] [hour_utc] [title] [role]</code><span>Announce the Top Marketer of the Week</span><b class="tag">Manage Server</b></li>
         <li><code>/afk [message]</code><span>Tell Billy you are away, and he will say so if you are pinged</span><b class="tag">Everyone</b></li>
         <li><code>/announce add</code><span>Schedule a message</span><b class="tag">Everyone</b></li>
         <li><code>/announce list</code><span>See what is scheduled</span><b class="tag">Everyone</b></li>
@@ -192,13 +181,21 @@
         <li><code>/event attendance &lt;event_id&gt;</code><span>Who said they were coming, and who actually turned up</span><b class="tag">Everyone</b></li>
         <li><code>/event cancel &lt;event_id&gt;</code><span>Cancel a scheduled event</span><b class="tag">Everyone</b></li>
         <li><code>/event create &lt;name&gt; [in_minutes] [when] [description] [voice] [announce_in]</code><span>Schedule a playtest or event</span><b class="tag">Everyone</b></li>
+        <li><code>/event feedback &lt;playtest_id&gt;</code><span>See the AI summary of a playtest&#x27;s feedback</span><b class="tag">Manage Server</b></li>
+        <li><code>/event keylookup &lt;key&gt;</code><span>Find out who a beta key was given to</span><b class="tag">Manage Server</b></li>
         <li><code>/event list</code><span>Show upcoming events</span><b class="tag">Everyone</b></li>
+        <li><code>/event playtest &lt;title&gt; &lt;when&gt; &lt;slots&gt; [duration_minutes] [voice] [xp] [ping] [feedback_channel] [announce_in] [description]</code><span>Run a playtest: slots, waitlist, beta keys and XP</span><b class="tag">Manage Server</b></li>
+        <li><code>/event playtestkeys &lt;playtest_id&gt;</code><span>Add more beta keys to a playtest</span><b class="tag">Manage Server</b></li>
         <li><code>/event reliability [member]</code><span>How often somebody actually shows up to events they sign up for</span><b class="tag">Everyone</b></li>
         <li><code>/event who &lt;event_id&gt;</code><span>See who has RSVP&#x27;d to an event</span><b class="tag">Everyone</b></li>
         <li><code>/gameadmin ban</code><span>Ban a player in the game</span><b class="tag">Everyone</b></li>
+        <li><code>/gameadmin bansync &lt;turn_on&gt;</code><span>Let the game ban linked players on Discord too</span><b class="tag">Administrator</b></li>
         <li><code>/gameadmin disconnect</code><span>Remove the stored PlayFab key</span><b class="tag">Everyone</b></li>
         <li><code>/gameadmin find</code><span>Look up a player</span><b class="tag">Everyone</b></li>
         <li><code>/gameadmin grant</code><span>Give a player an item</span><b class="tag">Everyone</b></li>
+        <li><code>/gameadmin linked &lt;member&gt;</code><span>See a member&#x27;s linked game account</span><b class="tag">Administrator</b></li>
+        <li><code>/gameadmin linkrole [role] [game_name]</code><span>The role linked players get</span><b class="tag">Administrator</b></li>
+        <li><code>/gameadmin rankrole &lt;rank&gt; [role]</code><span>Give a Discord role for an in-game rank</span><b class="tag">Administrator</b></li>
         <li><code>/gameadmin setup</code><span>Connect your PlayFab title to this server</span><b class="tag">Everyone</b></li>
         <li><code>/gameadmin unban</code><span>Remove a player&#x27;s game bans</span><b class="tag">Everyone</b></li>
         <li><code>/giveaway rules</code><span>Set who may enter a giveaway, beyond just holding a role</span><b class="tag">Everyone</b></li>
@@ -206,6 +203,20 @@
         <li><code>/idea mark</code><span>Staff: set what is happening with a suggestion</span><b class="tag">Everyone</b></li>
         <li><code>/idea new</code><span>Suggest something for this server</span><b class="tag">Everyone</b></li>
         <li><code>/lfg</code><span>Find people to play with</span><b class="tag">Everyone</b></li>
+        <li><code>/link start</code><span>Get a code to type into the game</span><b class="tag">Everyone</b></li>
+        <li><code>/link status</code><span>See which game account you&#x27;re linked to</span><b class="tag">Everyone</b></li>
+        <li><code>/link unlink</code><span>Unlink your game account</span><b class="tag">Everyone</b></li>
+        <li><code>/marketing adjust &lt;member&gt; &lt;amount&gt; &lt;reason&gt;</code><span>Add or take away Marketing Points by hand</span><b class="tag">Manage Server</b></li>
+        <li><code>/marketing check [member]</code><span>See someone&#x27;s Marketing Points</span><b class="tag">Everyone</b></li>
+        <li><code>/marketing export</code><span>Download every Marketing Point as a spreadsheet</span><b class="tag">Manage Server</b></li>
+        <li><code>/marketing off</code><span>Close the Marketing Team. The roster and points are kept</span><b class="tag">Manage Server</b></li>
+        <li><code>/marketing recruit [channel] [close]</code><span>Post an Apply button for the Marketing Team, or close applications</span><b class="tag">Manage Server</b></li>
+        <li><code>/marketing roster &lt;action&gt; [member]</code><span>List, add or remove Marketing Team members</span><b class="tag">Manage Server</b></li>
+        <li><code>/marketing setup &lt;team_role&gt; &lt;staff_channel&gt; [showcase_channel] [points_per_post]</code><span>Set up your server&#x27;s Marketing Team</span><b class="tag">Manage Server</b></li>
+        <li><code>/marketing sheet [apps_script_url] [disconnect]</code><span>Send every new Marketing Point to a Google Sheet</span><b class="tag">Manage Server</b></li>
+        <li><code>/marketing submit &lt;link&gt; [note]</code><span>Send a post you made about the server to staff</span><b class="tag">Team members</b></li>
+        <li><code>/marketing top [period]</code><span>The Marketing Points leaderboard</span><b class="tag">Everyone</b></li>
+        <li><code>/marketing weekly [turn_on] [channel] [day] [hour_utc] [title] [role]</code><span>Announce the Top Marketer of the Week</span><b class="tag">Manage Server</b></li>
         <li><code>/player</code><span>Look up a player in the game</span><b class="tag">Moderate Members</b></li>
         <li><code>/recap now [days_ago]</code><span>Show the recap for a day right now</span><b class="tag">Manage Server</b></li>
         <li><code>/recap off</code><span>Stop the daily recap</span><b class="tag">Manage Server</b></li>
@@ -214,6 +225,12 @@
         <li><code>/starboard off</code><span>Stop collecting starred messages</span><b class="tag">Manage Server</b></li>
         <li><code>/starboard settings</code><span>Show the starboard settings</span><b class="tag">Everyone</b></li>
         <li><code>/starboard setup &lt;channel&gt; [stars] [emoji]</code><span>Choose where starred messages are collected</span><b class="tag">Manage Server</b></li>
+        <li><code>/tournament bracket &lt;tournament&gt;</code><span>Show the bracket so far</span><b class="tag">Everyone</b></li>
+        <li><code>/tournament cancel &lt;tournament&gt;</code><span>Cancel a tournament</span><b class="tag">Manage Server</b></li>
+        <li><code>/tournament create &lt;name&gt; [max_players] [winner_role] [xp] [announce_in]</code><span>Open sign-ups for a tournament</span><b class="tag">Manage Server</b></li>
+        <li><code>/tournament report &lt;tournament&gt; &lt;result&gt;</code><span>Report the result of your match</span><b class="tag">Everyone</b></li>
+        <li><code>/tournament setwinner &lt;tournament&gt; &lt;winner&gt;</code><span>Settle a disputed match</span><b class="tag">Manage Server</b></li>
+        <li><code>/tournament start &lt;tournament&gt;</code><span>Close sign-ups and build the bracket</span><b class="tag">Manage Server</b></li>
         <li><code>/ultimate broadcast &lt;message&gt; [confirm]</code><span>Send one announcement to every server you own that has Billy</span><b class="tag">Server owner</b></li>
         <li><code>/verify</code><span>Prove an in-game account is yours</span><b class="tag">Everyone</b></li>
         <li><code>/voice off</code><span>Stop making rooms automatically</span><b class="tag">Everyone</b></li>
@@ -405,8 +422,13 @@
     </section>
 
     <section class="cmd-group" id="levels-activity" data-name="Levels &amp; Activity">
-      <h2>Levels &amp; Activity <small>18</small></h2>
+      <h2>Levels &amp; Activity <small>27</small></h2>
       <ul class="cmd-list">
+        <li><code>/coins adjust &lt;member&gt; &lt;action&gt; &lt;amount&gt; [reason]</code><span>Give or take coins</span><b class="tag">Manage Server</b></li>
+        <li><code>/coins balance [member]</code><span>How many coins you (or someone) have</span><b class="tag">Everyone</b></li>
+        <li><code>/coins pay &lt;member&gt; &lt;amount&gt;</code><span>Give some of your coins to another member</span><b class="tag">Everyone</b></li>
+        <li><code>/coins setup [turn_on] [name] [emoji] [per_message] [per_help] [per_event]</code><span>Switch the economy on and set how coins are earned</span><b class="tag">Manage Server</b></li>
+        <li><code>/coins top</code><span>The richest members of this server</span><b class="tag">Everyone</b></li>
         <li><code>/leaderboard</code><span>Open all server activity leaderboards from one menu</span><b class="tag">Everyone</b></li>
         <li><code>/level [member]</code><span>Show a member&#x27;s message level, progress, and server rank</span><b class="tag">Everyone</b></li>
         <li><code>/levels givexp &lt;role&gt; &lt;action&gt; &lt;amount&gt; [reason]</code><span>Give or remove XP for everyone with a role, in one go</span><b class="tag">Administrator</b></li>
@@ -420,6 +442,10 @@
         <li><code>/profile verify &lt;member&gt; [game] [verified]</code><span>Staff: mark a linked name as checked</span><b class="tag">Everyone</b></li>
         <li><code>/profile view [member]</code><span>See someone&#x27;s linked in-game names</span><b class="tag">Everyone</b></li>
         <li><code>/profile whois &lt;ign&gt;</code><span>Find which member an in-game name belongs to</span><b class="tag">Everyone</b></li>
+        <li><code>/shop add &lt;name&gt; &lt;price&gt; &lt;role&gt; [stock] [description]</code><span>Put a role up for sale</span><b class="tag">Manage Server</b></li>
+        <li><code>/shop browse</code><span>See what&#x27;s for sale, and buy something</span><b class="tag">Everyone</b></li>
+        <li><code>/shop buy &lt;item&gt;</code><span>Buy something from the shop</span><b class="tag">Everyone</b></li>
+        <li><code>/shop remove &lt;item&gt;</code><span>Take something out of the shop</span><b class="tag">Manage Server</b></li>
         <li><code>/ultimate insights [days]</code><span>A deep activity report for this server</span><b class="tag">Manage Server</b></li>
         <li><code>/xp &lt;action&gt; &lt;amount&gt; [member] [reason]</code><span>Administrator: give or remove a member&#x27;s server-local level XP</span><b class="tag">Administrator</b></li>
         <li><code>/xpevent list</code><span>Show scheduled XP events</span><b class="tag">Manage Server</b></li>
