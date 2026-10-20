@@ -51,7 +51,7 @@
       <button class="nav-btn" data-page="logs"><span class="icon">≡</span>Server logs</button>
       <button class="nav-btn" data-page="updates"><span class="icon">✦</span>What's new<span class="count" id="updatesCount"></span></button>
       <button class="nav-btn" data-page="team"><span class="icon">☺</span>Team</button>
-      <div class="nav-label staff-only" hidden>Billy staff</div><button class="nav-btn staff-only" data-page="moderator" hidden><span class="icon">⬢</span>Moderator room</button><div class="nav-label">Configuration</div>
+      <div class="nav-label staff-only" hidden>Billy staff</div><a class="nav-btn staff-only" href="/staff/" hidden><span class="icon">⬢</span>Staff dashboard</a><div class="nav-label">Configuration</div>
       <button class="nav-btn" data-page="settings"><span class="icon">⚙</span>Server settings</button>
       <div class="side-card" id="premiumCard"><span class="side-plan" id="premiumCardPlan">Free plan</span><b id="premiumCardTitle">Need more power?</b><p id="premiumCardCopy">Raise the limits on knowledge sources, blocked words, giveaways, and reaction roles. Safety features stay free.</p><div class="side-usage" id="premiumCardUsage" hidden><div class="side-usage-bar"><i id="premiumCardBar"></i></div><small id="premiumCardUsageText"></small></div><button class="demo-action" id="premiumCardButton" data-action="View premium">View premium</button></div>
     </aside>
@@ -65,6 +65,7 @@
           <article class="stat"><div class="stat-top"><span>Voice time (30 days)</span><span class="stat-icon">◉</span></div><strong id="overviewVoice">—</strong><span class="delta">Tracked by server</span></article>
           <article class="stat"><div class="stat-top"><span>Moderation records</span><span class="stat-icon">◇</span></div><strong id="overviewModeration">—</strong><span class="delta warn" id="overviewWarnings">Waiting for Billy</span></article>
         </div>
+        <article class="panel setup-health" id="setupHealthPanel" hidden><header class="panel-head"><div><h2>Needs attention</h2><span>Billy can't do these jobs until they are fixed</span></div></header><div class="panel-body" id="setupHealthList"></div></article>
         <div class="grid">
           <div class="stack">
             <article class="panel"><header class="panel-head"><div><h2>Knowledge health</h2><span>What Billy can confidently answer</span></div><button class="button demo-action">Manage sources</button></header><div class="panel-body health"><div class="ring" id="overviewHealthRing"><div class="ring-content"><strong id="overviewHealthValue">—</strong><span id="overviewHealthStatus">waiting</span></div></div><div class="source-list" id="overviewSourceList"><div class="empty-note"><strong>Waiting for server knowledge</strong>Approved sources will appear after a server is connected.</div></div></div></article>
@@ -77,74 +78,6 @@
         </div>
       </section>
 
-      <section class="page" id="moderator">
-      <div class="mod-room-head">
-        <div>
-          <h1>Moderator room</h1>
-          <p>Billy's own staff. This is not a server's moderation page — what
-             happens here applies everywhere Billy is.</p>
-        </div>
-        <span class="rank-pill" id="modRoomRank">—</span>
-      </div>
-
-      <div class="stat-row" id="modRoomStats"></div>
-
-      <div class="mod-room-grid"><article class="panel" id="updateComposer" hidden style="grid-column:1/-1"><header class="panel-head"><div><h2>Publish an update</h2><span>Developers only. It appears on What&#x27;s new for every server straight away.</span></div></header><div class="panel-body"><div class="update-form"><input class="field" id="updateVersion" aria-label="Update version number" placeholder="v9.3.0" maxlength="24"><input class="field" id="updateTitle" aria-label="Update title" placeholder="What changed?" maxlength="120"></div><textarea class="field update-textarea" id="updateBody" aria-label="What changed, one change per line" rows="8" maxlength="4000" placeholder="One change per line."></textarea><div class="update-actions"><span class="field-hint" id="updateStatus"></span><button class="button primary" id="updatePublish">Publish update</button></div></div></article>
-        <article class="panel">
-          <header class="panel-head">
-            <div><h2>Banned from Billy</h2>
-              <span>They cannot use commands, chat with Billy, or open this dashboard</span></div>
-          </header>
-          <div class="panel-body">
-            <div class="ban-form">
-              <input class="field" id="banUserId" aria-label="Discord user ID to ban from Billy" placeholder="Discord user ID" inputmode="numeric">
-              <input class="field" id="banReason" aria-label="Reason for the ban" placeholder="Reason — somebody reads this back in an appeal">
-              <input class="field" id="banDays" aria-label="Ban length in days, blank for forever" type="number" min="0" max="3650" placeholder="Days (blank = forever)">
-              <button class="button primary" id="banSubmit">Ban</button>
-            </div>
-            <p class="mod-status" id="banStatus"></p>
-            <div class="ban-list" id="banList">
-              <div class="empty-note"><strong>Nobody is banned</strong>That is the
-                good outcome. Bans stop somebody using Billy — they do not touch
-                their Discord account and no server is told.</div>
-            </div>
-          </div>
-        </article>
-
-        <article class="panel">
-          <header class="panel-head">
-            <div><h2>Billy staff</h2><span>Ranks apply to Discord, this dashboard and the website at once</span></div>
-          </header>
-          <div class="panel-body">
-            <div class="staff-form" id="staffForm" hidden>
-              <input class="field" id="staffUserId" aria-label="Discord user ID of the staff member" placeholder="Discord user ID" inputmode="numeric">
-              <select class="field" id="staffRank" aria-label="Staff rank">
-                <option value="beta_tester">Beta Tester</option>
-                <option value="moderator" selected>Moderator</option>
-                <option value="administrator">Administrator</option>
-                <option value="community_manager">Community Manager</option>
-                <option value="developer">Developer</option>
-                <option value="remove">— Remove from staff —</option>
-              </select>
-              <button class="button" id="staffSubmit">Set rank</button>
-            </div>
-            <p class="mod-status" id="staffStatus"></p>
-            <div class="staff-list" id="staffList"></div>
-          </div>
-        </article>
-      </div>
-
-      <article class="panel" style="margin-top:18px">
-        <header class="panel-head">
-          <div><h2>Every server Billy is in</h2><span>Sorted by size</span></div>
-        </header>
-        <div class="panel-body table-wrap">
-          <table class="table"><thead><tr><th>Server</th><th>Members</th><th>Plan</th><th>Since</th><th></th></tr></thead>
-          <tbody id="modRoomServers"><tr><td colspan="5" class="empty-note">
-            <strong>Loading</strong>Billy is fetching the server list.</td></tr></tbody></table>
-        </div>
-      </article>
-    </section>
     <section class="page" id="knowledge"><div class="page-head"><div><span class="eyebrow">Knowledge engine</span><h1>Teach once. Stay current.</h1><p>Choose exactly what Billy is allowed to learn and keep every server isolated.</p></div><div class="head-actions"><button class="button demo-action">Resolve conflict</button><button class="button amber demo-action">Add source</button></div></div><div class="stats"><article class="stat"><div class="stat-top"><span>Approved sources</span><span class="stat-icon">◎</span></div><strong id="kbSources">—</strong><span class="delta" id="kbSourcesNote">Waiting for server data</span></article><article class="stat"><div class="stat-top"><span>Knowledge items</span><span class="stat-icon">▤</span></div><strong id="kbItems">—</strong><span class="delta" id="kbItemsNote">Waiting for server data</span></article><article class="stat"><div class="stat-top"><span>Answer confidence</span><span class="stat-icon">✓</span></div><strong id="kbConfidence">—</strong><span class="delta" id="kbConfidenceNote">Available after sync</span></article><article class="stat"><div class="stat-top"><span>Needs review</span><span class="stat-icon">!</span></div><strong id="kbReview">—</strong><span class="delta warn" id="kbReviewNote">No live review data</span></article></div><article class="panel"><header class="panel-head"><div><h2>Approved knowledge sources</h2><span>Channels Billy is allowed to read. Private channels stay private unless you explicitly approve them.</span></div><button class="button demo-action" data-action="Add source">Add source</button></header><div class="panel-body" id="knowledgeSources"><div class="empty-note"><strong>Connect a server to load sources</strong>Approved sources will appear here after Billy's dashboard API is connected.</div></div></article></section>
 
       <section class="page" id="tickets"><div class="page-head"><div><span class="eyebrow">Support workspace</span><h1>Every request has a clear path.</h1><p>Normal ticket handling with Billy helping organize context—not making staff decisions.</p></div><div class="head-actions"><button class="button demo-action">Panel settings</button><button class="button amber demo-action">Create ticket panel</button></div></div><div class="ticket-board" id="ticketBoard"><div class="empty-note"><strong>Tickets will appear here</strong>Connect Discord and choose a server to load live ticket information.</div></div></section>
@@ -324,196 +257,22 @@
     }
     nav.forEach(btn=>btn.addEventListener('click',()=>openPage(btn.dataset.page)));
 
-    /* ---- Moderator room ---------------------------------------------------
-       Whether to show this is decided by ASKING THE ENDPOINT, not by reading a
-       flag. /api/health is fetched without the session token, so it could never
-       carry a rank; and a client-side flag is something a viewer can edit.
-       A 200 from the server is the only thing that reveals the room.
-
-       Hidden rather than disabled, too: a control that exists and refuses is an
-       invitation to try, and this one reaches every server Billy is in. */
-    let modRoomRank='',modRoomLoaded=false;
-    async function revealModeratorRoom(){
+    /* ---- Billy staff --------------------------------------------------------
+       The Moderator Room moved to its own Staff Dashboard at /staff/. Staff get
+       a link to it here, and developers keep the delete button on published
+       updates. Whether someone is staff is decided by ASKING THE ENDPOINT: a
+       200 is the only thing that reveals the link, and a viewer cannot edit
+       their way into it. */
+    async function revealStaffLink(){
       if(!sessionToken)return;
       let data;
       try{data=await api('/api/moderator/overview')}
       catch(error){return}          /* 403 for everybody who is not staff */
       document.querySelectorAll('.staff-only').forEach(el=>{el.hidden=false});
-      modRoomRank=(data.you&&data.you.rank)||'';
-      modRoomLoaded=true;
-      /* The publish form was asking whether it could be shown while the
-         page was still parsing -- before login, so the answer was always
-         no and it never asked again. The rank is already in this
-         response, and this runs once staff status is confirmed. */
-      const composer=document.getElementById('updateComposer');
-      if(composer)composer.hidden=(modRoomRank!=='developer');
-      document.body.classList.toggle('is-developer',modRoomRank==='developer');
-      renderModeratorRoom(data);
-      loadModeratorServers();
+      document.body.classList.toggle('is-developer',((data.you&&data.you.rank)||'')==='developer');
     }
+    revealStaffLink();
 
-    function modRoomTile(value,label){
-      const tile=document.createElement('div');tile.className='stat-tile';
-      const b=document.createElement('b');b.textContent=value;
-      const s=document.createElement('span');s.textContent=label;
-      tile.append(b,s);return tile;
-    }
-
-    async function loadModeratorRoom(){
-      let data;
-      try{data=await api('/api/moderator/overview')}
-      catch(error){
-        const status=document.getElementById('banStatus');
-        if(status){status.className='mod-status bad';status.textContent=explainApiError(error)}
-        return;
-      }
-      renderModeratorRoom(data);
-      loadModeratorServers();
-    }
-
-    function renderModeratorRoom(data){
-      const rankEl=document.getElementById('modRoomRank');
-      if(rankEl)rankEl.textContent=(data.you&&data.you.rank)?data.you.rank.replace(/_/g,' '):'staff';
-
-      const stats=document.getElementById('modRoomStats');
-      if(stats){
-        stats.replaceChildren(
-          modRoomTile(String(data.totals.servers),'Servers'),
-          modRoomTile(Number(data.totals.members).toLocaleString(),'Members reached'),
-          modRoomTile(String(data.totals.active_bans),'Banned from Billy'),
-          modRoomTile(String(data.totals.security_incidents_7d),'Security flags, 7 days'));
-      }
-
-      const bans=document.getElementById('banList');
-      if(bans){
-        if(!data.bans.length){
-          /* The empty state already in the markup says the right thing. */
-        }else{
-          bans.replaceChildren();
-          data.bans.forEach(ban=>{
-            const row=document.createElement('div');row.className='ban-row';
-            const left=document.createElement('div');
-            const who=document.createElement('b');who.textContent=ban.user_id;
-            const why=document.createElement('small');
-            why.textContent=(ban.reason||'No reason recorded')
-              +(ban.expires_at?' · until '+ban.expires_at.slice(0,10):' · no end date');
-            left.append(who,why);
-            const lift=document.createElement('button');
-            lift.type='button';lift.textContent='Lift';
-            lift.addEventListener('click',async()=>{
-              lift.disabled=true;
-              try{
-                await api('/api/moderator/bans/'+ban.user_id,{method:'DELETE',
-                  body:{reason:'Lifted from the Moderator Room'}});
-                modRoomLoaded=false;loadModeratorRoom();modRoomLoaded=true;
-              }catch(error){
-                lift.disabled=false;
-                const status=document.getElementById('banStatus');
-                status.className='mod-status bad';status.textContent=explainApiError(error);
-              }
-            });
-            row.append(left,lift);bans.append(row);
-          });
-        }
-      }
-
-      const staffList=document.getElementById('staffList');
-      if(staffList){
-        staffList.replaceChildren();
-        (data.staff||[]).forEach(member=>{
-          const row=document.createElement('div');row.className='staff-row';
-          const left=document.createElement('div');
-          const who=document.createElement('b');who.textContent=member.user_id;
-          const rank=document.createElement('small');
-          rank.textContent=(member.rank_label||member.rank)
-            +(member.updated_at?' · since '+member.updated_at.slice(0,10):'');
-          left.append(who,rank);row.append(left);staffList.append(row);
-        });
-        if(!(data.staff||[]).length){
-          const note=document.createElement('div');note.className='empty-note';
-          note.innerHTML='<strong>Nobody has a rank yet</strong>'
-            +'You are here because you own Billy. Give somebody a rank below to add them.';
-          staffList.append(note);
-        }
-      }
-      /* Only a developer may change the staff list, so only they get the form. */
-      const form=document.getElementById('staffForm');
-      if(form)form.hidden=(modRoomRank!=='developer');
-    }
-
-    async function loadModeratorServers(){
-      try{
-        const servers=await api('/api/moderator/servers');
-        const body=document.getElementById('modRoomServers');
-        body.replaceChildren();
-        servers.servers.forEach(server=>{
-          const tr=document.createElement('tr');
-          [server.name,Number(server.members).toLocaleString(),server.tier,
-           (server.joined_at||'').slice(0,10)||'—'].forEach(value=>{
-            const td=document.createElement('td');td.textContent=value;tr.append(td)
-          });
-
-          const cell=document.createElement('td');
-          const join=document.createElement('button');
-          join.type='button';join.className='join-btn';join.textContent='Join';
-          join.title='Billy makes a ten-minute, single-use invite. That server\u2019s '
-            +'audit log will show he made it.';
-          join.addEventListener('click',async()=>{
-            join.disabled=true;join.textContent='Asking\u2026';
-            try{
-              const result=await api('/api/moderator/servers/'+server.id+'/invite',
-                {method:'POST'});
-              /* Opened rather than navigated to, so the room stays where it is. */
-              window.open(result.url,'_blank','noopener');
-              join.textContent='Opened';
-              /* The invite dies in ten minutes, so the button comes back rather
-                 than leaving a stale link somebody clicks tomorrow. */
-              setTimeout(()=>{join.disabled=false;join.textContent='Join'},4000);
-            }catch(error){
-              join.textContent='Cannot';
-              join.title=explainApiError(error);
-              setTimeout(()=>{join.disabled=false;join.textContent='Join'},4000);
-            }
-          });
-          cell.append(join);tr.append(cell);
-          body.append(tr);
-        });
-      }catch(error){/* the table keeps its loading row */}
-    }
-
-    /* Asked once, as soon as there is a session to ask with. */
-    revealModeratorRoom();
-
-    document.getElementById('banSubmit')?.addEventListener('click',async()=>{
-      const status=document.getElementById('banStatus');
-      const userId=document.getElementById('banUserId').value.trim();
-      const reason=document.getElementById('banReason').value.trim();
-      const days=document.getElementById('banDays').value.trim();
-      status.className='mod-status';status.textContent='Banning…';
-      try{
-        const result=await api('/api/moderator/bans',{method:'POST',
-          body:{user_id:userId,reason:reason,days:days||0}});
-        status.className='mod-status good';status.textContent=result.message;
-        document.getElementById('banUserId').value='';
-        document.getElementById('banReason').value='';
-        document.getElementById('banDays').value='';
-        modRoomLoaded=false;loadModeratorRoom();modRoomLoaded=true;
-      }catch(error){status.className='mod-status bad';status.textContent=explainApiError(error)}
-    });
-
-    document.getElementById('staffSubmit')?.addEventListener('click',async()=>{
-      const status=document.getElementById('staffStatus');
-      const userId=document.getElementById('staffUserId').value.trim();
-      const rank=document.getElementById('staffRank').value;
-      status.className='mod-status';status.textContent='Saving…';
-      try{
-        const result=await api('/api/moderator/staff',{method:'POST',
-          body:{user_id:userId,rank:rank}});
-        status.className='mod-status good';status.textContent=result.message;
-        document.getElementById('staffUserId').value='';
-        modRoomLoaded=false;loadModeratorRoom();modRoomLoaded=true;
-      }catch(error){status.className='mod-status bad';status.textContent=explainApiError(error)}
-    });
     /* Run the intro on whichever page you land on. */
     flickerIn(document.querySelector('.page.active')||document.getElementById('overview'));
     function setSwitch(button,value){button.classList.toggle('on',Boolean(value));button.setAttribute('aria-pressed',String(Boolean(value)))}
@@ -1222,6 +981,28 @@ setOverviewText('moderationFalsePositivesNote',falsePositives?'Reviews staff dis
       billyLiveState.setup=setup||{};renderLiveSources(knowledge||{});renderLiveMembers(members||{},levels||{},voice||{});renderLiveActivity(activity||{},logs||{});renderLiveModeration(moderation||{},reviews||{});renderLiveTickets(tickets||{});renderLiveForms(forms||{});
       if(!setup)setOverviewText('overviewHealthStatus','API needs setup options');
     }
+    /* Deleted channels Billy still had saved, channels he can no longer post
+       in, missing permissions. These used to reach only Billy's log. Hidden
+       when there is nothing to fix, and when Billy is too old to say. */
+    async function loadSetupHealth(guildId){
+      const panel=document.getElementById('setupHealthPanel'),list=document.getElementById('setupHealthList');
+      if(!panel||!list)return;
+      let data;
+      try{data=await api('/api/guilds/'+guildId+'/setup-health')}
+      catch(error){panel.hidden=true;if(error.status===404)return;throw error}
+      if(guildId!==activeGuildId)return;
+      const problems=Array.isArray(data.problems)?data.problems:[];
+      panel.hidden=!problems.length;
+      list.replaceChildren(...problems.map(problem=>{
+        const row=document.createElement('div');row.className='setup-problem '+(problem.severity||'medium');
+        const title=document.createElement('b');title.textContent=problem.title||'Something needs fixing';
+        const detail=document.createElement('span');detail.textContent=problem.detail||'';
+        row.append(title,detail);
+        if(problem.fix){const fix=document.createElement('em');fix.textContent='Fix: '+problem.fix;row.append(fix)}
+        return row;
+      }));
+    }
+
     async function loadGuild(guildId){
       activeGuildId=guildId;
       counterValues.clear();
@@ -1251,7 +1032,8 @@ setOverviewText('moderationFalsePositivesNote',falsePositives?'Reviews staff dis
              activity cards silently stopped rendering even when the server
              had them. */
           loadKnowledgeAndSettings(guildId),
-          loadActivityCards(guildId)
+          loadActivityCards(guildId),
+          loadSetupHealth(guildId)
         ]);
         const failed=results.filter(r=>r.status==='rejected');
         if(failed.length===results.length){
@@ -3044,32 +2826,6 @@ setOverviewText('moderationFalsePositivesNote',falsePositives?'Reviews staff dis
           :(error.message||'That did not delete.'));
       }
     }
-    async function publishUpdate(){
-      const status=document.getElementById('updateStatus');
-      const button=document.getElementById('updatePublish');
-      const titleEl=document.getElementById('updateTitle');
-      const bodyEl=document.getElementById('updateBody');
-      const versionEl=document.getElementById('updateVersion');
-      const title=titleEl.value.trim(),body=bodyEl.value.trim(),version=versionEl.value.trim();
-      if(!title||!body){status.textContent='A title and some detail are needed.';return}
-      button.disabled=true;status.textContent='Publishing...';
-      try{
-        // Through api(), not a bare fetch. The dashboard authenticates with an
-        // Authorization: Bearer header, not cookies -- the first version sent
-        // credentials:'include' and no token, so the server saw no session and
-        // the browser blocked the response for good measure. api() also carries
-        // the base URL and the rolling session renewal.
-        await api('/api/updates/publish',{method:'POST',
-          body:{title:title,body:body,version:version,category:'bot'}});
-        titleEl.value='';bodyEl.value='';versionEl.value='';
-        status.textContent='Published.';
-        await loadUpdates();
-      }catch(error){
-        status.textContent=error.status===403
-          ?'Only Billy developers can publish an update.'
-          :(error.message||'That did not publish.');
-      }finally{button.disabled=false}
-    }
     async function loadUpdates(){
       const subtitle=document.getElementById('updatesSubtitle'),badge=document.getElementById('updatesCount');
       if(!apiBase){
@@ -3090,7 +2846,6 @@ setOverviewText('moderationFalsePositivesNote',falsePositives?'Reviews staff dis
       }
     }
     document.getElementById('updatesRefresh')?.addEventListener('click',loadUpdates);
-    document.getElementById('updatePublish')?.addEventListener('click',publishUpdate);
 
     /* ---- Premium ------------------------------------------------------
        Limits come from the API rather than being duplicated here, so the page

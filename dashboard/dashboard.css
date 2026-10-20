@@ -681,9 +681,6 @@ body.billy-offline main { display: grid; place-items: center; min-height: calc(1
 
 /* --------------------------------------------------------- moderator room */
 
-.mod-room-head { display: flex; align-items: flex-start; gap: 16px; margin-bottom: 18px; }
-.mod-room-head h1 { margin: 0; font-family: CuteDino, system-ui, sans-serif; font-weight: 400; font-size: 34px; }
-.mod-room-head p { max-width: 62ch; margin: 4px 0 0; color: var(--muted); }
 .rank-pill { margin-left: auto; padding: 2px 10px; border: 1px solid currentColor; border-radius: 999px; font-size: 13px; font-weight: 600; color: var(--purple); }
 .mod-room-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 16px; }
 
@@ -704,9 +701,6 @@ body.billy-offline main { display: grid; place-items: center; min-height: calc(1
 .mod-status.good { color: var(--green); }
 .mod-status.bad { color: var(--red); }
 
-.join-btn { padding: 3px 10px; border: 1px solid var(--line); border-radius: 8px; background: none; color: var(--amber-2); font-size: 13px; font-weight: 600; white-space: nowrap; cursor: pointer; }
-.join-btn:hover:not(:disabled) { border-color: var(--amber); }
-.join-btn:disabled { opacity: 0.55; cursor: default; }
 
 .update-form { display: grid; grid-template-columns: minmax(0, 170px) minmax(0, 1fr); gap: 8px; margin-bottom: 8px; }
 .update-textarea { width: 100%; min-height: 160px; resize: vertical; line-height: 1.5; }
@@ -941,7 +935,7 @@ body {
   text-transform: uppercase;
 }
 
-.page-head h1, .mod-room-head h1, .update-hero h2 { font-weight: 700; letter-spacing: -0.02em; }
+.page-head h1, .update-hero h2 { font-weight: 700; letter-spacing: -0.02em; }
 
 .panel, .stat, .module, .mod-tile, .mod-card, .plan, .team-card, .countdown-card,
 .update-hero, .stat-tile, .lane, .side-card, .owner-notice {
@@ -1015,3 +1009,14 @@ body::before { content: ""; position: fixed; inset: 0; z-index: 0; pointer-event
   .brand strong, .brand small, .intro-in, .intro-hero { animation: none; }
   .button:hover, .button:active, .module:hover, .mod-tile:hover, .team-card:hover { transform: none; }
 }
+
+/* Needs attention: setup problems that used to reach only Billy's log. */
+.setup-health { margin-bottom: 16px; }
+.setup-problem { display: grid; gap: 2px; padding: 10px 12px 10px 14px; border: 1px solid var(--line); border-left: 4px solid var(--amber); border-radius: 8px; }
+.setup-problem + .setup-problem { margin-top: 8px; }
+.setup-problem.high { border-left-color: var(--red); }
+.setup-problem.low { border-left-color: var(--line); }
+.setup-problem b { font-size: 14px; }
+.setup-problem span { font-size: 13px; color: var(--muted); }
+.setup-problem em { font-size: 13px; font-style: normal; color: var(--text); }
+a.nav-btn { text-decoration: none; }

@@ -1,0 +1,174 @@
+/* Billy staff dashboard.
+   Builds on /dashboard/dashboard.css: its colours, dark mode, panels, buttons,
+   tables and the ban/staff rows all come from there. This file is only the
+   layout -- tabs along the top, a list on the left, the details on the right,
+   the way the Monkey Buddys staff dashboard is laid out. */
+
+.staff-page { min-height: 100vh; }
+
+/* ---- Top bar with tabs ---------------------------------------------------- */
+.staff-topbar { height: auto; min-height: 60px; flex-wrap: nowrap; row-gap: 0; }
+.staff-topbar .brand { min-width: 0; flex: none; }
+/* One row on a desktop: the tabs scroll sideways rather than push the
+   buttons onto a second line. Phones get a row of their own (below). */
+.staff-tabs { flex: 1 1 auto; display: flex; gap: 2px; min-width: 0; overflow-x: auto; scrollbar-width: none; }
+.staff-topbar .top-actions { flex: none; }
+.staff-tabs::-webkit-scrollbar { display: none; }
+.staff-tabs button {
+  position: relative;
+  padding: 18px 12px;
+  border: 0;
+  background: none;
+  color: var(--muted);
+  font: inherit;
+  font-size: 14px;
+  font-weight: 600;
+  white-space: nowrap;
+  cursor: pointer;
+}
+.staff-tabs button:hover { color: var(--text); }
+.staff-tabs button.on { color: var(--amber-2); }
+.staff-tabs button.on::after {
+  content: "";
+  position: absolute;
+  left: 10px;
+  right: 10px;
+  bottom: 0;
+  height: 3px;
+  border-radius: 3px 3px 0 0;
+  background: var(--amber);
+}
+.staff-tabs button:focus-visible { outline: 2px solid var(--amber); outline-offset: -4px; border-radius: 6px; }
+
+/* ---- Main area ----------------------------------------------------------------- */
+.staff-main { max-width: 1400px; margin: 0 auto; padding: 20px 24px 40px; }
+.staff-view { display: grid; grid-template-columns: minmax(260px, 340px) minmax(0, 1fr); gap: 16px; align-items: start; }
+.staff-view[hidden] { display: none; }
+.staff-wide { grid-template-columns: minmax(0, 1fr); }
+.staff-columns { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 16px; }
+
+/* ---- Sign-in gate ------------------------------------------------------------- */
+.staff-gate { display: grid; place-items: center; min-height: calc(100vh - 160px); }
+.staff-gate[hidden] { display: none; }
+.staff-gate-card { width: min(440px, 100%); text-align: center; }
+.staff-gate-card .panel-body { display: grid; justify-items: center; gap: 10px; padding: 32px 24px; }
+.staff-gate-card img { border-radius: 50%; border: 1px solid var(--line); }
+.staff-gate-card h1 { margin: 4px 0 0; font-family: var(--display); font-weight: 400; font-size: 30px; }
+.staff-gate-card p { margin: 0; color: var(--muted); }
+
+/* ---- The list on the left ------------------------------------------------------ */
+.staff-list { position: sticky; top: 76px; display: flex; flex-direction: column; max-height: calc(100vh - 100px); }
+.staff-list-head { display: flex; align-items: center; gap: 8px; padding: 10px; border-bottom: 1px solid var(--line); }
+.staff-list-head .field { flex: 1; }
+.staff-count { font-size: 12px; color: var(--muted); white-space: nowrap; }
+.staff-items { overflow-y: auto; padding: 6px; }
+.staff-item {
+  display: grid;
+  grid-template-columns: 34px minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 10px;
+  width: 100%;
+  padding: 8px;
+  border: 1px solid transparent;
+  border-radius: 8px;
+  background: none;
+  color: var(--text);
+  font: inherit;
+  text-align: left;
+  cursor: pointer;
+}
+.staff-item.no-icon { grid-template-columns: minmax(0, 1fr) auto; }
+.staff-item:hover { background: var(--surface-2); }
+.staff-item.on { border-color: var(--gold-line); background: var(--accent-soft); }
+.staff-item:focus-visible { outline: 2px solid var(--amber); outline-offset: 1px; }
+.staff-item img, .staff-initial {
+  width: 34px;
+  height: 34px;
+  border-radius: 50%;
+  object-fit: cover;
+}
+.staff-initial { display: grid; place-items: center; background: var(--tint); color: var(--amber-deep); font-weight: 700; }
+.staff-item b { display: block; overflow: hidden; font-size: 14px; text-overflow: ellipsis; white-space: nowrap; }
+.staff-item small { display: block; overflow: hidden; font-size: 12px; color: var(--muted); text-overflow: ellipsis; white-space: nowrap; }
+.staff-badges { display: flex; gap: 4px; }
+.staff-empty { margin: 0; padding: 18px 12px; font-size: 14px; text-align: center; color: var(--muted); }
+
+.staff-chips { display: flex; flex-wrap: wrap; gap: 6px; padding: 10px; border-bottom: 1px solid var(--line); }
+.staff-chips button {
+  padding: 4px 10px;
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  background: none;
+  color: var(--muted);
+  font: inherit;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+}
+.staff-chips button b { color: var(--text); font-variant-numeric: tabular-nums; }
+.staff-chips button.on { border-color: var(--amber); background: var(--accent-soft); color: var(--amber-2); }
+
+/* ---- The details on the right ---------------------------------------------------- */
+.staff-detail { min-width: 0; display: grid; gap: 16px; }
+.staff-placeholder { padding: 48px 20px; border: 1px dashed var(--line); border-radius: 10px; text-align: center; color: var(--muted); }
+.staff-detail-head { display: flex; align-items: center; gap: 14px; flex-wrap: wrap; }
+.staff-detail-head img, .staff-detail-head .staff-initial { width: 52px; height: 52px; font-size: 20px; }
+.staff-detail-head h1 { margin: 0; font-family: var(--display); font-weight: 400; font-size: 28px; line-height: 1.15; }
+.staff-detail-head p { margin: 2px 0 0; color: var(--muted); font-size: 14px; }
+.staff-detail-head .staff-actions { margin-left: auto; display: flex; gap: 8px; flex-wrap: wrap; }
+
+.staff-facts { display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 10px; }
+.staff-facts div { padding: 10px 12px; border: 1px solid var(--line); border-radius: 8px; background: var(--surface); }
+.staff-facts b { display: block; font-size: 18px; font-variant-numeric: tabular-nums; }
+.staff-facts span { font-size: 12px; color: var(--muted); }
+
+.staff-problem { display: grid; gap: 2px; padding: 10px 12px 10px 14px; border: 1px solid var(--line); border-left: 4px solid var(--amber); border-radius: 8px; }
+.staff-problem + .staff-problem { margin-top: 8px; }
+.staff-problem.high { border-left-color: var(--red); }
+.staff-problem.low { border-left-color: var(--line); }
+.staff-problem b { font-size: 14px; }
+.staff-problem span { font-size: 13px; color: var(--muted); }
+.staff-problem em { font-size: 13px; font-style: normal; color: var(--text); }
+
+.staff-read { margin: 0; white-space: pre-wrap; overflow-wrap: anywhere; font-size: 14px; line-height: 1.55; }
+.staff-meta { font-size: 13px; color: var(--muted); }
+.staff-qa { display: grid; gap: 12px; }
+.staff-qa dt { font-size: 13px; font-weight: 700; color: var(--muted); }
+.staff-qa dd { margin: 2px 0 0; white-space: pre-wrap; overflow-wrap: anywhere; font-size: 14px; }
+
+.staff-list-rows { display: grid; gap: 6px; }
+
+/* Global: AI models and usage */
+.staff-model { display: flex; align-items: center; justify-content: space-between; gap: 10px; padding: 8px 0; border-bottom: 1px solid var(--line-soft); font-size: 14px; }
+.staff-model:last-child { border-bottom: 0; }
+.staff-model code { font-size: 13px; }
+.staff-bar { display: grid; grid-template-columns: 52px minmax(0, 1fr) 70px; align-items: center; gap: 10px; padding: 4px 0; font-size: 13px; }
+.staff-bar i { display: block; height: 10px; border-radius: 5px; background: var(--amber); min-width: 2px; }
+.staff-bar span:last-child { text-align: right; font-variant-numeric: tabular-nums; color: var(--muted); }
+
+.staff-update { padding: 12px 0; border-bottom: 1px solid var(--line-soft); }
+.staff-update:last-child { border-bottom: 0; }
+.staff-update-head { display: flex; align-items: center; gap: 8px; }
+.staff-update-head b { font-size: 15px; }
+.staff-update-head button { margin-left: auto; }
+
+/* ---- Narrower screens: every tab still fits ------------------------------------- */
+@media (max-width: 1180px) {
+  .staff-topbar .rank-pill { display: none; }
+  .staff-tabs button { padding-left: 9px; padding-right: 9px; }
+}
+
+/* ---- Small screens --------------------------------------------------------------- */
+@media (max-width: 900px) {
+  .staff-topbar { flex-wrap: wrap; }
+  .staff-tabs { order: 3; flex-basis: 100%; margin: 0 -12px; padding: 0 6px; }
+  .staff-tabs button { padding: 12px 10px; }
+  .staff-main { padding: 14px 16px 32px; }
+  .staff-view { grid-template-columns: minmax(0, 1fr); }
+  .staff-list { position: static; max-height: 46vh; }
+  .staff-columns { grid-template-columns: minmax(0, 1fr); }
+  .staff-detail-head .staff-actions { margin-left: 0; width: 100%; }
+}
+
+/* The signed-in person's Discord picture in the top bar. */
+.staff-page .avatar img { width: 100%; height: 100%; border-radius: 50%; object-fit: cover; }

@@ -1,0 +1,194 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="theme-color" content="#f6f4ee" />
+  <meta name="robots" content="noindex" />
+  <meta name="description" content="Billy the AI staff dashboard." />
+  <title>Billy Staff</title>
+  <link rel="icon" href="/billy-icon.webp?v=20260806" type="image/webp" />
+  <link rel="apple-touch-icon" href="/billy-icon.webp?v=20260806" />
+  <link rel="preload" href="/fonts/Cute-Dino.otf" as="font" type="font/otf" crossorigin />
+  <script src="/theme.js"></script>
+  <link rel="stylesheet" href="/dashboard/dashboard.css" />
+  <link rel="stylesheet" href="/staff/staff.css" />
+  <link rel="stylesheet" href="/scrollbars.css" />
+</head>
+<body class="staff-page">
+  <header class="topbar staff-topbar">
+    <a class="brand" href="/"><img src="/billy-icon.webp" alt="Billy the AI" /><div><strong>Billy</strong><small>Staff</small></div></a>
+    <nav class="staff-tabs" id="staffTabs" aria-label="Staff sections" hidden>
+      <button type="button" data-tab="servers">Servers</button>
+      <button type="button" data-tab="reports">Reports</button>
+      <button type="button" data-tab="applications">Applications</button>
+      <button type="button" data-tab="plans">Plans</button>
+      <button type="button" data-tab="global">Global</button>
+      <button type="button" data-tab="staff">Staff</button>
+      <button type="button" data-tab="announce">Announce</button>
+    </nav>
+    <div class="top-actions">
+      <span class="rank-pill" id="staffRank" hidden></span>
+      <a class="button" href="/dashboard/">Control room</a>
+      <div class="avatar" id="staffAvatar" aria-hidden="true">?</div>
+    </div>
+  </header>
+
+  <main class="staff-main">
+    <!-- Shown until Billy confirms who is looking. -->
+    <section class="staff-gate" id="staffGate">
+      <article class="panel staff-gate-card">
+        <div class="panel-body">
+          <img src="/billy-icon.webp" alt="" width="64" height="64" />
+          <h1 id="gateTitle">Billy staff</h1>
+          <p id="gateText">Checking who you are&hellip;</p>
+          <a class="button primary" id="gateLogin" href="#" hidden>Sign in with Discord</a>
+        </div>
+      </article>
+    </section>
+
+    <!-- Servers: list on the left, the chosen server on the right. -->
+    <section class="staff-view" id="view-servers" hidden>
+      <aside class="staff-list panel">
+        <div class="staff-list-head">
+          <input class="field" id="serverSearch" type="search" placeholder="Find a server" aria-label="Find a server" />
+          <span class="staff-count" id="serverCount"></span>
+        </div>
+        <div class="staff-items" id="serverList"><p class="staff-empty">Loading servers&hellip;</p></div>
+      </aside>
+      <div class="staff-detail" id="serverDetail">
+        <div class="staff-placeholder">Pick a server to see what is happening there.</div>
+      </div>
+    </section>
+
+    <!-- Reports: four kinds, newest first. -->
+    <section class="staff-view" id="view-reports" hidden>
+      <aside class="staff-list panel">
+        <div class="staff-chips" id="reportKinds" role="tablist" aria-label="Report kind">
+          <button type="button" data-kind="errors" class="on">Errors <b></b></button>
+          <button type="button" data-kind="scams">Scams <b></b></button>
+          <button type="button" data-kind="links">Links <b></b></button>
+          <button type="button" data-kind="security">Security <b></b></button>
+        </div>
+        <div class="staff-items" id="reportList"><p class="staff-empty">Loading reports&hellip;</p></div>
+      </aside>
+      <div class="staff-detail" id="reportDetail">
+        <div class="staff-placeholder">Pick a report to read it in full. Counts are for the last 7 days.</div>
+      </div>
+    </section>
+
+    <!-- Applications: read here, decided in Discord. -->
+    <section class="staff-view" id="view-applications" hidden>
+      <aside class="staff-list panel">
+        <div class="staff-list-head">
+          <select class="field" id="applicationFilter" aria-label="Show applications">
+            <option value="">Every status</option>
+            <option value="pending">Pending</option>
+            <option value="accepted">Accepted</option>
+            <option value="rejected">Rejected</option>
+          </select>
+          <span class="staff-count" id="applicationCount"></span>
+        </div>
+        <div class="staff-items" id="applicationList"><p class="staff-empty">Loading applications&hellip;</p></div>
+      </aside>
+      <div class="staff-detail" id="applicationDetail">
+        <div class="staff-placeholder">Pick an application to read the answers. Accept or reject it in Discord, where its review card is.</div>
+      </div>
+    </section>
+
+    <!-- Plans -->
+    <section class="staff-view staff-wide" id="view-plans" hidden>
+      <article class="panel">
+        <header class="panel-head"><div><h2>Servers on a plan</h2><span>Paid through Lemon Squeezy, or granted by staff</span></div></header>
+        <div class="panel-body table-wrap">
+          <table class="table"><thead><tr><th>Server</th><th>Plan</th><th>Status</th><th>From</th><th>Renews</th></tr></thead>
+          <tbody id="planServers"><tr><td colspan="5" class="staff-empty">Loading&hellip;</td></tr></tbody></table>
+        </div>
+      </article>
+      <article class="panel">
+        <header class="panel-head"><div><h2>Personal grants</h2><span>A plan that follows a person into every server they own</span></div></header>
+        <div class="panel-body table-wrap">
+          <table class="table"><thead><tr><th>Person</th><th>Plan</th><th>Status</th><th>Until</th><th>Note</th></tr></thead>
+          <tbody id="planPeople"><tr><td colspan="5" class="staff-empty">Loading&hellip;</td></tr></tbody></table>
+        </div>
+      </article>
+    </section>
+
+    <!-- Global -->
+    <section class="staff-view staff-wide" id="view-global" hidden>
+      <div class="stat-row" id="globalStats"></div>
+      <div class="staff-columns">
+        <article class="panel">
+          <header class="panel-head"><div><h2>AI models</h2><span>Tried in this order. A resting model hit its limit.</span></div></header>
+          <div class="panel-body" id="globalModels"></div>
+        </article>
+        <article class="panel">
+          <header class="panel-head"><div><h2>AI use, last 7 days</h2><span>Every AI call, across every server</span></div></header>
+          <div class="panel-body" id="globalUsage"></div>
+        </article>
+      </div>
+    </section>
+
+    <!-- Staff and bans (the old Moderator Room) -->
+    <section class="staff-view staff-wide" id="view-staff" hidden>
+      <div class="staff-columns">
+        <article class="panel">
+          <header class="panel-head"><div><h2>Billy staff</h2><span>Ranks apply to Discord, the dashboards and the website at once</span></div></header>
+          <div class="panel-body">
+            <div class="staff-form" id="staffForm" hidden>
+              <input class="field" id="staffUserId" aria-label="Discord user ID of the staff member" placeholder="Discord user ID" inputmode="numeric" />
+              <select class="field" id="staffRankPick" aria-label="Staff rank">
+                <option value="beta_tester">Beta Tester</option>
+                <option value="moderator" selected>Moderator</option>
+                <option value="administrator">Administrator</option>
+                <option value="community_manager">Community Manager</option>
+                <option value="developer">Developer</option>
+                <option value="remove">— Remove from staff —</option>
+              </select>
+              <button class="button" type="button" id="staffSubmit">Set rank</button>
+            </div>
+            <p class="mod-status" id="staffStatus"></p>
+            <div class="staff-list-rows" id="staffMembers"></div>
+          </div>
+        </article>
+        <article class="panel">
+          <header class="panel-head"><div><h2>Banned from Billy</h2><span>They can't use commands, chat with Billy, or open the dashboards</span></div></header>
+          <div class="panel-body">
+            <div class="ban-form">
+              <input class="field" id="banUserId" aria-label="Discord user ID to ban from Billy" placeholder="Discord user ID" inputmode="numeric" />
+              <input class="field" id="banReason" aria-label="Reason for the ban" placeholder="Reason — somebody reads this back in an appeal" />
+              <input class="field" id="banDays" aria-label="Ban length in days, blank for forever" type="number" min="0" max="3650" placeholder="Days" />
+              <button class="button primary" type="button" id="banSubmit">Ban</button>
+            </div>
+            <p class="mod-status" id="banStatus"></p>
+            <div class="staff-list-rows" id="banList"></div>
+          </div>
+        </article>
+      </div>
+    </section>
+
+    <!-- Announce -->
+    <section class="staff-view staff-wide" id="view-announce" hidden>
+      <article class="panel">
+        <header class="panel-head"><div><h2>Publish an update</h2><span>It appears on What's new for every server straight away</span></div></header>
+        <div class="panel-body">
+          <div class="update-form">
+            <input class="field" id="updateVersion" aria-label="Update version number" placeholder="v9.3.0" maxlength="24" />
+            <input class="field" id="updateTitle" aria-label="Update title" placeholder="What changed?" maxlength="120" />
+          </div>
+          <textarea class="field update-textarea" id="updateBody" aria-label="What changed, one change per line" rows="8" maxlength="4000" placeholder="One change per line."></textarea>
+          <div class="update-actions"><span class="field-hint" id="updateStatus"></span><button class="button primary" type="button" id="updatePublish">Publish update</button></div>
+        </div>
+      </article>
+      <article class="panel">
+        <header class="panel-head"><div><h2>Published</h2><span>Newest first</span></div></header>
+        <div class="panel-body" id="updateList"><p class="staff-empty">Loading&hellip;</p></div>
+      </article>
+    </section>
+  </main>
+
+  <div class="toast" id="staffToast" role="status" aria-live="polite"></div>
+  <script src="/dashboard/config.js"></script>
+  <script src="/staff/staff.js"></script>
+</body>
+</html>
